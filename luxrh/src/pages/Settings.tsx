@@ -1,0 +1,157 @@
+import { useApp } from '@/context/AppContext'
+import { useAuditLog, useLegalParameters } from '@/lib/queries'
+import { supabase } from '@/lib/supabase'
+import { Badge, Button, Card, ErrorNote, Loading, Table } from '@/components/ui'
+import { ROLE_LABEL, date, num } from '@/lib/format'
+
+/** Catégories de données et durées de conservation — registre RGPD. */
+const RETENTION = [
+  { data: 'Fiches de salaire, décomptes, pièces comptables', key: 'retention_payslips_years' },
+  { data: 'Registre du temps de travail', key: 'retention_time_register_years' },
+]
+
+export default function Settings() {
+  const { activeCompanyId, activeCompany, profile } = useApp()
+  const audit = useAuditLog(activeCompanyId ?? undefined)
+  const params = useLegalParameters()
+
+  async function exportMyData() {
+    const { data } = await supabase.auth.getUser()
+    const payload = {
+      exported_at: new Date().toISOString(),
+      user: { id: data.user?.id, email: data.user?.email },
+      profile,
+      note: 'Export des données personnelles au titre du droit d’accès (art. 15 RGPD).',
+    }
+    const url = URL.createObjectURL(new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' }))
+    const a = document.createElement('a')
+    a.href = url
+    a.download = 'mes-donnees-luxrh.json'
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
+  return (
+    <div className="space-y-4">
+      <header>
+        <h1 className="text-xl font-bold tracking-tight text-ink">Paramètres et utilisateurs</h1>
+        <p className="text-xs text-ink-muted">
+          {profile?.organizations?.name} · rôles, journal d’audit et conformité RGPD.
+        </p>
+      </header>
+
+      <div className="grid gap-4 lg:grid-cols-2">
+        <Card title="Utilisateurs et rôles">
+          <Table head={['Utilisateur', 'Rôle', 'Portée']}>
+            <tr>
+              <td className="lux-td">
+                <span className="font-medium text-ink">{profile?.full_name}</span>
+                <span className="block text-2xs text-ink-faint">{profile?.email}</span>
+              </td>
+              <td className="lux-td">
+                {profile?.is_org_admin ? (
+                  <Badge tone="violet">Administrateur de l’espace</Badge>
+                ) : (
+                  <Badge tone="neutral">Utilisateur</Badge>
+                )}
+              </td>
+              <td className="lux-td text-xs text-ink-muted">toutes les sociétés</td>
+            </tr>
+            {(profile?.roles ?? []).map((r) => (
+              <tr key={r.id}>
+                <td className="lux-td text-xs text-ink-muted">{r.user_id.slice(0, 8)}…</td>
+                <td className="lux-td">{ROLE_LABEL[r.role]}</td>
+                <td className="lux-td text-xs text-ink-muted">
+                  {r.company_id ? 'une société' : 'toutes les sociétés'}
+                </td>
+              </tr>
+            ))}
+          </Table>
+          <p className="mt-3 text-xs text-ink-muted">
+            Quatre rôles : admin fiduciaire, gestionnaire, manager de service, salarié. Un salarié ne voit que
+            ses propres données — la restriction est appliquée par Row Level Security en base, pas par
+            l’interface.
+          </p>
+        </Card>
+
+        <Card title="RGPD">
+          <div className="space-y-3">
+            <div>
+              <p className="lux-label">Durées de conservation</p>
+              <ul className="mt-1.5 space-y-1 text-sm">
+                {RETENTION.map((r) => {
+                  const p = params.data?.find((x) => x.param_key === r.key && !x.valid_to)
+                  return (
+                    <li key={r.key} className="flex justify-between gap-3 border-b border-rule pb-1">
+                      <span className="text-ink-body">{r.data}</span>
+                      <span className="shrink-0 font-mono text-ink">{num(p?.value_num, 0)} ans</span>
+                    </li>
+                  )
+                })}
+              </ul>
+            </div>
+            <div>
+              <p className="lux-label">Chiffrement au repos</p>
+              <p className="mt-1 text-xs text-ink-muted">
+                Matricule national et coordonnées bancaires sont chiffrés en base. Ils ne sont lisibles que par
+                une fonction serveur qui vérifie les droits de l’appelant, jamais par une requête directe.
+              </p>
+            </div>
+            <div>
+              <p className="lux-label">Droit d’accès et d’export</p>
+              <Button size="sm" className="mt-1.5" onClick={exportMyData}>
+                Exporter mes données personnelles
+              </Button>
+            </div>
+            <p className="text-xs text-ink-muted">
+              Données hébergées dans l’Union européenne. Aucune décision automatisée à effet juridique n’est
+              prise sur une personne : l’application prépare et documente, la décision reste humaine.
+            </p>
+          </div>
+        </Card>
+      </div>
+
+      <Card
+        dense
+        title="Journal d’audit"
+        subtitle={`Contrats, temps de travail et absences de ${activeCompany?.legal_name ?? 'la société active'} — inaltérable`}
+      >
+        {audit.isLoading ? (
+          <Loading />
+        ) : audit.error ? (
+          <ErrorNote error={audit.error} />
+        ) : (
+          <Table head={['Horodatage', 'Auteur', 'Table', 'Action', 'Entité']}>
+            {(audit.data ?? []).slice(0, 60).map((a) => (
+              <tr key={a.id}>
+                <td className="lux-td font-mono text-2xs">
+                  {new Date(a.occurred_at).toLocaleString('fr-LU')}
+                </td>
+                <td className="lux-td">{a.actor_label ?? '—'}</td>
+                <td className="lux-td font-mono text-2xs">{a.entity_table}</td>
+                <td className="lux-td">
+                  <Badge tone={a.action === 'DELETE' ? 'blocking' : a.action === 'INSERT' ? 'ok' : 'info'}>
+                    {a.action}
+                  </Badge>
+                </td>
+                <td className="lux-td font-mono text-2xs text-ink-faint">{a.entity_id?.slice(0, 8) ?? '—'}</td>
+              </tr>
+            ))}
+            {(audit.data ?? []).length === 0 && (
+              <tr>
+                <td className="lux-td text-ink-muted" colSpan={5}>
+                  Aucune écriture tracée pour cette société. Le journal se remplit dès la première modification
+                  de contrat, de temps ou d’absence.
+                </td>
+              </tr>
+            )}
+          </Table>
+        )}
+      </Card>
+
+      <p className="text-2xs text-ink-faint">
+        Dernière lecture du référentiel : {date(new Date())}.
+      </p>
+    </div>
+  )
+}

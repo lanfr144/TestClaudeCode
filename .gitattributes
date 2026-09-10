@@ -1,0 +1,6 @@
+# Normalisation des fins de ligne : LF dans le dépôt, natif à la copie de travail.
+* text=auto eol=lf
+
+*.png binary
+*.jpg binary
+*.pdf binary

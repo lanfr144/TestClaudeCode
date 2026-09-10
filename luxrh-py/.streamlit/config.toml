@@ -1,0 +1,13 @@
+# Palette du Design System LuxRH.
+[theme]
+primaryColor = "#017E84"
+backgroundColor = "#F6F5F6"
+secondaryBackgroundColor = "#FFFFFF"
+textColor = "#1F2937"
+font = "sans serif"
+
+[server]
+headless = true
+
+[browser]
+gatherUsageStats = false

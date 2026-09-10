@@ -1,0 +1,1215 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  body { margin:0; background:#EEECEE; font-family:'Public Sans', system-ui, sans-serif; -webkit-font-smoothing:antialiased; }
+  a { color:#017E84; text-decoration:none; }
+  a:hover { color:#01686D; text-decoration:underline; }
+</style>
+</helmet>
+
+<div style="padding:56px; display:flex; flex-direction:column; gap:56px; color:#1F2937; width:fit-content;">
+
+  <div style="max-width:760px; display:flex; flex-direction:column; gap:12px;">
+    <span style="font-size:12px; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; color:#6E666C;">LuxRH · Maquettes MVP · Persona : responsable d'exploitation</span>
+    <h1 style="margin:0; font-size:40px; font-weight:700; letter-spacing:-1px; line-height:1.1;">12 écrans, un seul principe : l'application avertit et explique.</h1>
+    <p style="margin:0; font-size:16px; line-height:1.6; color:#5B5459;">Société de démonstration : Brasserie du Glacis Sàrl, HORECA, 13 salariés, CCT HORECA 2025-2027. Semaine 42, du 12 au 18 octobre 2026.</p>
+  </div>
+
+  <!-- ══ 01 PLANNING ══ -->
+  <div style="display:flex; flex-direction:column; gap:12px;" data-screen-label="01 Planning">
+    <div style="display:flex; align-items:baseline; gap:12px;"><span style="font-family:'IBM Plex Mono',monospace; font-size:13px; color:#6E666C;">01</span><h2 style="margin:0; font-size:20px; font-weight:700;">Planning — validation légale en temps réel</h2></div>
+    <div style="width:1440px; background:#F6F5F6; border:1px solid #DCD8DA; border-radius:10px; overflow:hidden; box-shadow:0 10px 30px rgba(31,41,55,0.08);">
+      <div style="display:flex; align-items:center; justify-content:space-between; background:#714B67; padding:0 18px; height:48px;">
+        <div style="display:flex; align-items:center; gap:22px;">
+          <span style="color:#fff; font-weight:700; font-size:15px;">LuxRH</span>
+          <div style="display:flex; gap:2px;">
+            <span style="color:#fff; font-size:13.5px; font-weight:600; padding:6px 12px; border-radius:4px; background:rgba(255,255,255,0.16);">Planning</span>
+            <span style="color:#EADFE6; font-size:13.5px; padding:6px 12px;">Employés</span>
+            <span style="color:#EADFE6; font-size:13.5px; padding:6px 12px;">Contrats</span>
+            <span style="color:#EADFE6; font-size:13.5px; padding:6px 12px;">Congés</span>
+            <span style="color:#EADFE6; font-size:13.5px; padding:6px 12px;">Vigilance</span>
+          </div>
+        </div>
+        <div style="display:flex; align-items:center; gap:16px;">
+          <span style="display:flex; align-items:center; gap:7px; background:rgba(255,255,255,0.13); color:#fff; font-size:13px; padding:5px 11px; border-radius:4px;">Brasserie du Glacis <span style="color:#D8C6D2; font-size:10px;">▾</span></span>
+          <span style="color:#fff; font-size:13px;">Alertes <span style="background:#C0392B; color:#fff; font-size:10px; font-weight:700; border-radius:9px; padding:1px 6px;">4</span></span>
+          <span style="width:26px; height:26px; border-radius:50%; background:#F3ECF1; color:#714B67; font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center;">SL</span>
+        </div>
+      </div>
+      <div style="display:flex;">
+        <div style="width:206px; background:#FAF9FA; border-right:1px solid #E4E1E3; padding:14px 10px; display:flex; flex-direction:column; gap:2px;">
+          <span style="font-size:11px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:#6E666C; padding:6px 10px;">Exploitation</span>
+          <span style="font-size:13.5px; font-weight:600; color:#714B67; background:#F3ECF1; padding:8px 10px; border-radius:5px;">Grille hebdomadaire</span>
+          <span style="font-size:13.5px; color:#4A4348; padding:8px 10px;">Vue mensuelle</span>
+          <span style="font-size:13.5px; color:#4A4348; padding:8px 10px;">Modèles de shifts</span>
+          <span style="font-size:13.5px; color:#4A4348; padding:8px 10px;">Registre du temps</span>
+          <span style="font-size:13.5px; color:#4A4348; padding:8px 10px; display:flex; justify-content:space-between; align-items:center;">Demandes<span style="background:#C0392B; color:#fff; font-size:10px; font-weight:700; border-radius:9px; padding:1px 6px;">3</span></span>
+          <div style="margin-top:20px; padding:12px 10px; border-top:1px solid #E4E1E3;">
+            <div style="font-size:11px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:#6E666C; margin-bottom:10px;">Période de référence</div>
+            <div style="font-size:12.5px; color:#5B5459; line-height:1.5;">PRL 4 mois · sept → déc</div>
+            <div style="font-family:'IBM Plex Mono',monospace; font-size:19px; margin-top:6px;">39,4 <span style="font-size:12px; color:#6E666C;">h / sem. moy.</span></div>
+            <div style="height:5px; border-radius:3px; background:#EAE7E9; margin-top:8px; overflow:hidden;"><div style="width:78%; height:100%; background:#017E84;"></div></div>
+            <div style="font-size:11.5px; color:#6B6469; margin-top:6px; line-height:1.45;">Marge de 0,6 h avant heures supplémentaires.</div>
+          </div>
+        </div>
+
+        <div style="flex:1; padding:18px 22px; min-width:0;">
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;">
+            <div>
+              <div style="display:flex; align-items:center; gap:8px; font-size:12px; color:#6E666C; margin-bottom:5px;"><span>Brasserie du Glacis</span><span>›</span><span>Planning</span><span>›</span><span style="color:#4A4348;">Semaine 42</span></div>
+              <div style="display:flex; align-items:center; gap:12px;">
+                <h3 style="margin:0; font-size:23px; font-weight:700; letter-spacing:-0.4px;">Semaine 42 · 12 – 18 octobre 2026</h3>
+                <span style="font-size:12px; font-weight:600; padding:4px 10px; border-radius:12px; background:#F1EFF0; color:#5B5459;">Brouillon</span>
+              </div>
+            </div>
+            <div style="display:flex; gap:10px; align-items:center;">
+              <button style="font-family:inherit; font-size:13px; font-weight:500; color:#4A4348; background:#fff; border:1px solid #D6D2D4; border-radius:5px; padding:8px 14px; cursor:pointer;">Dupliquer S41</button>
+              <button style="font-family:inherit; font-size:13px; font-weight:600; color:#6E666C; background:#F1EFF0; border:1px solid #E4E1E3; border-radius:5px; padding:8px 16px;">Publier · 1 blocage</button>
+            </div>
+          </div>
+
+          <div style="display:flex; gap:16px; align-items:flex-start;">
+            <div style="flex:1; min-width:0; background:#fff; border:1px solid #E4E1E3; border-radius:8px; overflow:hidden;">
+              <div style="display:grid; grid-template-columns:150px repeat(7, 1fr); background:#FAF9FA; border-bottom:1px solid #E4E1E3;">
+                <span style="padding:9px 12px; font-size:11px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:#6E666C;">Salarié</span>
+                <span style="padding:9px 8px; font-size:12px; font-weight:600; text-align:center; color:#4A4348;">Lun 12</span>
+                <span style="padding:9px 8px; font-size:12px; font-weight:600; text-align:center; color:#4A4348;">Mar 13</span>
+                <span style="padding:9px 8px; font-size:12px; font-weight:600; text-align:center; color:#4A4348;">Mer 14</span>
+                <span style="padding:9px 8px; font-size:12px; font-weight:600; text-align:center; color:#4A4348;">Jeu 15</span>
+                <span style="padding:9px 8px; font-size:12px; font-weight:600; text-align:center; color:#4A4348;">Ven 16</span>
+                <span style="padding:9px 8px; font-size:12px; font-weight:600; text-align:center; color:#4A4348;">Sam 17</span>
+                <span style="padding:9px 8px; font-size:12px; font-weight:600; text-align:center; color:#8C5C13; background:#FDF3E2;">Dim 18</span>
+              </div>
+
+              <div style="display:grid; grid-template-columns:150px repeat(7, 1fr); border-bottom:1px solid #F2F0F1; min-height:66px;">
+                <div style="padding:10px 12px; border-right:1px solid #F2F0F1;"><div style="font-size:13.5px; font-weight:600;">Marta Ferreira</div><div style="font-size:11.5px; color:#6E666C;">Cheffe de rang</div><div style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:#A5302A; margin-top:2px;">42 h · repos 7h30</div></div>
+                <div style="padding:6px;"><div style="background:#E4F1F2; border-left:3px solid #017E84; border-radius:4px; padding:6px 7px;"><div style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; font-weight:500; color:#01585D;">11:00–15:00</div><div style="font-size:11px; color:#125D61;">Service midi</div></div></div>
+                <div style="padding:6px;"><div style="background:#E4F1F2; border-left:3px solid #017E84; border-radius:4px; padding:6px 7px;"><div style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; font-weight:500; color:#01585D;">17:00–23:30</div><div style="font-size:11px; color:#125D61;">Service soir</div></div></div>
+                <div style="padding:6px;"><div style="background:#FBEAE8; border:1px solid #E8938A; border-left:3px solid #C0392B; border-radius:4px; padding:6px 7px;"><div style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; font-weight:600; color:#8E2A22;">17:00–23:30</div><div style="font-size:11px; color:#A5302A; font-weight:600;">Repos 11 h ✕</div></div></div>
+                <div style="padding:6px;"><div style="background:#FBEAE8; border:1px solid #E8938A; border-left:3px solid #C0392B; border-radius:4px; padding:6px 7px;"><div style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; font-weight:600; color:#8E2A22;">07:00–15:00</div><div style="font-size:11px; color:#A5302A; font-weight:600;">Repos 11 h ✕</div></div></div>
+                <div style="padding:6px;"><div style="background:#E4F1F2; border-left:3px solid #017E84; border-radius:4px; padding:6px 7px;"><div style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; font-weight:500; color:#01585D;">17:00–23:00</div><div style="font-size:11px; color:#125D61;">Service soir</div></div></div>
+                <div style="padding:6px;"><div style="background:#E4F1F2; border-left:3px solid #017E84; border-radius:4px; padding:6px 7px;"><div style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; font-weight:500; color:#01585D;">17:00–23:00</div><div style="font-size:11px; color:#125D61;">Service soir</div></div></div>
+                <div style="padding:6px; background:#FEFAF1;"><div style="font-size:11.5px; color:#6E666C; text-align:center; padding-top:14px;">Repos</div></div>
+              </div>
+
+              <div style="display:grid; grid-template-columns:150px repeat(7, 1fr); border-bottom:1px solid #F2F0F1; min-height:66px; background:#FDFCFD;">
+                <div style="padding:10px 12px; border-right:1px solid #F2F0F1;"><div style="font-size:13.5px; font-weight:600;">Jonas Klein</div><div style="font-size:11.5px; color:#6E666C;">Commis de cuisine</div><div style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:#8C5C13; margin-top:2px;">46 h · +6 h supp.</div></div>
+                <div style="padding:6px;"><div style="background:#F3ECF1; border-left:3px solid #714B67; border-radius:4px; padding:6px 7px;"><div style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; font-weight:500; color:#5C3D54;">09:00–18:00</div><div style="font-size:11px; color:#6E4A63;">Cuisine</div></div></div>
+                <div style="padding:6px;"><div style="background:#F3ECF1; border-left:3px solid #714B67; border-radius:4px; padding:6px 7px;"><div style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; font-weight:500; color:#5C3D54;">09:00–18:00</div><div style="font-size:11px; color:#6E4A63;">Cuisine</div></div></div>
+                <div style="padding:6px;"><div style="background:#FDF3E2; border-left:3px solid #B7791F; border-radius:4px; padding:6px 7px;"><div style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; font-weight:600; color:#7D5312;">08:00–19:00</div><div style="font-size:11px; color:#8C5C13; font-weight:600;">10 h max ⚠</div></div></div>
+                <div style="padding:6px;"><div style="background:#F3ECF1; border-left:3px solid #714B67; border-radius:4px; padding:6px 7px;"><div style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; font-weight:500; color:#5C3D54;">09:00–18:00</div><div style="font-size:11px; color:#6E4A63;">Cuisine</div></div></div>
+                <div style="padding:6px;"><div style="background:#F3ECF1; border-left:3px solid #714B67; border-radius:4px; padding:6px 7px;"><div style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; font-weight:500; color:#5C3D54;">09:00–18:00</div><div style="font-size:11px; color:#6E4A63;">Cuisine</div></div></div>
+                <div style="padding:6px;"><div style="font-size:11.5px; color:#6E666C; text-align:center; padding-top:14px;">Repos</div></div>
+                <div style="padding:6px; background:#FEFAF1;"><div style="font-size:11.5px; color:#6E666C; text-align:center; padding-top:14px;">Repos</div></div>
+              </div>
+
+              <div style="display:grid; grid-template-columns:150px repeat(7, 1fr); border-bottom:1px solid #F2F0F1; min-height:66px;">
+                <div style="padding:10px 12px; border-right:1px solid #F2F0F1;"><div style="font-size:13.5px; font-weight:600;">Aïcha Diallo</div><div style="font-size:11.5px; color:#6E666C;">Réceptionniste · essai</div><div style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:#5B5459; margin-top:2px;">32 h</div></div>
+                <div style="padding:6px;"><div style="background:#E4F1F2; border-left:3px solid #017E84; border-radius:4px; padding:6px 7px;"><div style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; font-weight:500; color:#01585D;">08:00–16:00</div><div style="font-size:11px; color:#125D61;">Accueil</div></div></div>
+                <div style="padding:6px; background:#F8F7F8;"><div style="font-size:11.5px; color:#6B6469; text-align:center; padding-top:8px; line-height:1.4;">Congé<br><span style="font-size:10.5px; color:#6E666C;">validé</span></div></div>
+                <div style="padding:6px; background:#F8F7F8;"><div style="font-size:11.5px; color:#6B6469; text-align:center; padding-top:8px; line-height:1.4;">Congé<br><span style="font-size:10.5px; color:#6E666C;">validé</span></div></div>
+                <div style="padding:6px;"><div style="background:#E4F1F2; border-left:3px solid #017E84; border-radius:4px; padding:6px 7px;"><div style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; font-weight:500; color:#01585D;">08:00–16:00</div><div style="font-size:11px; color:#125D61;">Accueil</div></div></div>
+                <div style="padding:6px;"><div style="background:#E4F1F2; border-left:3px solid #017E84; border-radius:4px; padding:6px 7px;"><div style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; font-weight:500; color:#01585D;">08:00–16:00</div><div style="font-size:11px; color:#125D61;">Accueil</div></div></div>
+                <div style="padding:6px;"><div style="background:#E4F1F2; border-left:3px solid #017E84; border-radius:4px; padding:6px 7px;"><div style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; font-weight:500; color:#01585D;">08:00–16:00</div><div style="font-size:11px; color:#125D61;">Accueil</div></div></div>
+                <div style="padding:6px; background:#FEFAF1;"><div style="font-size:11.5px; color:#6E666C; text-align:center; padding-top:14px;">Repos</div></div>
+              </div>
+
+              <div style="display:grid; grid-template-columns:150px repeat(7, 1fr); min-height:66px; background:#FDFCFD;">
+                <div style="padding:10px 12px; border-right:1px solid #F2F0F1;"><div style="font-size:13.5px; font-weight:600;">Tomás Rocha</div><div style="font-size:11.5px; color:#6E666C;">Barman</div><div style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:#5B5459; margin-top:2px;">38 h · 1 dim.</div></div>
+                <div style="padding:6px;"><div style="font-size:11.5px; color:#6E666C; text-align:center; padding-top:14px;">Repos</div></div>
+                <div style="padding:6px;"><div style="background:#E4F1F2; border-left:3px solid #017E84; border-radius:4px; padding:6px 7px;"><div style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; font-weight:500; color:#01585D;">16:00–24:00</div><div style="font-size:11px; color:#125D61;">Bar</div></div></div>
+                <div style="padding:6px;"><div style="background:#E4F1F2; border-left:3px solid #017E84; border-radius:4px; padding:6px 7px;"><div style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; font-weight:500; color:#01585D;">16:00–24:00</div><div style="font-size:11px; color:#125D61;">Bar</div></div></div>
+                <div style="padding:6px;"><div style="background:#F8F7F8; border-radius:4px; padding:6px 7px;"><div style="font-size:11.5px; color:#6B6469;">Maladie</div><div style="font-size:10.5px; color:#6E666C;">certificat OK</div></div></div>
+                <div style="padding:6px;"><div style="background:#E4F1F2; border-left:3px solid #017E84; border-radius:4px; padding:6px 7px;"><div style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; font-weight:500; color:#01585D;">16:00–24:00</div><div style="font-size:11px; color:#125D61;">Bar</div></div></div>
+                <div style="padding:6px;"><div style="background:#E4F1F2; border-left:3px solid #017E84; border-radius:4px; padding:6px 7px;"><div style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; font-weight:500; color:#01585D;">16:00–24:00</div><div style="font-size:11px; color:#125D61;">Bar</div></div></div>
+                <div style="padding:6px; background:#FEFAF1;"><div style="background:#FDF3E2; border-left:3px solid #B7791F; border-radius:4px; padding:6px 7px;"><div style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; font-weight:500; color:#7D5312;">16:00–24:00</div><div style="font-size:11px; color:#8C5C13;">Dimanche +70 %</div></div></div>
+              </div>
+            </div>
+
+            <div style="width:320px; flex:none; display:flex; flex-direction:column; gap:12px;">
+              <div style="background:#fff; border:1px solid #E4E1E3; border-radius:8px; overflow:hidden;">
+                <div style="padding:12px 14px; border-bottom:1px solid #EFEDEE; display:flex; justify-content:space-between; align-items:center;">
+                  <span style="font-size:13px; font-weight:700;">Contrôles légaux</span>
+                  <span style="font-size:11.5px; color:#6E666C;">évalué à chaque modification</span>
+                </div>
+                <div style="padding:13px 14px; border-bottom:1px solid #F2F0F1; background:#FEF8F7;">
+                  <div style="display:flex; gap:8px; align-items:flex-start;">
+                    <span style="color:#C0392B; font-weight:700; font-size:13px;">✕</span>
+                    <div>
+                      <div style="font-size:13px; font-weight:700; color:#8E2A22; line-height:1.4;">Repos journalier de 11 h — Marta Ferreira</div>
+                      <div style="font-size:12.5px; color:#7A3E38; line-height:1.5; margin-top:3px;">Nuit du 14 au 15 : 7 h 30 entre 23:30 et 07:00. Bloquant.</div>
+                      <div style="display:flex; gap:8px; align-items:center; margin-top:7px;">
+                        <span style="font-family:'IBM Plex Mono',monospace; font-size:11px; color:#8E2A22; background:#F6D9D5; padding:3px 7px; border-radius:4px;">art. L.211-16</span>
+                        <a href="#" style="font-size:12.5px; font-weight:600; color:#8E2A22;">Corriger</a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div style="padding:13px 14px; border-bottom:1px solid #F2F0F1;">
+                  <div style="display:flex; gap:8px; align-items:flex-start;">
+                    <span style="color:#B7791F; font-weight:700; font-size:13px;">▲</span>
+                    <div>
+                      <div style="font-size:13px; font-weight:700; color:#7D5312; line-height:1.4;">Journée de 11 h — Jonas Klein, mer. 14</div>
+                      <div style="font-size:12.5px; color:#7D5312; line-height:1.5; margin-top:3px;">Dépasse le maximum de 10 h/jour. Avertissement : dérogation ITM à justifier.</div>
+                      <span style="font-family:'IBM Plex Mono',monospace; font-size:11px; color:#7D5312; background:#F7E6C4; padding:3px 7px; border-radius:4px; display:inline-block; margin-top:7px;">art. L.211-12</span>
+                    </div>
+                  </div>
+                </div>
+                <div style="padding:13px 14px; border-bottom:1px solid #F2F0F1;">
+                  <div style="display:flex; gap:8px; align-items:flex-start;">
+                    <span style="color:#017E84; font-weight:700; font-size:13px;">i</span>
+                    <div>
+                      <div style="font-size:13px; font-weight:700; color:#01585D; line-height:1.4;">Dimanche travaillé — Tomás Rocha</div>
+                      <div style="font-size:12.5px; color:#125D61; line-height:1.5; margin-top:3px;">8 h majorées à 170 %. Repos compensatoire dû dans les 8 semaines.</div>
+                    </div>
+                  </div>
+                </div>
+                <div style="padding:13px 14px;">
+                  <div style="display:flex; gap:8px; align-items:flex-start;">
+                    <span style="color:#1E7E34; font-weight:700; font-size:13px;">✓</span>
+                    <div><div style="font-size:13px; font-weight:600; color:#186429; line-height:1.4;">Repos hebdomadaire de 44 h respecté pour les 4 salariés planifiés.</div></div>
+                  </div>
+                </div>
+              </div>
+              <div style="background:#fff; border:1px solid #E4E1E3; border-radius:8px; padding:14px;">
+                <div style="font-size:13px; font-weight:700; margin-bottom:10px;">Modèles de shifts</div>
+                <div style="display:flex; flex-direction:column; gap:7px;">
+                  <div style="border:1px solid #E4E1E3; border-radius:5px; padding:8px 10px; display:flex; justify-content:space-between; font-size:12.5px;"><span>Service midi</span><span style="font-family:'IBM Plex Mono',monospace; color:#6B6469;">11:00–15:00</span></div>
+                  <div style="border:1px solid #E4E1E3; border-radius:5px; padding:8px 10px; display:flex; justify-content:space-between; font-size:12.5px;"><span>Service soir</span><span style="font-family:'IBM Plex Mono',monospace; color:#6B6469;">17:00–23:00</span></div>
+                  <div style="border:1px solid #E4E1E3; border-radius:5px; padding:8px 10px; display:flex; justify-content:space-between; font-size:12.5px;"><span>Coupure</span><span style="font-family:'IBM Plex Mono',monospace; color:#6B6469;">11:00–14:00 / 18:00–23:00</span></div>
+                  <div style="border:1px dashed #D6D2D4; border-radius:5px; padding:8px 10px; font-size:12.5px; color:#6B6469;">+ Nouveau modèle</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ 02 TABLEAU DE BORD ══ -->
+  <div style="display:flex; flex-direction:column; gap:12px;" data-screen-label="02 Tableau de bord">
+    <div style="display:flex; align-items:baseline; gap:12px;"><span style="font-family:'IBM Plex Mono',monospace; font-size:13px; color:#6E666C;">02</span><h2 style="margin:0; font-size:20px; font-weight:700;">Tableau de bord de vigilance</h2></div>
+    <div style="width:1440px; background:#F6F5F6; border:1px solid #DCD8DA; border-radius:10px; overflow:hidden; box-shadow:0 10px 30px rgba(31,41,55,0.08);">
+      <div style="display:flex; align-items:center; justify-content:space-between; background:#714B67; padding:0 18px; height:48px;">
+        <div style="display:flex; align-items:center; gap:22px;">
+          <span style="color:#fff; font-weight:700; font-size:15px;">LuxRH</span>
+          <div style="display:flex; gap:2px;">
+            <span style="color:#fff; font-size:13.5px; font-weight:600; padding:6px 12px; border-radius:4px; background:rgba(255,255,255,0.16);">Tableau de bord</span>
+            <span style="color:#EADFE6; font-size:13.5px; padding:6px 12px;">Planning</span>
+            <span style="color:#EADFE6; font-size:13.5px; padding:6px 12px;">Employés</span>
+            <span style="color:#EADFE6; font-size:13.5px; padding:6px 12px;">Contrats</span>
+            <span style="color:#EADFE6; font-size:13.5px; padding:6px 12px;">Vigilance</span>
+          </div>
+        </div>
+        <div style="display:flex; align-items:center; gap:16px;">
+          <span style="display:flex; align-items:center; gap:7px; background:rgba(255,255,255,0.13); color:#fff; font-size:13px; padding:5px 11px; border-radius:4px;">Brasserie du Glacis <span style="color:#D8C6D2; font-size:10px;">▾</span></span>
+          <span style="color:#fff; font-size:13px;">Alertes <span style="background:#C0392B; color:#fff; font-size:10px; font-weight:700; border-radius:9px; padding:1px 6px;">4</span></span>
+          <span style="width:26px; height:26px; border-radius:50%; background:#F3ECF1; color:#714B67; font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center;">SL</span>
+        </div>
+      </div>
+      <div style="padding:24px 28px 30px;">
+        <div style="display:flex; align-items:flex-end; justify-content:space-between; margin-bottom:20px;">
+          <div>
+            <h3 style="margin:0 0 4px; font-size:26px; font-weight:700; letter-spacing:-0.5px;">Bonjour Sophie — 4 points demandent votre attention</h3>
+            <p style="margin:0; font-size:14px; color:#5B5459;">Mercredi 9 septembre 2026 · Brasserie du Glacis Sàrl · 13 salariés</p>
+          </div>
+          <div style="display:flex; gap:10px;">
+            <button style="font-family:inherit; font-size:13px; font-weight:500; color:#4A4348; background:#fff; border:1px solid #D6D2D4; border-radius:5px; padding:8px 14px; cursor:pointer;">Toutes les sociétés</button>
+            <button style="font-family:inherit; font-size:13px; font-weight:600; color:#fff; background:#714B67; border:1px solid #714B67; border-radius:5px; padding:8px 16px; cursor:pointer;">Nouveau contrat</button>
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:14px; margin-bottom:20px;">
+          <div style="background:#fff; border:1px solid #E4E1E3; border-radius:9px; padding:16px 18px;">
+            <div style="font-size:11.5px; font-weight:700; letter-spacing:0.07em; text-transform:uppercase; color:#6E666C;">En retard</div>
+            <div style="font-family:'IBM Plex Mono',monospace; font-size:32px; color:#C0392B; margin-top:6px; line-height:1;">1</div>
+            <div style="font-size:12.5px; color:#5B5459; margin-top:6px;">Certificat médical non reçu</div>
+          </div>
+          <div style="background:#fff; border:1px solid #E4E1E3; border-radius:9px; padding:16px 18px;">
+            <div style="font-size:11.5px; font-weight:700; letter-spacing:0.07em; text-transform:uppercase; color:#6E666C;">Dans les 30 jours</div>
+            <div style="font-family:'IBM Plex Mono',monospace; font-size:32px; color:#B7791F; margin-top:6px; line-height:1;">3</div>
+            <div style="font-size:12.5px; color:#5B5459; margin-top:6px;">Essai, CDD, seuil d'effectif</div>
+          </div>
+          <div style="background:#fff; border:1px solid #E4E1E3; border-radius:9px; padding:16px 18px;">
+            <div style="font-size:11.5px; font-weight:700; letter-spacing:0.07em; text-transform:uppercase; color:#6E666C;">Effectif · 12 mois</div>
+            <div style="font-family:'IBM Plex Mono',monospace; font-size:32px; margin-top:6px; line-height:1;">13<span style="font-size:16px; color:#6E666C;"> / 15</span></div>
+            <div style="height:5px; border-radius:3px; background:#F1EFF0; margin-top:10px; overflow:hidden;"><div style="width:87%; height:100%; background:#B7791F;"></div></div>
+          </div>
+          <div style="background:#fff; border:1px solid #E4E1E3; border-radius:9px; padding:16px 18px;">
+            <div style="font-size:11.5px; font-weight:700; letter-spacing:0.07em; text-transform:uppercase; color:#6E666C;">Plannings à publier</div>
+            <div style="font-family:'IBM Plex Mono',monospace; font-size:32px; margin-top:6px; line-height:1;">2</div>
+            <div style="font-size:12.5px; color:#A5302A; margin-top:6px;">dont 1 avec blocage</div>
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1.75fr 1fr; gap:16px;">
+          <div style="background:#fff; border:1px solid #E4E1E3; border-radius:9px; overflow:hidden;">
+            <div style="padding:14px 18px; border-bottom:1px solid #EFEDEE; display:flex; justify-content:space-between; align-items:center;">
+              <span style="font-size:15px; font-weight:700;">Obligations en cours</span>
+              <a href="#" style="font-size:13px; font-weight:600;">Ouvrir le centre de vigilance →</a>
+            </div>
+            <div style="padding:10px 18px 6px; font-size:11.5px; font-weight:700; letter-spacing:0.07em; text-transform:uppercase; color:#A5302A;">En retard</div>
+            <div style="padding:12px 18px; border-bottom:1px solid #F2F0F1; display:grid; grid-template-columns:1fr 130px 110px; gap:12px; align-items:center;">
+              <div>
+                <div style="font-size:14px; font-weight:600;">Certificat médical manquant — Tomás Rocha</div>
+                <div style="font-size:12.5px; color:#5B5459; margin-top:2px;">Absence du 15.10 non justifiée au-delà du 3e jour. <span style="font-family:'IBM Plex Mono',monospace; color:#714B67;">art. L.121-6</span></div>
+              </div>
+              <span style="font-family:'IBM Plex Mono',monospace; font-size:13px; color:#A5302A;">échu 18.10</span>
+              <span style="font-size:12px; font-weight:600; padding:4px 10px; border-radius:12px; background:#FBEAE8; color:#A5302A; justify-self:start;">Bloquant</span>
+            </div>
+            <div style="padding:14px 18px 6px; font-size:11.5px; font-weight:700; letter-spacing:0.07em; text-transform:uppercase; color:#8C5C13;">Dans les 30 jours</div>
+            <div style="padding:12px 18px; border-bottom:1px solid #F2F0F1; display:grid; grid-template-columns:1fr 130px 110px; gap:12px; align-items:center;">
+              <div>
+                <div style="font-size:14px; font-weight:600;">Dernier jour pour notifier la rupture d'essai — Aïcha Diallo</div>
+                <div style="font-size:12.5px; color:#5B5459; margin-top:2px;">Le préavis de 15 jours doit expirer au plus tard le 30.09. <span style="font-family:'IBM Plex Mono',monospace; color:#714B67;">art. L.121-5</span></div>
+              </div>
+              <span style="font-family:'IBM Plex Mono',monospace; font-size:13px; color:#8C5C13;">15.09 · J-6</span>
+              <span style="font-size:12px; font-weight:600; padding:4px 10px; border-radius:12px; background:#FDF3E2; color:#8C5C13; justify-self:start;">Échéance</span>
+            </div>
+            <div style="padding:12px 18px; border-bottom:1px solid #F2F0F1; display:grid; grid-template-columns:1fr 130px 110px; gap:12px; align-items:center;">
+              <div>
+                <div style="font-size:14px; font-weight:600;">Fin du CDD de Jonas Klein — 2e renouvellement atteint</div>
+                <div style="font-size:12.5px; color:#5B5459; margin-top:2px;">Tout nouveau renouvellement requalifie le contrat en CDI. <span style="font-family:'IBM Plex Mono',monospace; color:#714B67;">art. L.122-4</span></div>
+              </div>
+              <span style="font-family:'IBM Plex Mono',monospace; font-size:13px; color:#8C5C13;">31.10 · J-52</span>
+              <span style="font-size:12px; font-weight:600; padding:4px 10px; border-radius:12px; background:#FDF3E2; color:#8C5C13; justify-self:start;">Échéance</span>
+            </div>
+            <div style="padding:12px 18px; display:grid; grid-template-columns:1fr 130px 110px; gap:12px; align-items:center;">
+              <div>
+                <div style="font-size:14px; font-weight:600;">Effectif à 13 — seuil de délégation du personnel proche</div>
+                <div style="font-size:12.5px; color:#5B5459; margin-top:2px;">À 15 salariés : délégation obligatoire et élections sociales. <span style="font-family:'IBM Plex Mono',monospace; color:#714B67;">art. L.412-1</span></div>
+              </div>
+              <span style="font-family:'IBM Plex Mono',monospace; font-size:13px; color:#5B5459;">à surveiller</span>
+              <span style="font-size:12px; font-weight:600; padding:4px 10px; border-radius:12px; background:#E4F1F2; color:#01646A; justify-self:start;">Seuil</span>
+            </div>
+          </div>
+
+          <div style="display:flex; flex-direction:column; gap:16px;">
+            <div style="background:#fff; border:1px solid #E4E1E3; border-radius:9px; padding:16px 18px;">
+              <div style="font-size:15px; font-weight:700; margin-bottom:12px;">Compteur licenciement collectif</div>
+              <div style="display:flex; gap:18px;">
+                <div><div style="font-size:11.5px; color:#6E666C;">30 jours glissants</div><div style="font-family:'IBM Plex Mono',monospace; font-size:24px; margin-top:2px;">2 / 7</div></div>
+                <div><div style="font-size:11.5px; color:#6E666C;">90 jours glissants</div><div style="font-family:'IBM Plex Mono',monospace; font-size:24px; margin-top:2px;">3 / 15</div></div>
+              </div>
+              <div style="margin-top:12px; padding-top:12px; border-top:1px solid #EFEDEE; font-size:12.5px; color:#5B5459; line-height:1.5;">Encore <strong>4 notifications</strong> possibles sur 30 jours. Le compteur se libère le <span style="font-family:'IBM Plex Mono',monospace;">02.10.2026</span>.</div>
+            </div>
+            <div style="background:#fff; border:1px solid #E4E1E3; border-radius:9px; padding:16px 18px;">
+              <div style="font-size:15px; font-weight:700; margin-bottom:12px;">Absences en cours</div>
+              <div style="display:flex; flex-direction:column; gap:10px;">
+                <div style="display:flex; justify-content:space-between; font-size:13.5px;"><span>Tomás Rocha · maladie</span><span style="font-family:'IBM Plex Mono',monospace; color:#5B5459;">j. 12 / 77</span></div>
+                <div style="display:flex; justify-content:space-between; font-size:13.5px;"><span>Aïcha Diallo · congé</span><span style="font-family:'IBM Plex Mono',monospace; color:#5B5459;">13–14.10</span></div>
+                <div style="display:flex; justify-content:space-between; font-size:13.5px;"><span>Protection licenciement</span><span style="font-family:'IBM Plex Mono',monospace; color:#8C5C13;">jusqu'au 05.04.27</span></div>
+              </div>
+            </div>
+            <div style="background:#5C3D54; border-radius:9px; padding:16px 18px; color:#F4EDF2;">
+              <div style="font-size:11.5px; font-weight:700; letter-spacing:0.07em; text-transform:uppercase; color:#D8C6D2; margin-bottom:8px;">Référentiel</div>
+              <div style="font-size:13.5px; line-height:1.55;">Paramètres sociaux à l'indice <span style="font-family:'IBM Plex Mono',monospace;">992,24</span>, en vigueur depuis le 01.06.2026. Barèmes fiscaux 2026 validés en double lecture.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ 03 CENTRE DE VIGILANCE ══ -->
+  <div style="display:flex; flex-direction:column; gap:12px;" data-screen-label="03 Centre de vigilance">
+    <div style="display:flex; align-items:baseline; gap:12px;"><span style="font-family:'IBM Plex Mono',monospace; font-size:13px; color:#6E666C;">03</span><h2 style="margin:0; font-size:20px; font-weight:700;">Centre de vigilance — obligations et seuils</h2></div>
+    <div style="width:1440px; background:#F6F5F6; border:1px solid #DCD8DA; border-radius:10px; overflow:hidden; box-shadow:0 10px 30px rgba(31,41,55,0.08);">
+      <div style="display:flex; align-items:center; justify-content:space-between; background:#714B67; padding:0 18px; height:48px;">
+        <div style="display:flex; align-items:center; gap:22px;">
+          <span style="color:#fff; font-weight:700; font-size:15px;">LuxRH</span>
+          <div style="display:flex; gap:2px;">
+            <span style="color:#EADFE6; font-size:13.5px; padding:6px 12px;">Tableau de bord</span>
+            <span style="color:#EADFE6; font-size:13.5px; padding:6px 12px;">Planning</span>
+            <span style="color:#EADFE6; font-size:13.5px; padding:6px 12px;">Employés</span>
+            <span style="color:#fff; font-size:13.5px; font-weight:600; padding:6px 12px; border-radius:4px; background:rgba(255,255,255,0.16);">Vigilance</span>
+          </div>
+        </div>
+        <div style="display:flex; align-items:center; gap:16px;">
+          <span style="display:flex; align-items:center; gap:7px; background:rgba(255,255,255,0.13); color:#fff; font-size:13px; padding:5px 11px; border-radius:4px;">Brasserie du Glacis <span style="color:#D8C6D2; font-size:10px;">▾</span></span>
+          <span style="width:26px; height:26px; border-radius:50%; background:#F3ECF1; color:#714B67; font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center;">SL</span>
+        </div>
+      </div>
+      <div style="padding:24px 28px 30px;">
+        <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:18px;">
+          <div>
+            <h3 style="margin:0 0 4px; font-size:24px; font-weight:700; letter-spacing:-0.5px;">Centre de vigilance</h3>
+            <p style="margin:0; font-size:14px; color:#5B5459;">Toutes les obligations, leur base légale et la conséquence du non-respect.</p>
+          </div>
+          <div style="display:flex; gap:8px;">
+            <span style="font-size:12.5px; font-weight:600; padding:6px 12px; border-radius:5px; background:#714B67; color:#fff;">Toutes</span>
+            <span style="font-size:12.5px; padding:6px 12px; border-radius:5px; background:#fff; border:1px solid #D6D2D4; color:#4A4348;">Contrats</span>
+            <span style="font-size:12.5px; padding:6px 12px; border-radius:5px; background:#fff; border:1px solid #D6D2D4; color:#4A4348;">Temps de travail</span>
+            <span style="font-size:12.5px; padding:6px 12px; border-radius:5px; background:#fff; border:1px solid #D6D2D4; color:#4A4348;">Effectif</span>
+            <span style="font-size:12.5px; padding:6px 12px; border-radius:5px; background:#fff; border:1px solid #D6D2D4; color:#4A4348;">Traitées</span>
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1.6fr 1fr; gap:16px; align-items:start;">
+          <div style="display:flex; flex-direction:column; gap:14px;">
+            <div style="background:#fff; border:1px solid #E4E1E3; border-radius:9px; overflow:hidden;">
+              <div style="padding:11px 16px; background:#FBEAE8; font-size:12px; font-weight:700; letter-spacing:0.07em; text-transform:uppercase; color:#A5302A;">En retard · 1</div>
+              <div style="padding:16px; display:flex; gap:14px;">
+                <div style="flex:1;">
+                  <div style="font-size:15px; font-weight:700;">Certificat médical manquant — Tomás Rocha</div>
+                  <div style="font-size:13.5px; color:#5B5459; line-height:1.55; margin-top:5px;">L'absence débutée le 15.10 n'est pas couverte par un certificat au-delà du 3e jour. <strong>Conséquence :</strong> absence injustifiée, perte du droit à la continuation de salaire et motif disciplinaire possible.</div>
+                  <div style="display:flex; gap:8px; margin-top:10px;">
+                    <span style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:#5C3D54; background:#F3ECF1; padding:4px 8px; border-radius:4px;">art. L.121-6 (3)</span>
+                    <span style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:#5B5459; background:#F1EFF0; padding:4px 8px; border-radius:4px;">échu depuis 3 j</span>
+                  </div>
+                </div>
+                <div style="display:flex; flex-direction:column; gap:8px; width:150px; flex:none;">
+                  <button style="font-family:inherit; font-size:13px; font-weight:600; color:#fff; background:#714B67; border:1px solid #714B67; border-radius:5px; padding:8px 12px; cursor:pointer;">Relancer</button>
+                  <button style="font-family:inherit; font-size:13px; font-weight:500; color:#4A4348; background:#fff; border:1px solid #D6D2D4; border-radius:5px; padding:8px 12px; cursor:pointer;">Marquer traité</button>
+                </div>
+              </div>
+            </div>
+
+            <div style="background:#fff; border:1px solid #E4E1E3; border-radius:9px; overflow:hidden;">
+              <div style="padding:11px 16px; background:#FDF3E2; font-size:12px; font-weight:700; letter-spacing:0.07em; text-transform:uppercase; color:#8C5C13;">Dans les 30 jours · 2</div>
+              <div style="padding:16px; border-bottom:1px solid #F2F0F1;">
+                <div style="display:flex; justify-content:space-between; gap:16px;">
+                  <div>
+                    <div style="font-size:15px; font-weight:700;">Rupture d'essai — Aïcha Diallo</div>
+                    <div style="font-size:13.5px; color:#5B5459; line-height:1.55; margin-top:5px;">Essai de 3 mois jusqu'au 30.09.2026, prolongé de 4 jours par une incapacité. Préavis d'essai de 15 jours : <strong>dernier jour utile pour notifier, le 15.09.2026</strong>. <strong>Conséquence :</strong> passé cette date, le contrat devient définitif.</div>
+                  </div>
+                  <div style="text-align:right; flex:none;"><div style="font-family:'IBM Plex Mono',monospace; font-size:21px; color:#8C5C13;">J-6</div><div style="font-size:11.5px; color:#6E666C;">15.09.2026</div></div>
+                </div>
+                <span style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:#5C3D54; background:#F3ECF1; padding:4px 8px; border-radius:4px; display:inline-block; margin-top:10px;">art. L.121-5 (4)</span>
+              </div>
+              <div style="padding:16px;">
+                <div style="display:flex; justify-content:space-between; gap:16px;">
+                  <div>
+                    <div style="font-size:15px; font-weight:700;">CDD arrivant à terme — Jonas Klein</div>
+                    <div style="font-size:13.5px; color:#5B5459; line-height:1.55; margin-top:5px;">2 renouvellements consommés, 19 mois cumulés sur 24 maximum. <strong>Conséquence :</strong> un 3e renouvellement entraîne la requalification en CDI. Délai de carence de 6 mois avant un nouveau CDD sur le même poste.</div>
+                  </div>
+                  <div style="text-align:right; flex:none;"><div style="font-family:'IBM Plex Mono',monospace; font-size:21px; color:#8C5C13;">J-52</div><div style="font-size:11.5px; color:#6E666C;">31.10.2026</div></div>
+                </div>
+                <span style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:#5C3D54; background:#F3ECF1; padding:4px 8px; border-radius:4px; display:inline-block; margin-top:10px;">art. L.122-4</span>
+              </div>
+            </div>
+
+            <div style="background:#fff; border:1px solid #E4E1E3; border-radius:9px; overflow:hidden;">
+              <div style="padding:11px 16px; background:#E4F1F2; font-size:12px; font-weight:700; letter-spacing:0.07em; text-transform:uppercase; color:#01646A;">À surveiller · 1</div>
+              <div style="padding:16px;">
+                <div style="font-size:15px; font-weight:700;">Seuil de 15 salariés — délégation du personnel</div>
+                <div style="font-size:13.5px; color:#5B5459; line-height:1.55; margin-top:5px;">Effectif moyen de 13 sur les 12 mois précédents. Au franchissement : délégation obligatoire, 1 délégué effectif et 1 suppléant pour la tranche 15-25, scrutin majoritaire, élections tous les 5 ans. <strong>Conséquence :</strong> défaut de mise en place sanctionné pénalement.</div>
+                <span style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:#5C3D54; background:#F3ECF1; padding:4px 8px; border-radius:4px; display:inline-block; margin-top:10px;">art. L.412-1</span>
+              </div>
+            </div>
+          </div>
+
+          <div style="display:flex; flex-direction:column; gap:14px;">
+            <div style="background:#fff; border:1px solid #E4E1E3; border-radius:9px; padding:18px;">
+              <div style="font-size:15px; font-weight:700; margin-bottom:14px;">Seuils d'effectif</div>
+              <div style="display:flex; flex-direction:column; gap:0;">
+                <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid #F2F0F1;"><div><div style="font-size:13.5px; font-weight:600;">15 salariés</div><div style="font-size:12px; color:#6B6469;">Délégation du personnel</div></div><span style="font-size:12px; font-weight:600; padding:3px 9px; border-radius:11px; background:#FDF3E2; color:#8C5C13;">à 2 près</span></div>
+                <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid #F2F0F1;"><div><div style="font-size:13.5px; font-weight:600;">100 salariés</div><div style="font-size:12px; color:#6B6469;">Scrutin proportionnel</div></div><span style="font-size:12px; color:#6E666C;">non atteint</span></div>
+                <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid #F2F0F1;"><div><div style="font-size:13.5px; font-weight:600;">150 salariés</div><div style="font-size:12px; color:#6B6469;">Entretien préalable obligatoire</div></div><span style="font-size:12px; color:#6E666C;">non atteint</span></div>
+                <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0;"><div><div style="font-size:13.5px; font-weight:600;">250 salariés</div><div style="font-size:12px; color:#6B6469;">Délégué libéré à temps plein</div></div><span style="font-size:12px; color:#6E666C;">non atteint</span></div>
+              </div>
+              <div style="margin-top:12px; padding-top:12px; border-top:1px solid #EFEDEE; font-size:12px; color:#6B6469; line-height:1.5;">Chaque seuil est lu dans le référentiel daté, jamais codé en dur.</div>
+            </div>
+            <div style="background:#F1EFF0; border:1px solid #E4E1E3; border-radius:9px; padding:16px 18px;">
+              <div style="font-size:13px; line-height:1.6; color:#5B5459;">LuxRH est un outil d'aide à la décision. Il ne se substitue pas à un conseil juridique.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ 04 LISTE EMPLOYÉS + 05 FICHE EMPLOYÉ ══ -->
+  <div style="display:flex; gap:32px; align-items:flex-start;">
+    <div style="display:flex; flex-direction:column; gap:12px;" data-screen-label="04 Liste employés">
+      <div style="display:flex; align-items:baseline; gap:12px;"><span style="font-family:'IBM Plex Mono',monospace; font-size:13px; color:#6E666C;">04</span><h2 style="margin:0; font-size:20px; font-weight:700;">Liste des employés</h2></div>
+      <div style="width:704px; background:#F6F5F6; border:1px solid #DCD8DA; border-radius:10px; overflow:hidden; box-shadow:0 10px 30px rgba(31,41,55,0.08);">
+        <div style="display:flex; align-items:center; justify-content:space-between; background:#714B67; padding:0 16px; height:44px;">
+          <span style="color:#fff; font-weight:700; font-size:14px;">LuxRH · Employés</span>
+          <span style="width:24px; height:24px; border-radius:50%; background:#F3ECF1; color:#714B67; font-size:10px; font-weight:700; display:flex; align-items:center; justify-content:center;">SL</span>
+        </div>
+        <div style="padding:20px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+            <h3 style="margin:0; font-size:20px; font-weight:700;">13 salariés</h3>
+            <button style="font-family:inherit; font-size:13px; font-weight:600; color:#fff; background:#714B67; border:1px solid #714B67; border-radius:5px; padding:8px 14px; cursor:pointer;">Nouvel employé</button>
+          </div>
+          <div style="display:flex; gap:8px; margin-bottom:12px;">
+            <div style="flex:1; border:1px solid #D6D2D4; border-radius:5px; padding:8px 12px; font-size:13px; color:#6E666C; background:#fff;">Rechercher…</div>
+            <span style="font-size:12.5px; font-weight:600; padding:8px 12px; border-radius:5px; background:#F3ECF1; color:#5C3D54;">Contrat actif ×</span>
+            <span style="font-size:12.5px; padding:8px 12px; border-radius:5px; background:#fff; border:1px solid #D6D2D4; color:#4A4348;">Service ▾</span>
+          </div>
+          <div style="background:#fff; border:1px solid #E4E1E3; border-radius:8px; overflow:hidden;">
+            <div style="display:grid; grid-template-columns:1.7fr 1fr 0.7fr 1fr; padding:9px 14px; background:#FAF9FA; border-bottom:1px solid #E4E1E3; font-size:11px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:#6E666C;"><span>Salarié</span><span>Poste</span><span>Contrat</span><span>Conformité</span></div>
+            <div style="display:grid; grid-template-columns:1.7fr 1fr 0.7fr 1fr; padding:11px 14px; border-bottom:1px solid #F2F0F1; font-size:13.5px; align-items:center; background:#F3ECF1;"><span style="display:flex; align-items:center; gap:9px; font-weight:600;"><span style="width:26px; height:26px; border-radius:50%; background:#714B67; color:#fff; font-size:10px; font-weight:700; display:flex; align-items:center; justify-content:center;">AD</span>Aïcha Diallo</span><span style="color:#4A4348;">Réceptionniste</span><span style="color:#4A4348;">CDI</span><span><span style="font-size:11.5px; font-weight:600; padding:3px 9px; border-radius:11px; background:#FBEAE8; color:#A5302A;">Essai · J-6</span></span></div>
+            <div style="display:grid; grid-template-columns:1.7fr 1fr 0.7fr 1fr; padding:11px 14px; border-bottom:1px solid #F2F0F1; font-size:13.5px; align-items:center;"><span style="display:flex; align-items:center; gap:9px;"><span style="width:26px; height:26px; border-radius:50%; background:#F3ECF1; color:#714B67; font-size:10px; font-weight:700; display:flex; align-items:center; justify-content:center;">MF</span>Marta Ferreira</span><span style="color:#4A4348;">Cheffe de rang</span><span style="color:#4A4348;">CDI</span><span><span style="font-size:11.5px; font-weight:600; padding:3px 9px; border-radius:11px; background:#E8F5EA; color:#186429;">Conforme</span></span></div>
+            <div style="display:grid; grid-template-columns:1.7fr 1fr 0.7fr 1fr; padding:11px 14px; border-bottom:1px solid #F2F0F1; font-size:13.5px; align-items:center;"><span style="display:flex; align-items:center; gap:9px;"><span style="width:26px; height:26px; border-radius:50%; background:#F3ECF1; color:#714B67; font-size:10px; font-weight:700; display:flex; align-items:center; justify-content:center;">JK</span>Jonas Klein</span><span style="color:#4A4348;">Commis</span><span style="color:#4A4348;">CDD</span><span><span style="font-size:11.5px; font-weight:600; padding:3px 9px; border-radius:11px; background:#FDF3E2; color:#8C5C13;">CDD J-52</span></span></div>
+            <div style="display:grid; grid-template-columns:1.7fr 1fr 0.7fr 1fr; padding:11px 14px; border-bottom:1px solid #F2F0F1; font-size:13.5px; align-items:center;"><span style="display:flex; align-items:center; gap:9px;"><span style="width:26px; height:26px; border-radius:50%; background:#F3ECF1; color:#714B67; font-size:10px; font-weight:700; display:flex; align-items:center; justify-content:center;">TR</span>Tomás Rocha</span><span style="color:#4A4348;">Barman</span><span style="color:#4A4348;">CDI</span><span><span style="font-size:11.5px; font-weight:600; padding:3px 9px; border-radius:11px; background:#FBEAE8; color:#A5302A;">Certificat ✕</span></span></div>
+            <div style="display:grid; grid-template-columns:1.7fr 1fr 0.7fr 1fr; padding:11px 14px; border-bottom:1px solid #F2F0F1; font-size:13.5px; align-items:center;"><span style="display:flex; align-items:center; gap:9px;"><span style="width:26px; height:26px; border-radius:50%; background:#F3ECF1; color:#714B67; font-size:10px; font-weight:700; display:flex; align-items:center; justify-content:center;">LW</span>Lena Weber</span><span style="color:#4A4348;">Sous-cheffe</span><span style="color:#4A4348;">CDI</span><span><span style="font-size:11.5px; font-weight:600; padding:3px 9px; border-radius:11px; background:#E8F5EA; color:#186429;">Conforme</span></span></div>
+            <div style="display:grid; grid-template-columns:1.7fr 1fr 0.7fr 1fr; padding:11px 14px; font-size:13.5px; align-items:center;"><span style="display:flex; align-items:center; gap:9px;"><span style="width:26px; height:26px; border-radius:50%; background:#F3ECF1; color:#714B67; font-size:10px; font-weight:700; display:flex; align-items:center; justify-content:center;">PM</span>Paulo Martins</span><span style="color:#4A4348;">Plongeur</span><span style="color:#4A4348;">CDI · 20 h</span><span><span style="font-size:11.5px; font-weight:600; padding:3px 9px; border-radius:11px; background:#E8F5EA; color:#186429;">Conforme</span></span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex; flex-direction:column; gap:12px;" data-screen-label="05 Fiche employé">
+      <div style="display:flex; align-items:baseline; gap:12px;"><span style="font-family:'IBM Plex Mono',monospace; font-size:13px; color:#6E666C;">05</span><h2 style="margin:0; font-size:20px; font-weight:700;">Fiche employé</h2></div>
+      <div style="width:704px; background:#F6F5F6; border:1px solid #DCD8DA; border-radius:10px; overflow:hidden; box-shadow:0 10px 30px rgba(31,41,55,0.08);">
+        <div style="display:flex; align-items:center; justify-content:space-between; background:#714B67; padding:0 16px; height:44px;">
+          <span style="color:#fff; font-weight:700; font-size:14px;">LuxRH · Employés</span>
+          <span style="width:24px; height:24px; border-radius:50%; background:#F3ECF1; color:#714B67; font-size:10px; font-weight:700; display:flex; align-items:center; justify-content:center;">SL</span>
+        </div>
+        <div style="padding:20px;">
+          <div style="display:flex; align-items:center; gap:8px; font-size:12px; color:#6E666C; margin-bottom:12px;"><span>Employés</span><span>›</span><span style="color:#4A4348;">Aïcha Diallo</span></div>
+          <div style="background:#fff; border:1px solid #E4E1E3; border-radius:9px; padding:18px; margin-bottom:14px; display:flex; gap:16px; align-items:flex-start;">
+            <span style="width:52px; height:52px; border-radius:50%; background:#714B67; color:#fff; font-size:17px; font-weight:700; display:flex; align-items:center; justify-content:center; flex:none;">AD</span>
+            <div style="flex:1;">
+              <div style="display:flex; align-items:center; gap:10px;"><h3 style="margin:0; font-size:22px; font-weight:700; letter-spacing:-0.4px;">Aïcha Diallo</h3><span style="font-size:11.5px; font-weight:600; padding:3px 9px; border-radius:11px; background:#F3ECF1; color:#5C3D54;">En essai</span></div>
+              <div style="font-size:13.5px; color:#5B5459; margin-top:3px;">Réceptionniste · CDI 40 h · entrée le 01.07.2026</div>
+              <div style="display:flex; gap:22px; margin-top:12px;">
+                <div><div style="font-size:11px; color:#6E666C;">Matricule</div><div style="font-family:'IBM Plex Mono',monospace; font-size:13px;">1994 03 18 227</div></div>
+                <div><div style="font-size:11px; color:#6E666C;">Résidence</div><div style="font-size:13px;">Frontalière (FR)</div></div>
+                <div><div style="font-size:11px; color:#6E666C;">Classe d'impôt</div><div style="font-size:13px;">1</div></div>
+                <div><div style="font-size:11px; color:#6E666C;">Qualification</div><div style="font-size:13px;">Qualifiée</div></div>
+              </div>
+            </div>
+          </div>
+
+          <div style="background:#FBEAE8; border-left:4px solid #C0392B; border-radius:8px; padding:14px 16px; margin-bottom:14px;">
+            <div style="font-size:14px; font-weight:700; color:#8E2A22;">Dernier jour pour notifier la rupture d'essai : 15.09.2026</div>
+            <div style="font-size:12.5px; color:#7A3E38; line-height:1.55; margin-top:4px;">Essai du 01.07 au 30.09, prolongé de 4 jours (incapacité du 12 au 15.08, plafonnée à 1 mois). Préavis d'essai de 15 jours devant expirer au plus tard le dernier jour de l'essai.</div>
+            <span style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:#8E2A22; background:#F6D9D5; padding:3px 8px; border-radius:4px; display:inline-block; margin-top:8px;">art. L.121-5</span>
+          </div>
+
+          <div style="display:flex; gap:2px; border-bottom:1px solid #E4E1E3; margin-bottom:14px;">
+            <span style="font-size:13.5px; font-weight:600; color:#714B67; padding:9px 14px; border-bottom:2px solid #714B67;">Compteurs</span>
+            <span style="font-size:13.5px; color:#5B5459; padding:9px 14px;">Contrats</span>
+            <span style="font-size:13.5px; color:#5B5459; padding:9px 14px;">Absences</span>
+            <span style="font-size:13.5px; color:#5B5459; padding:9px 14px;">Planning</span>
+            <span style="font-size:13.5px; color:#5B5459; padding:9px 14px;">Documents</span>
+          </div>
+
+          <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:12px; margin-bottom:14px;">
+            <div style="background:#fff; border:1px solid #E4E1E3; border-radius:8px; padding:14px;"><div style="font-size:11.5px; color:#6E666C; text-transform:uppercase; letter-spacing:0.06em; font-weight:700;">Solde de congés</div><div style="font-family:'IBM Plex Mono',monospace; font-size:26px; margin-top:6px;">6,5<span style="font-size:14px; color:#6E666C;"> j</span></div><div style="font-size:12px; color:#5B5459; margin-top:4px;">acquis 8,7 · pris 2,2</div></div>
+            <div style="background:#fff; border:1px solid #E4E1E3; border-radius:8px; padding:14px;"><div style="font-size:11.5px; color:#6E666C; text-transform:uppercase; letter-spacing:0.06em; font-weight:700;">Heures supp.</div><div style="font-family:'IBM Plex Mono',monospace; font-size:26px; margin-top:6px;">0<span style="font-size:14px; color:#6E666C;"> h</span></div><div style="font-size:12px; color:#5B5459; margin-top:4px;">PRL en cours</div></div>
+            <div style="background:#fff; border:1px solid #E4E1E3; border-radius:8px; padding:14px;"><div style="font-size:11.5px; color:#6E666C; text-transform:uppercase; letter-spacing:0.06em; font-weight:700;">Incapacité / 18 mois</div><div style="font-family:'IBM Plex Mono',monospace; font-size:26px; margin-top:6px;">4<span style="font-size:14px; color:#6E666C;"> / 77 j</span></div><div style="font-size:12px; color:#5B5459; margin-top:4px;">continuation employeur</div></div>
+          </div>
+
+          <div style="background:#fff; border:1px solid #E4E1E3; border-radius:9px; padding:16px 18px;">
+            <div style="font-size:14px; font-weight:700; margin-bottom:10px;">Détail du solde de congés</div>
+            <div style="display:flex; flex-direction:column; gap:0; font-size:13px;">
+              <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #F2F0F1;"><span style="color:#4A4348;">Acquisition 1/12e × 4 mois (CCT HORECA, 28 j/an)</span><span style="font-family:'IBM Plex Mono',monospace;">+ 9,33 j</span></div>
+              <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #F2F0F1;"><span style="color:#4A4348;">Prorata mois d'entrée (juillet, mois complet)</span><span style="font-family:'IBM Plex Mono',monospace;">— 0,63 j</span></div>
+              <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #F2F0F1;"><span style="color:#4A4348;">Congés pris (13–14.10)</span><span style="font-family:'IBM Plex Mono',monospace;">— 2,20 j</span></div>
+              <div style="display:flex; justify-content:space-between; padding:9px 0 0; font-weight:700;"><span>Solde disponible</span><span style="font-family:'IBM Plex Mono',monospace;">6,50 j</span></div>
+            </div>
+            <div style="margin-top:12px; padding-top:12px; border-top:1px solid #EFEDEE; display:flex; gap:8px; align-items:center;">
+              <span style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:#5C3D54; background:#F3ECF1; padding:3px 8px; border-radius:4px;">art. L.233-4</span>
+              <span style="font-size:12px; color:#6B6469;">28 j retenus : CCT plus favorable que le minimum légal de 26 j.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ 06 ASSISTANT CONTRAT ══ -->
+  <div style="display:flex; flex-direction:column; gap:12px;" data-screen-label="06 Assistant contrat">
+    <div style="display:flex; align-items:baseline; gap:12px;"><span style="font-family:'IBM Plex Mono',monospace; font-size:13px; color:#6E666C;">06</span><h2 style="margin:0; font-size:20px; font-weight:700;">Assistant de création de contrat — étape 3 / 5</h2></div>
+    <div style="width:1440px; background:#F6F5F6; border:1px solid #DCD8DA; border-radius:10px; overflow:hidden; box-shadow:0 10px 30px rgba(31,41,55,0.08);">
+      <div style="display:flex; align-items:center; justify-content:space-between; background:#714B67; padding:0 18px; height:48px;">
+        <span style="color:#fff; font-weight:700; font-size:15px;">LuxRH</span>
+        <span style="color:#EADFE6; font-size:13px;">Brouillon enregistré à 14:32 · Quitter l'assistant</span>
+      </div>
+      <div style="padding:26px 28px 34px; display:flex; justify-content:center;">
+        <div style="width:1080px;">
+          <div style="display:flex; align-items:center; gap:0; margin-bottom:24px;">
+            <div style="display:flex; align-items:center; gap:9px;"><span style="width:26px; height:26px; border-radius:50%; background:#1E7E34; color:#fff; font-size:12px; font-weight:700; display:flex; align-items:center; justify-content:center;">✓</span><span style="font-size:13.5px; color:#4A4348;">Employé</span></div>
+            <div style="flex:1; height:2px; background:#1E7E34; margin:0 12px;"></div>
+            <div style="display:flex; align-items:center; gap:9px;"><span style="width:26px; height:26px; border-radius:50%; background:#1E7E34; color:#fff; font-size:12px; font-weight:700; display:flex; align-items:center; justify-content:center;">✓</span><span style="font-size:13.5px; color:#4A4348;">Poste & rémunération</span></div>
+            <div style="flex:1; height:2px; background:#714B67; margin:0 12px;"></div>
+            <div style="display:flex; align-items:center; gap:9px;"><span style="width:26px; height:26px; border-radius:50%; background:#714B67; color:#fff; font-size:12px; font-weight:700; display:flex; align-items:center; justify-content:center;">3</span><span style="font-size:13.5px; font-weight:700; color:#714B67;">Temps de travail</span></div>
+            <div style="flex:1; height:2px; background:#E4E1E3; margin:0 12px;"></div>
+            <div style="display:flex; align-items:center; gap:9px;"><span style="width:26px; height:26px; border-radius:50%; background:#fff; border:1px solid #D6D2D4; color:#6E666C; font-size:12px; font-weight:700; display:flex; align-items:center; justify-content:center;">4</span><span style="font-size:13.5px; color:#6E666C;">Essai & durée</span></div>
+            <div style="flex:1; height:2px; background:#E4E1E3; margin:0 12px;"></div>
+            <div style="display:flex; align-items:center; gap:9px;"><span style="width:26px; height:26px; border-radius:50%; background:#fff; border:1px solid #D6D2D4; color:#6E666C; font-size:12px; font-weight:700; display:flex; align-items:center; justify-content:center;">5</span><span style="font-size:13.5px; color:#6E666C;">Relecture</span></div>
+          </div>
+
+          <div style="display:grid; grid-template-columns:1.55fr 1fr; gap:18px; align-items:start;">
+            <div style="background:#fff; border:1px solid #E4E1E3; border-radius:10px; padding:24px;">
+              <h3 style="margin:0 0 4px; font-size:20px; font-weight:700; letter-spacing:-0.3px;">Temps de travail</h3>
+              <p style="margin:0 0 22px; font-size:13.5px; color:#5B5459;">CDI · Nadia Schmit · Serveuse qualifiée · CCT HORECA 2025-2027</p>
+
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:18px;">
+                <div style="display:flex; flex-direction:column; gap:6px;">
+                  <label style="font-size:13px; font-weight:600; color:#3A3438;">Durée hebdomadaire</label>
+                  <div style="border:1px solid #D6D2D4; border-radius:5px; display:flex; overflow:hidden; background:#fff;"><span style="flex:1; padding:10px 12px; font-family:'IBM Plex Mono',monospace; font-size:14px;">40</span><span style="padding:10px 14px; background:#F6F5F6; border-left:1px solid #E4E1E3; font-size:13.5px; color:#6B6469;">h / semaine</span></div>
+                  <span style="font-size:12px; color:#6B6469;">Durée normale légale : 8 h/jour, 40 h/semaine.</span>
+                </div>
+                <div style="display:flex; flex-direction:column; gap:6px;">
+                  <label style="font-size:13px; font-weight:600; color:#3A3438;">Répartition</label>
+                  <div style="border:1px solid #D6D2D4; border-radius:5px; padding:10px 12px; font-size:14px; background:#fff; display:flex; justify-content:space-between;"><span>5 jours sur 7, horaires variables</span><span style="color:#6E666C; font-size:11px;">▾</span></div>
+                  <span style="font-size:12px; color:#6B6469;">Mention obligatoire au contrat.</span>
+                </div>
+                <div style="display:flex; flex-direction:column; gap:6px;">
+                  <label style="font-size:13px; font-weight:600; color:#3A3438;">Période de référence (PRL)</label>
+                  <div style="border:1px solid #D6D2D4; border-radius:5px; padding:10px 12px; font-size:14px; background:#fff; display:flex; justify-content:space-between;"><span>4 mois</span><span style="color:#6E666C; font-size:11px;">▾</span></div>
+                  <span style="font-size:12px; color:#6B6469;">Maximum légal : 4 mois.</span>
+                </div>
+                <div style="display:flex; flex-direction:column; gap:6px;">
+                  <label style="font-size:13px; font-weight:600; color:#3A3438;">Travail de nuit</label>
+                  <div style="display:flex; align-items:center; gap:10px; padding-top:8px;"><span style="width:36px; height:20px; border-radius:10px; background:#017E84; position:relative; display:inline-block;"><span style="position:absolute; right:2px; top:2px; width:16px; height:16px; border-radius:50%; background:#fff;"></span></span><span style="font-size:13.5px;">Oui — majoration CCT de 15 %</span></div>
+                </div>
+                <div style="display:flex; flex-direction:column; gap:6px;">
+                  <label style="font-size:13px; font-weight:600; color:#3A3438;">Congé annuel</label>
+                  <div style="border:1px solid #D6D2D4; border-radius:5px; display:flex; overflow:hidden; background:#F6F5F6;"><span style="flex:1; padding:10px 12px; font-family:'IBM Plex Mono',monospace; font-size:14px;">28</span><span style="padding:10px 14px; background:#EFEDEE; border-left:1px solid #E4E1E3; font-size:13.5px; color:#6B6469;">jours</span></div>
+                  <span style="font-size:12px; color:#186429; font-weight:500;">Imposé par la CCT, supérieur au minimum légal.</span>
+                </div>
+                <div style="display:flex; flex-direction:column; gap:6px;">
+                  <label style="font-size:13px; font-weight:600; color:#3A3438;">Pause journalière</label>
+                  <div style="border:1px solid #D6D2D4; border-radius:5px; padding:10px 12px; font-size:14px; background:#fff;">30 min au-delà de 6 h</div>
+                  <span style="font-size:12px; color:#6B6469;">Durée renvoyée à la CCT.</span>
+                </div>
+              </div>
+
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-top:26px; padding-top:20px; border-top:1px solid #EFEDEE;">
+                <button style="font-family:inherit; font-size:14px; font-weight:500; color:#4A4348; background:#fff; border:1px solid #D6D2D4; border-radius:5px; padding:10px 18px; cursor:pointer;">← Précédent</button>
+                <div style="display:flex; gap:10px;">
+                  <button style="font-family:inherit; font-size:14px; font-weight:500; color:#4A4348; background:#fff; border:1px solid #D6D2D4; border-radius:5px; padding:10px 18px; cursor:pointer;">Enregistrer le brouillon</button>
+                  <button style="font-family:inherit; font-size:14px; font-weight:600; color:#fff; background:#714B67; border:1px solid #714B67; border-radius:5px; padding:10px 22px; cursor:pointer;">Continuer →</button>
+                </div>
+              </div>
+            </div>
+
+            <div style="display:flex; flex-direction:column; gap:14px;">
+              <div style="background:#fff; border:1px solid #E4E1E3; border-radius:10px; overflow:hidden;">
+                <div style="padding:13px 16px; border-bottom:1px solid #EFEDEE; display:flex; justify-content:space-between; align-items:center;"><span style="font-size:14px; font-weight:700;">Conformité en direct</span><span style="font-size:11.5px; font-weight:600; padding:3px 9px; border-radius:11px; background:#FDF3E2; color:#8C5C13;">1 attention</span></div>
+                <div style="padding:12px 16px; border-bottom:1px solid #F2F0F1; display:flex; gap:9px;"><span style="color:#1E7E34; font-weight:700; font-size:13px;">✓</span><div><div style="font-size:13px; font-weight:600;">Salaire ≥ SSM qualifié</div><div style="font-size:12.5px; color:#5B5459; line-height:1.5;">3 400,00 € ≥ 3 325,59 € · indice 992,24</div></div></div>
+                <div style="padding:12px 16px; border-bottom:1px solid #F2F0F1; display:flex; gap:9px;"><span style="color:#1E7E34; font-weight:700; font-size:13px;">✓</span><div><div style="font-size:13px; font-weight:600;">Salaire ≥ grille CCT</div><div style="font-size:12.5px; color:#5B5459; line-height:1.5;">Catégorie B, 0-2 ans : 3 388 €</div></div></div>
+                <div style="padding:12px 16px; border-bottom:1px solid #F2F0F1; display:flex; gap:9px;"><span style="color:#1E7E34; font-weight:700; font-size:13px;">✓</span><div><div style="font-size:13px; font-weight:600;">Congé annuel conforme</div><div style="font-size:12.5px; color:#5B5459; line-height:1.5;">28 j (CCT) ≥ 26 j (loi)</div></div></div>
+                <div style="padding:12px 16px; display:flex; gap:9px; background:#FEFBF4;"><span style="color:#B7791F; font-weight:700; font-size:13px;">▲</span><div><div style="font-size:13px; font-weight:700; color:#7D5312;">Clause de non-concurrence à vérifier</div><div style="font-size:12.5px; color:#7D5312; line-height:1.5;">Non bloquant. Elle doit être limitée dans le temps, l'espace et l'activité.</div></div></div>
+              </div>
+              <div style="background:#fff; border:1px solid #E4E1E3; border-radius:10px; padding:16px;">
+                <div style="font-size:12px; font-weight:600; letter-spacing:0.07em; text-transform:uppercase; color:#6E666C; margin-bottom:10px;">Mentions obligatoires</div>
+                <div style="display:flex; flex-direction:column; gap:7px; font-size:13px;">
+                  <span style="display:flex; gap:8px;"><span style="color:#1E7E34;">✓</span>Identité des parties</span>
+                  <span style="display:flex; gap:8px;"><span style="color:#1E7E34;">✓</span>Date de début et lieu de travail</span>
+                  <span style="display:flex; gap:8px;"><span style="color:#1E7E34;">✓</span>Nature de l'emploi et description</span>
+                  <span style="display:flex; gap:8px;"><span style="color:#1E7E34;">✓</span>Durée de travail et horaire</span>
+                  <span style="display:flex; gap:8px;"><span style="color:#1E7E34;">✓</span>Rémunération et accessoires</span>
+                  <span style="display:flex; gap:8px; color:#6E666C;"><span>○</span>Période d'essai — étape 4</span>
+                  <span style="display:flex; gap:8px; color:#6E666C;"><span>○</span>Congé et préavis — étape 4</span>
+                  <span style="display:flex; gap:8px;"><span style="color:#1E7E34;">✓</span>Convention collective applicable</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ 07 APERÇU CONTRAT ══ -->
+  <div style="display:flex; flex-direction:column; gap:12px;" data-screen-label="07 Aperçu contrat">
+    <div style="display:flex; align-items:baseline; gap:12px;"><span style="font-family:'IBM Plex Mono',monospace; font-size:13px; color:#6E666C;">07</span><h2 style="margin:0; font-size:20px; font-weight:700;">Aperçu du contrat et panneau de conformité</h2></div>
+    <div style="width:1440px; background:#F6F5F6; border:1px solid #DCD8DA; border-radius:10px; overflow:hidden; box-shadow:0 10px 30px rgba(31,41,55,0.08);">
+      <div style="display:flex; align-items:center; justify-content:space-between; background:#714B67; padding:0 18px; height:48px;">
+        <span style="color:#fff; font-weight:700; font-size:15px;">LuxRH · Contrats</span>
+        <div style="display:flex; gap:10px; align-items:center;">
+          <span style="color:#EADFE6; font-size:13px;">Version 1 · brouillon</span>
+          <span style="width:26px; height:26px; border-radius:50%; background:#F3ECF1; color:#714B67; font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center;">SL</span>
+        </div>
+      </div>
+      <div style="padding:22px 28px 30px; display:grid; grid-template-columns:1fr 380px; gap:20px; align-items:start;">
+        <div>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+            <h3 style="margin:0; font-size:22px; font-weight:700; letter-spacing:-0.4px;">Contrat de travail à durée indéterminée — Nadia Schmit</h3>
+            <div style="display:flex; gap:10px;">
+              <button style="font-family:inherit; font-size:13px; font-weight:500; color:#4A4348; background:#fff; border:1px solid #D6D2D4; border-radius:5px; padding:8px 14px; cursor:pointer;">Version modifiable</button>
+              <button style="font-family:inherit; font-size:13px; font-weight:600; color:#017E84; background:#fff; border:1px solid #017E84; border-radius:5px; padding:8px 14px; cursor:pointer;">Exporter en PDF</button>
+              <button style="font-family:inherit; font-size:13px; font-weight:600; color:#fff; background:#714B67; border:1px solid #714B67; border-radius:5px; padding:8px 16px; cursor:pointer;">Valider et envoyer</button>
+            </div>
+          </div>
+          <div style="background:#fff; border:1px solid #E4E1E3; border-radius:9px; padding:44px 56px; min-height:640px;">
+            <div style="text-align:center; margin-bottom:30px;">
+              <div style="font-size:11px; letter-spacing:0.16em; text-transform:uppercase; color:#6E666C;">Brasserie du Glacis Sàrl · Luxembourg</div>
+              <div style="font-size:19px; font-weight:700; margin-top:10px; letter-spacing:-0.2px;">CONTRAT DE TRAVAIL À DURÉE INDÉTERMINÉE</div>
+            </div>
+            <div style="font-size:13.5px; line-height:1.75; color:#2E2A2C;">
+              <p style="margin:0 0 16px;"><strong>Entre les soussignés :</strong><br>La société <strong>Brasserie du Glacis Sàrl</strong>, RCS B 214 887, établie 12 rue du Glacis, L-1628 Luxembourg, matricule CCSS 2019 24 15 883, représentée par sa gérante, ci-après « l'employeur »,</p>
+              <p style="margin:0 0 16px;"><strong>Et</strong><br>Madame <strong>Nadia Schmit</strong>, née le 14.02.1996, matricule national 1996 02 14 338, demeurant 8 rue de Thionville, F-57100 Thionville, ci-après « la salariée »,</p>
+              <p style="margin:0 0 20px; color:#5B5459;">il a été convenu ce qui suit.</p>
+              <p style="margin:0 0 12px;"><strong>Article 1 — Engagement et fonction.</strong> La salariée est engagée en qualité de <strong>serveuse qualifiée</strong>, à compter du <strong>1er octobre 2026</strong>, au lieu de travail sis 12 rue du Glacis, L-1628 Luxembourg.</p>
+              <p style="margin:0 0 12px; background:#F3ECF1; padding:10px 12px; border-radius:5px;"><strong>Article 2 — Période d'essai.</strong> Le contrat est assorti d'une période d'essai de <strong>trois mois</strong>, expirant le <strong>31 décembre 2026</strong>. Pendant l'essai, chaque partie peut résilier moyennant un préavis de <strong>15 jours</strong>, qui doit expirer au plus tard le dernier jour de l'essai.</p>
+              <p style="margin:0 0 12px;"><strong>Article 3 — Durée de travail.</strong> La durée hebdomadaire est fixée à <strong>40 heures</strong>, réparties sur 5 jours sur 7 selon un horaire variable communiqué par voie de planning. Une période de référence de 4 mois est applicable.</p>
+              <p style="margin:0 0 12px;"><strong>Article 4 — Rémunération.</strong> La rémunération mensuelle brute est fixée à <strong>3 400,00 €</strong> à l'indice 992,24, payable à la fin de chaque mois. Elle est adaptée à chaque variation de l'indice des prix à la consommation.</p>
+              <p style="margin:0 0 12px;"><strong>Article 5 — Congé annuel.</strong> La salariée bénéficie de <strong>28 jours ouvrables</strong> de congé annuel payé, conformément à la convention collective applicable.</p>
+              <p style="margin:0; color:#6E666C;">Article 6 — Convention collective · Article 7 — Préavis · Article 8 — Confidentialité…</p>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:14px;">
+          <div style="background:#fff; border:1px solid #E4E1E3; border-radius:9px; overflow:hidden;">
+            <div style="padding:13px 16px; border-bottom:1px solid #EFEDEE; display:flex; justify-content:space-between; align-items:center;"><span style="font-size:14px; font-weight:700;">Panneau de conformité</span><span style="font-size:11.5px; font-weight:600; padding:3px 9px; border-radius:11px; background:#E8F5EA; color:#186429;">Validable</span></div>
+            <div style="padding:14px 16px; border-bottom:1px solid #F2F0F1;">
+              <div style="font-size:12px; font-weight:700; letter-spacing:0.07em; text-transform:uppercase; color:#6E666C; margin-bottom:10px;">Arbitrage loi / CCT / contrat</div>
+              <div style="display:flex; flex-direction:column; gap:10px;">
+                <div>
+                  <div style="font-size:13px; font-weight:600; margin-bottom:5px;">Congé annuel</div>
+                  <div style="display:flex; flex-direction:column; gap:1px; border:1px solid #EFEDEE; border-radius:5px; overflow:hidden;">
+                    <div style="display:flex; justify-content:space-between; padding:7px 10px; font-size:12.5px; background:#fff;"><span style="color:#5B5459;">Loi</span><span style="font-family:'IBM Plex Mono',monospace;">26 j</span></div>
+                    <div style="display:flex; justify-content:space-between; padding:7px 10px; font-size:12.5px; background:#E8F5EA;"><span style="color:#186429; font-weight:600;">CCT · retenu</span><span style="font-family:'IBM Plex Mono',monospace; font-weight:600; color:#186429;">28 j</span></div>
+                    <div style="display:flex; justify-content:space-between; padding:7px 10px; font-size:12.5px; background:#fff;"><span style="color:#5B5459;">Contrat</span><span style="font-family:'IBM Plex Mono',monospace;">28 j</span></div>
+                  </div>
+                </div>
+                <div>
+                  <div style="font-size:13px; font-weight:600; margin-bottom:5px;">Salaire mensuel</div>
+                  <div style="display:flex; flex-direction:column; gap:1px; border:1px solid #EFEDEE; border-radius:5px; overflow:hidden;">
+                    <div style="display:flex; justify-content:space-between; padding:7px 10px; font-size:12.5px; background:#fff;"><span style="color:#5B5459;">SSM qualifié</span><span style="font-family:'IBM Plex Mono',monospace;">3 325,59 €</span></div>
+                    <div style="display:flex; justify-content:space-between; padding:7px 10px; font-size:12.5px; background:#fff;"><span style="color:#5B5459;">Grille CCT · cat. B</span><span style="font-family:'IBM Plex Mono',monospace;">3 388,00 €</span></div>
+                    <div style="display:flex; justify-content:space-between; padding:7px 10px; font-size:12.5px; background:#E8F5EA;"><span style="color:#186429; font-weight:600;">Contrat · retenu</span><span style="font-family:'IBM Plex Mono',monospace; font-weight:600; color:#186429;">3 400,00 €</span></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div style="padding:14px 16px; background:#FEFBF4;">
+              <div style="display:flex; gap:9px;"><span style="color:#B7791F; font-weight:700; font-size:13px;">▲</span><div><div style="font-size:13px; font-weight:700; color:#7D5312;">Essai de 3 mois pour une rémunération de 3 400 €</div><div style="font-size:12.5px; color:#7D5312; line-height:1.5; margin-top:2px;">Vérifier les bornes de durée d'essai applicables à la qualification. Avertissement non bloquant.</div></div></div>
+            </div>
+          </div>
+          <div style="background:#fff; border:1px solid #E4E1E3; border-radius:9px; padding:16px;">
+            <div style="font-size:12px; font-weight:600; letter-spacing:0.07em; text-transform:uppercase; color:#6E666C; margin-bottom:10px;">Dates calculées</div>
+            <div style="display:flex; flex-direction:column; gap:9px; font-size:13px;">
+              <div style="display:flex; justify-content:space-between;"><span style="color:#5B5459;">Fin d'essai</span><span style="font-family:'IBM Plex Mono',monospace;">31.12.2026</span></div>
+              <div style="display:flex; justify-content:space-between;"><span style="color:#5B5459;">Préavis d'essai</span><span style="font-family:'IBM Plex Mono',monospace;">15 jours</span></div>
+              <div style="display:flex; justify-content:space-between;"><span style="color:#A5302A; font-weight:600;">Dernier jour pour notifier</span><span style="font-family:'IBM Plex Mono',monospace; font-weight:600; color:#A5302A;">16.12.2026</span></div>
+              <div style="display:flex; justify-content:space-between;"><span style="color:#5B5459;">Préavis licenciement (&lt; 5 ans)</span><span style="font-family:'IBM Plex Mono',monospace;">2 mois</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ 08 CONGÉS ══ -->
+  <div style="display:flex; flex-direction:column; gap:12px;" data-screen-label="08 Congés">
+    <div style="display:flex; align-items:baseline; gap:12px;"><span style="font-family:'IBM Plex Mono',monospace; font-size:13px; color:#6E666C;">08</span><h2 style="margin:0; font-size:20px; font-weight:700;">Congés — calendrier d'équipe et validations</h2></div>
+    <div style="width:1440px; background:#F6F5F6; border:1px solid #DCD8DA; border-radius:10px; overflow:hidden; box-shadow:0 10px 30px rgba(31,41,55,0.08);">
+      <div style="display:flex; align-items:center; justify-content:space-between; background:#714B67; padding:0 18px; height:48px;">
+        <div style="display:flex; align-items:center; gap:22px;">
+          <span style="color:#fff; font-weight:700; font-size:15px;">LuxRH</span>
+          <div style="display:flex; gap:2px;">
+            <span style="color:#EADFE6; font-size:13.5px; padding:6px 12px;">Planning</span>
+            <span style="color:#fff; font-size:13.5px; font-weight:600; padding:6px 12px; border-radius:4px; background:rgba(255,255,255,0.16);">Congés</span>
+            <span style="color:#EADFE6; font-size:13.5px; padding:6px 12px;">Absences</span>
+          </div>
+        </div>
+        <span style="width:26px; height:26px; border-radius:50%; background:#F3ECF1; color:#714B67; font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center;">SL</span>
+      </div>
+      <div style="padding:22px 28px 30px; display:grid; grid-template-columns:1fr 400px; gap:20px; align-items:start;">
+        <div>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+            <h3 style="margin:0; font-size:22px; font-weight:700; letter-spacing:-0.4px;">Octobre 2026 · salle et cuisine</h3>
+            <div style="display:flex; gap:14px; font-size:12.5px; color:#5B5459; align-items:center;">
+              <span style="display:flex; align-items:center; gap:6px;"><span style="width:11px; height:11px; border-radius:3px; background:#017E84;"></span>Congé validé</span>
+              <span style="display:flex; align-items:center; gap:6px;"><span style="width:11px; height:11px; border-radius:3px; background:#F7E6C4; border:1px solid #B7791F;"></span>En attente</span>
+              <span style="display:flex; align-items:center; gap:6px;"><span style="width:11px; height:11px; border-radius:3px; background:#D6D2D4;"></span>Maladie</span>
+              <span style="display:flex; align-items:center; gap:6px;"><span style="width:11px; height:11px; border-radius:3px; background:#F5C842;"></span>Férié</span>
+            </div>
+          </div>
+          <div style="background:#fff; border:1px solid #E4E1E3; border-radius:9px; overflow:hidden;">
+            <div style="display:grid; grid-template-columns:160px repeat(16, 1fr); background:#FAF9FA; border-bottom:1px solid #E4E1E3;">
+              <span style="padding:8px 12px; font-size:11px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:#6E666C;">Salarié</span>
+              <span style="padding:8px 0; font-size:11.5px; text-align:center; color:#6E666C;">5</span><span style="padding:8px 0; font-size:11.5px; text-align:center; color:#6E666C;">6</span><span style="padding:8px 0; font-size:11.5px; text-align:center; color:#6E666C;">7</span><span style="padding:8px 0; font-size:11.5px; text-align:center; color:#6E666C;">8</span><span style="padding:8px 0; font-size:11.5px; text-align:center; color:#6E666C;">9</span>
+              <span style="padding:8px 0; font-size:11.5px; text-align:center; color:#6E666C; background:#FAFAFA;">10</span><span style="padding:8px 0; font-size:11.5px; text-align:center; color:#6E666C; background:#FAFAFA;">11</span>
+              <span style="padding:8px 0; font-size:11.5px; text-align:center; color:#6E666C;">12</span><span style="padding:8px 0; font-size:11.5px; text-align:center; color:#6E666C;">13</span><span style="padding:8px 0; font-size:11.5px; text-align:center; color:#6E666C;">14</span><span style="padding:8px 0; font-size:11.5px; text-align:center; color:#6E666C;">15</span><span style="padding:8px 0; font-size:11.5px; text-align:center; color:#6E666C;">16</span>
+              <span style="padding:8px 0; font-size:11.5px; text-align:center; color:#6E666C; background:#FAFAFA;">17</span><span style="padding:8px 0; font-size:11.5px; text-align:center; color:#6E666C; background:#FAFAFA;">18</span>
+              <span style="padding:8px 0; font-size:11.5px; text-align:center; color:#6E666C;">19</span><span style="padding:8px 0; font-size:11.5px; text-align:center; color:#6E666C;">20</span>
+            </div>
+            <div style="display:grid; grid-template-columns:160px repeat(16, 1fr); border-bottom:1px solid #F2F0F1; align-items:center; min-height:42px;">
+              <span style="padding:0 12px; font-size:13.5px;">Marta Ferreira</span>
+              <span></span><span></span><span></span><span></span><span></span><span style="background:#FAFAFA; height:100%;"></span><span style="background:#FAFAFA; height:100%;"></span><span></span><span></span><span></span><span></span><span></span><span style="background:#FAFAFA; height:100%;"></span><span style="background:#FAFAFA; height:100%;"></span><span></span><span></span>
+            </div>
+            <div style="display:grid; grid-template-columns:160px repeat(16, 1fr); border-bottom:1px solid #F2F0F1; align-items:center; min-height:42px; background:#FDFCFD;">
+              <span style="padding:0 12px; font-size:13.5px;">Aïcha Diallo</span>
+              <span></span><span></span><span></span><span></span><span></span><span style="background:#FAFAFA; height:100%;"></span><span style="background:#FAFAFA; height:100%;"></span><span></span>
+              <span style="background:#017E84; height:22px; border-radius:3px 0 0 3px;"></span><span style="background:#017E84; height:22px; border-radius:0 3px 3px 0;"></span>
+              <span></span><span></span><span style="background:#FAFAFA; height:100%;"></span><span style="background:#FAFAFA; height:100%;"></span><span></span><span></span>
+            </div>
+            <div style="display:grid; grid-template-columns:160px repeat(16, 1fr); border-bottom:1px solid #F2F0F1; align-items:center; min-height:42px;">
+              <span style="padding:0 12px; font-size:13.5px;">Tomás Rocha</span>
+              <span></span><span></span><span></span><span></span><span></span><span style="background:#FAFAFA; height:100%;"></span><span style="background:#FAFAFA; height:100%;"></span><span></span><span></span><span></span>
+              <span style="background:#D6D2D4; height:22px; border-radius:3px;"></span>
+              <span></span><span style="background:#FAFAFA; height:100%;"></span><span style="background:#FAFAFA; height:100%;"></span><span></span><span></span>
+            </div>
+            <div style="display:grid; grid-template-columns:160px repeat(16, 1fr); border-bottom:1px solid #F2F0F1; align-items:center; min-height:42px; background:#FDFCFD;">
+              <span style="padding:0 12px; font-size:13.5px;">Lena Weber</span>
+              <span></span><span></span><span></span><span></span><span></span><span style="background:#FAFAFA; height:100%;"></span><span style="background:#FAFAFA; height:100%;"></span><span></span><span></span><span></span><span></span><span></span><span style="background:#FAFAFA; height:100%;"></span><span style="background:#FAFAFA; height:100%;"></span>
+              <span style="background:#F7E6C4; border:1px solid #B7791F; height:22px; border-radius:3px 0 0 3px; box-sizing:border-box;"></span><span style="background:#F7E6C4; border:1px solid #B7791F; border-left:none; height:22px; border-radius:0 3px 3px 0; box-sizing:border-box;"></span>
+            </div>
+            <div style="display:grid; grid-template-columns:160px repeat(16, 1fr); align-items:center; min-height:42px;">
+              <span style="padding:0 12px; font-size:13.5px;">Jonas Klein</span>
+              <span></span><span></span><span></span><span></span><span></span><span style="background:#FAFAFA; height:100%;"></span><span style="background:#FAFAFA; height:100%;"></span><span></span><span></span><span></span><span></span><span></span><span style="background:#FAFAFA; height:100%;"></span><span style="background:#FAFAFA; height:100%;"></span><span></span><span></span>
+            </div>
+          </div>
+          <div style="display:flex; gap:14px; margin-top:14px;">
+            <div style="flex:1; background:#fff; border:1px solid #E4E1E3; border-radius:9px; padding:14px 16px;"><div style="font-size:11.5px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:#6E666C;">Couverture minimale salle</div><div style="font-size:13.5px; color:#5B5459; margin-top:6px; line-height:1.5;">2 personnes le soir — respectée sur toute la période.</div></div>
+            <div style="flex:1; background:#fff; border:1px solid #E4E1E3; border-radius:9px; padding:14px 16px;"><div style="font-size:11.5px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:#6E666C;">Jour férié d'octobre</div><div style="font-size:13.5px; color:#5B5459; margin-top:6px; line-height:1.5;">Aucun. Prochain : 1er novembre (Toussaint).</div></div>
+          </div>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:14px;">
+          <div style="background:#fff; border:1px solid #E4E1E3; border-radius:9px; overflow:hidden;">
+            <div style="padding:13px 16px; border-bottom:1px solid #EFEDEE; display:flex; justify-content:space-between; align-items:center;"><span style="font-size:14px; font-weight:700;">Demandes en attente</span><span style="font-size:11.5px; font-weight:700; padding:3px 9px; border-radius:11px; background:#C0392B; color:#fff;">3</span></div>
+            <div style="padding:16px; border-bottom:1px solid #F2F0F1;">
+              <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                <div><div style="font-size:14px; font-weight:600;">Lena Weber</div><div style="font-size:12.5px; color:#5B5459;">Congé annuel · 19 – 20.10 · 2 jours</div></div>
+                <span style="font-size:11.5px; font-weight:600; padding:3px 9px; border-radius:11px; background:#FDF3E2; color:#8C5C13;">En attente</span>
+              </div>
+              <div style="display:flex; gap:16px; margin-top:10px; padding:9px 11px; background:#FAF9FA; border-radius:6px;">
+                <div><div style="font-size:11px; color:#6E666C;">Solde après</div><div style="font-family:'IBM Plex Mono',monospace; font-size:13px;">11,3 j</div></div>
+                <div><div style="font-size:11px; color:#6E666C;">Effectif salle</div><div style="font-family:'IBM Plex Mono',monospace; font-size:13px; color:#186429;">3 / 2 min.</div></div>
+                <div><div style="font-size:11px; color:#6E666C;">Impact planning</div><div style="font-size:13px; color:#186429;">aucun</div></div>
+              </div>
+              <div style="display:flex; gap:9px; margin-top:11px;">
+                <button style="font-family:inherit; font-size:13px; font-weight:600; color:#fff; background:#714B67; border:1px solid #714B67; border-radius:5px; padding:8px 16px; cursor:pointer;">Valider</button>
+                <button style="font-family:inherit; font-size:13px; font-weight:500; color:#4A4348; background:#fff; border:1px solid #D6D2D4; border-radius:5px; padding:8px 16px; cursor:pointer;">Refuser</button>
+              </div>
+            </div>
+            <div style="padding:16px; border-bottom:1px solid #F2F0F1;">
+              <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                <div><div style="font-size:14px; font-weight:600;">Paulo Martins</div><div style="font-size:12.5px; color:#5B5459;">Congé extraordinaire · naissance · 10 jours</div></div>
+                <span style="font-size:11.5px; font-weight:600; padding:3px 9px; border-radius:11px; background:#E4F1F2; color:#01646A;">Droit vérifié</span>
+              </div>
+              <div style="display:flex; gap:8px; align-items:center; margin-top:9px; padding:9px 11px; background:#E4F1F2; border-radius:6px;">
+                <span style="font-size:12.5px; color:#125D61; line-height:1.5;">10 jours de droit, à prendre dans les 2 mois de la naissance. <span style="font-family:'IBM Plex Mono',monospace;">art. L.233-16</span></span>
+              </div>
+            </div>
+            <div style="padding:16px;">
+              <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                <div><div style="font-size:14px; font-weight:600;">Jonas Klein</div><div style="font-size:12.5px; color:#5B5459;">Congé annuel · 24 – 31.12 · 6 jours</div></div>
+                <span style="font-size:11.5px; font-weight:600; padding:3px 9px; border-radius:11px; background:#FBEAE8; color:#A5302A;">Solde insuffisant</span>
+              </div>
+              <div style="font-size:12.5px; color:#7A3E38; line-height:1.5; margin-top:8px; padding:9px 11px; background:#FBEAE8; border-radius:6px;">Solde de 4,2 j au 24.12. La demande dépasse de 1,8 j le droit acquis à cette date.</div>
+            </div>
+          </div>
+          <div style="background:#fff; border:1px solid #E4E1E3; border-radius:9px; padding:16px;">
+            <div style="font-size:14px; font-weight:700; margin-bottom:11px;">Soldes de l'équipe</div>
+            <div style="display:flex; flex-direction:column; gap:9px; font-size:13.5px;">
+              <div style="display:flex; justify-content:space-between;"><span>Marta Ferreira</span><span style="font-family:'IBM Plex Mono',monospace; color:#5B5459;">14,0 j</span></div>
+              <div style="display:flex; justify-content:space-between;"><span>Lena Weber</span><span style="font-family:'IBM Plex Mono',monospace; color:#5B5459;">13,3 j</span></div>
+              <div style="display:flex; justify-content:space-between;"><span>Tomás Rocha</span><span style="font-family:'IBM Plex Mono',monospace; color:#5B5459;">9,1 j</span></div>
+              <div style="display:flex; justify-content:space-between;"><span>Aïcha Diallo</span><span style="font-family:'IBM Plex Mono',monospace; color:#5B5459;">6,5 j</span></div>
+              <div style="display:flex; justify-content:space-between;"><span>Jonas Klein</span><span style="font-family:'IBM Plex Mono',monospace; color:#8C5C13;">4,2 j</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ 09 SIMULATEUR LICENCIEMENT COLLECTIF ══ -->
+  <div style="display:flex; flex-direction:column; gap:12px;" data-screen-label="09 Simulateur licenciement collectif">
+    <div style="display:flex; align-items:baseline; gap:12px;"><span style="font-family:'IBM Plex Mono',monospace; font-size:13px; color:#6E666C;">09</span><h2 style="margin:0; font-size:20px; font-weight:700;">Simulateur de licenciement collectif</h2></div>
+    <div style="width:1440px; background:#F6F5F6; border:1px solid #DCD8DA; border-radius:10px; overflow:hidden; box-shadow:0 10px 30px rgba(31,41,55,0.08);">
+      <div style="display:flex; align-items:center; justify-content:space-between; background:#714B67; padding:0 18px; height:48px;">
+        <span style="color:#fff; font-weight:700; font-size:15px;">LuxRH · Vigilance</span>
+        <span style="width:26px; height:26px; border-radius:50%; background:#F3ECF1; color:#714B67; font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center;">SL</span>
+      </div>
+      <div style="padding:24px 28px 30px;">
+        <h3 style="margin:0 0 4px; font-size:24px; font-weight:700; letter-spacing:-0.5px;">Simuler un scénario de licenciement</h3>
+        <p style="margin:0 0 20px; font-size:14px; color:#5B5459;">Aide à la décision. Aucune notification n'est envoyée depuis cet écran.</p>
+
+        <div style="display:grid; grid-template-columns:360px 1fr; gap:20px; align-items:start;">
+          <div style="display:flex; flex-direction:column; gap:14px;">
+            <div style="background:#fff; border:1px solid #E4E1E3; border-radius:9px; padding:18px;">
+              <div style="font-size:14px; font-weight:700; margin-bottom:14px;">Scénario</div>
+              <div style="display:flex; flex-direction:column; gap:14px;">
+                <div style="display:flex; flex-direction:column; gap:6px;">
+                  <label style="font-size:13px; font-weight:600; color:#3A3438;">Nombre de licenciements</label>
+                  <div style="border:1px solid #714B67; box-shadow:0 0 0 3px rgba(113,75,103,0.14); border-radius:5px; padding:10px 12px; font-family:'IBM Plex Mono',monospace; font-size:15px; background:#fff;">6</div>
+                </div>
+                <div style="display:flex; flex-direction:column; gap:6px;">
+                  <label style="font-size:13px; font-weight:600; color:#3A3438;">Date de notification envisagée</label>
+                  <div style="border:1px solid #D6D2D4; border-radius:5px; padding:10px 12px; font-family:'IBM Plex Mono',monospace; font-size:14px; background:#fff;">20.09.2026</div>
+                </div>
+                <div style="display:flex; flex-direction:column; gap:6px;">
+                  <label style="font-size:13px; font-weight:600; color:#3A3438;">Motif</label>
+                  <div style="border:1px solid #D6D2D4; border-radius:5px; padding:10px 12px; font-size:14px; background:#fff; display:flex; justify-content:space-between;"><span>Non inhérent à la personne</span><span style="color:#6E666C; font-size:11px;">▾</span></div>
+                </div>
+              </div>
+              <button style="font-family:inherit; width:100%; margin-top:16px; font-size:14px; font-weight:600; color:#fff; background:#714B67; border:1px solid #714B67; border-radius:5px; padding:11px; cursor:pointer;">Simuler</button>
+            </div>
+            <div style="background:#fff; border:1px solid #E4E1E3; border-radius:9px; padding:18px;">
+              <div style="font-size:14px; font-weight:700; margin-bottom:12px;">Compteurs glissants au 09.09</div>
+              <div style="display:flex; flex-direction:column; gap:12px;">
+                <div>
+                  <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:5px;"><span style="color:#5B5459;">30 jours</span><span style="font-family:'IBM Plex Mono',monospace;">2 / 7</span></div>
+                  <div style="height:6px; border-radius:3px; background:#F1EFF0; overflow:hidden;"><div style="width:29%; height:100%; background:#017E84;"></div></div>
+                  <div style="font-size:12px; color:#6B6469; margin-top:5px;">Encore 4 notifications possibles. Se libère le <span style="font-family:'IBM Plex Mono',monospace;">02.10</span>.</div>
+                </div>
+                <div>
+                  <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:5px;"><span style="color:#5B5459;">90 jours</span><span style="font-family:'IBM Plex Mono',monospace;">3 / 15</span></div>
+                  <div style="height:6px; border-radius:3px; background:#F1EFF0; overflow:hidden;"><div style="width:20%; height:100%; background:#017E84;"></div></div>
+                  <div style="font-size:12px; color:#6B6469; margin-top:5px;">Encore 11 notifications possibles. Se libère le <span style="font-family:'IBM Plex Mono',monospace;">14.09</span>.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div style="display:flex; flex-direction:column; gap:14px;">
+            <div style="background:#FBEAE8; border:1px solid #E8938A; border-radius:9px; padding:20px 22px;">
+              <div style="display:flex; align-items:flex-start; gap:14px;">
+                <span style="font-size:18px; font-weight:700; color:#C0392B;">✕</span>
+                <div>
+                  <div style="font-size:19px; font-weight:700; color:#8E2A22; letter-spacing:-0.2px;">La procédure de licenciement collectif se déclenche</div>
+                  <div style="font-size:14px; color:#7A3E38; line-height:1.6; margin-top:6px; max-width:78ch;">2 licenciements déjà notifiés sur la fenêtre de 30 jours + 6 envisagés = <strong>8 licenciements</strong>, au-delà du seuil de 7 sur 30 jours. Aucune notification ne peut intervenir avant l'issue de la procédure.</div>
+                  <div style="display:flex; gap:9px; margin-top:12px;">
+                    <span style="font-family:'IBM Plex Mono',monospace; font-size:12px; color:#8E2A22; background:#F6D9D5; padding:4px 9px; border-radius:4px;">art. L.166-1</span>
+                    <span style="font-family:'IBM Plex Mono',monospace; font-size:12px; color:#8E2A22; background:#F6D9D5; padding:4px 9px; border-radius:4px;">art. L.166-2</span>
+                  </div>
+                </div>
+              </div>
+              <div style="margin-top:16px; padding-top:14px; border-top:1px solid #E8C4BF; display:flex; gap:26px;">
+                <div><div style="font-size:11.5px; color:#8E2A22;">Alternative</div><div style="font-size:13.5px; color:#7A3E38; margin-top:2px;">Notifier au maximum <strong>4</strong> licenciements le 20.09</div></div>
+                <div><div style="font-size:11.5px; color:#8E2A22;">Ou reporter au</div><div style="font-family:'IBM Plex Mono',monospace; font-size:13.5px; color:#7A3E38; margin-top:2px;">02.10.2026 — 6 possibles</div></div>
+              </div>
+            </div>
+
+            <div style="background:#fff; border:1px solid #E4E1E3; border-radius:9px; padding:20px 22px;">
+              <div style="font-size:15px; font-weight:700; margin-bottom:18px;">Chronologie de la procédure</div>
+              <div style="display:flex; flex-direction:column; gap:0;">
+                <div style="display:grid; grid-template-columns:110px 22px 1fr; gap:14px; align-items:start;">
+                  <span style="font-family:'IBM Plex Mono',monospace; font-size:13px; color:#5B5459; padding-top:1px;">J — 20.09</span>
+                  <span style="display:flex; flex-direction:column; align-items:center;"><span style="width:11px; height:11px; border-radius:50%; background:#714B67; margin-top:5px;"></span><span style="width:2px; flex:1; min-height:34px; background:#E4E1E3;"></span></span>
+                  <div style="padding-bottom:16px;"><div style="font-size:14px; font-weight:600;">Information écrite de la délégation du personnel et de l'ADEM</div><div style="font-size:13px; color:#5B5459; line-height:1.5;">Motifs, nombre et catégories de salariés concernés, critères de sélection, calendrier.</div></div>
+                </div>
+                <div style="display:grid; grid-template-columns:110px 22px 1fr; gap:14px; align-items:start;">
+                  <span style="font-family:'IBM Plex Mono',monospace; font-size:13px; color:#5B5459; padding-top:1px;">J+1 → J+15</span>
+                  <span style="display:flex; flex-direction:column; align-items:center;"><span style="width:11px; height:11px; border-radius:50%; background:#714B67; margin-top:5px;"></span><span style="width:2px; flex:1; min-height:34px; background:#E4E1E3;"></span></span>
+                  <div style="padding-bottom:16px;"><div style="font-size:14px; font-weight:600;">Négociation du plan social — 15 jours</div><div style="font-size:13px; color:#5B5459; line-height:1.5;">Mesures d'accompagnement, reclassement, indemnités. Accord ou constat de désaccord.</div></div>
+                </div>
+                <div style="display:grid; grid-template-columns:110px 22px 1fr; gap:14px; align-items:start;">
+                  <span style="font-family:'IBM Plex Mono',monospace; font-size:13px; color:#5B5459; padding-top:1px;">J+15 → J+18</span>
+                  <span style="display:flex; flex-direction:column; align-items:center;"><span style="width:11px; height:11px; border-radius:50%; background:#B7791F; margin-top:5px;"></span><span style="width:2px; flex:1; min-height:34px; background:#E4E1E3;"></span></span>
+                  <div style="padding-bottom:16px;"><div style="font-size:14px; font-weight:600;">En cas de désaccord : saisine de l'ONC dans les 3 jours</div><div style="font-size:13px; color:#5B5459; line-height:1.5;">Office national de conciliation. Le constat de désaccord doit être signé par les parties.</div></div>
+                </div>
+                <div style="display:grid; grid-template-columns:110px 22px 1fr; gap:14px; align-items:start;">
+                  <span style="font-family:'IBM Plex Mono',monospace; font-size:13px; color:#5B5459; padding-top:1px;">J+18 → J+33</span>
+                  <span style="display:flex; flex-direction:column; align-items:center;"><span style="width:11px; height:11px; border-radius:50%; background:#B7791F; margin-top:5px;"></span><span style="width:2px; flex:1; min-height:34px; background:#E4E1E3;"></span></span>
+                  <div style="padding-bottom:16px;"><div style="font-size:14px; font-weight:600;">Conciliation devant l'ONC — 15 jours</div><div style="font-size:13px; color:#5B5459; line-height:1.5;">Interdiction absolue de notifier pendant toute la durée de la procédure.</div></div>
+                </div>
+                <div style="display:grid; grid-template-columns:110px 22px 1fr; gap:14px; align-items:start;">
+                  <span style="font-family:'IBM Plex Mono',monospace; font-size:13px; color:#186429; padding-top:1px; font-weight:500;">≈ 23.10</span>
+                  <span style="display:flex; align-items:flex-start; justify-content:center;"><span style="width:11px; height:11px; border-radius:50%; background:#1E7E34; margin-top:5px;"></span></span>
+                  <div><div style="font-size:14px; font-weight:600; color:#186429;">Première date de notification possible</div><div style="font-size:13px; color:#5B5459; line-height:1.5;">Sous réserve de la signature du plan social ou du procès-verbal de non-conciliation.</div></div>
+                </div>
+              </div>
+              <div style="margin-top:18px; padding:12px 14px; background:#F1EFF0; border-radius:7px; font-size:12.5px; color:#5B5459; line-height:1.55;">LuxRH est un outil d'aide à la décision. Il ne se substitue pas à un conseil juridique. Vérifiez les délais applicables à votre situation avant toute démarche.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ 10 SÉLECTEUR + 11 FICHE SOCIÉTÉ ══ -->
+  <div style="display:flex; gap:32px; align-items:flex-start;">
+    <div style="display:flex; flex-direction:column; gap:12px;" data-screen-label="10 Sélecteur de sociétés">
+      <div style="display:flex; align-items:baseline; gap:12px;"><span style="font-family:'IBM Plex Mono',monospace; font-size:13px; color:#6E666C;">10</span><h2 style="margin:0; font-size:20px; font-weight:700;">Sélecteur de sociétés</h2></div>
+      <div style="width:600px; background:#F6F5F6; border:1px solid #DCD8DA; border-radius:10px; overflow:hidden; box-shadow:0 10px 30px rgba(31,41,55,0.08);">
+        <div style="display:flex; align-items:center; background:#714B67; padding:0 16px; height:44px;"><span style="color:#fff; font-weight:700; font-size:14px;">LuxRH</span></div>
+        <div style="padding:22px;">
+          <h3 style="margin:0 0 4px; font-size:20px; font-weight:700;">Vos dossiers</h3>
+          <p style="margin:0 0 14px; font-size:13.5px; color:#5B5459;">Fiduciaire Weiland &amp; Associés · 28 sociétés</p>
+          <div style="border:1px solid #D6D2D4; border-radius:5px; padding:9px 12px; font-size:13.5px; color:#6E666C; background:#fff; margin-bottom:12px;">Rechercher un dossier…</div>
+          <div style="background:#fff; border:1px solid #E4E1E3; border-radius:8px; overflow:hidden;">
+            <div style="padding:13px 15px; border-bottom:1px solid #F2F0F1; display:flex; justify-content:space-between; align-items:center; background:#F3ECF1;">
+              <div style="display:flex; align-items:center; gap:11px;"><span style="width:32px; height:32px; border-radius:6px; background:#714B67; color:#fff; font-size:12px; font-weight:700; display:flex; align-items:center; justify-content:center;">BG</span><div><div style="font-size:14px; font-weight:600;">Brasserie du Glacis Sàrl</div><div style="font-size:12px; color:#6B6469;">HORECA · 13 salariés</div></div></div>
+              <span style="font-size:11.5px; font-weight:600; padding:3px 9px; border-radius:11px; background:#FBEAE8; color:#A5302A;">4 alertes</span>
+            </div>
+            <div style="padding:13px 15px; border-bottom:1px solid #F2F0F1; display:flex; justify-content:space-between; align-items:center;">
+              <div style="display:flex; align-items:center; gap:11px;"><span style="width:32px; height:32px; border-radius:6px; background:#F3ECF1; color:#714B67; font-size:12px; font-weight:700; display:flex; align-items:center; justify-content:center;">CS</span><div><div style="font-size:14px; font-weight:600;">Clinique Sainte-Anne asbl</div><div style="font-size:12px; color:#6B6469;">Aides et soins · 84 salariés</div></div></div>
+              <span style="font-size:11.5px; font-weight:600; padding:3px 9px; border-radius:11px; background:#FDF3E2; color:#8C5C13;">2 échéances</span>
+            </div>
+            <div style="padding:13px 15px; border-bottom:1px solid #F2F0F1; display:flex; justify-content:space-between; align-items:center;">
+              <div style="display:flex; align-items:center; gap:11px;"><span style="width:32px; height:32px; border-radius:6px; background:#F3ECF1; color:#714B67; font-size:12px; font-weight:700; display:flex; align-items:center; justify-content:center;">GL</span><div><div style="font-size:14px; font-weight:600;">Guardian Lux SA</div><div style="font-size:12px; color:#6B6469;">Gardiennage · 212 salariés</div></div></div>
+              <span style="font-size:11.5px; font-weight:600; padding:3px 9px; border-radius:11px; background:#E8F5EA; color:#186429;">À jour</span>
+            </div>
+            <div style="padding:13px 15px; display:flex; justify-content:space-between; align-items:center;">
+              <div style="display:flex; align-items:center; gap:11px;"><span style="width:32px; height:32px; border-radius:6px; background:#F3ECF1; color:#714B67; font-size:12px; font-weight:700; display:flex; align-items:center; justify-content:center;">MT</span><div><div style="font-size:14px; font-weight:600;">Menuiserie Thill Sàrl</div><div style="font-size:12px; color:#6B6469;">Artisanat · 9 salariés</div></div></div>
+              <span style="font-size:11.5px; font-weight:600; padding:3px 9px; border-radius:11px; background:#E8F5EA; color:#186429;">À jour</span>
+            </div>
+          </div>
+          <div style="margin-top:12px; font-size:12.5px; color:#6B6469;">Bascule de dossier en moins de 2 secondes. Les données ne se croisent jamais : l'isolation est imposée en base.</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex; flex-direction:column; gap:12px;" data-screen-label="11 Fiche société">
+      <div style="display:flex; align-items:baseline; gap:12px;"><span style="font-family:'IBM Plex Mono',monospace; font-size:13px; color:#6E666C;">11</span><h2 style="margin:0; font-size:20px; font-weight:700;">Fiche société</h2></div>
+      <div style="width:808px; background:#F6F5F6; border:1px solid #DCD8DA; border-radius:10px; overflow:hidden; box-shadow:0 10px 30px rgba(31,41,55,0.08);">
+        <div style="display:flex; align-items:center; justify-content:space-between; background:#714B67; padding:0 16px; height:44px;"><span style="color:#fff; font-weight:700; font-size:14px;">LuxRH · Sociétés</span><span style="width:24px; height:24px; border-radius:50%; background:#F3ECF1; color:#714B67; font-size:10px; font-weight:700; display:flex; align-items:center; justify-content:center;">SL</span></div>
+        <div style="padding:22px;">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:16px;">
+            <div>
+              <h3 style="margin:0 0 3px; font-size:22px; font-weight:700; letter-spacing:-0.4px;">Brasserie du Glacis Sàrl</h3>
+              <div style="font-size:13.5px; color:#5B5459;">RCS B 214 887 · 12 rue du Glacis, L-1628 Luxembourg</div>
+            </div>
+            <button style="font-family:inherit; font-size:13px; font-weight:600; color:#fff; background:#714B67; border:1px solid #714B67; border-radius:5px; padding:8px 14px; cursor:pointer;">Modifier</button>
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px;">
+            <div style="background:#fff; border:1px solid #E4E1E3; border-radius:9px; padding:16px 18px;">
+              <div style="font-size:12px; font-weight:700; letter-spacing:0.07em; text-transform:uppercase; color:#6E666C; margin-bottom:12px;">Paramètres CCSS</div>
+              <div style="display:flex; flex-direction:column; gap:10px; font-size:13.5px;">
+                <div style="display:flex; justify-content:space-between;"><span style="color:#5B5459;">Matricule CCSS</span><span style="font-family:'IBM Plex Mono',monospace;">2019 24 15 883</span></div>
+                <div style="display:flex; justify-content:space-between;"><span style="color:#5B5459;">Classe Mutualité</span><span style="font-family:'IBM Plex Mono',monospace;">2 · 1,26 %</span></div>
+                <div style="display:flex; justify-content:space-between;"><span style="color:#5B5459;">Facteur accident</span><span style="font-family:'IBM Plex Mono',monospace;">1,00 · 0,65 %</span></div>
+                <div style="display:flex; justify-content:space-between;"><span style="color:#5B5459;">Secteur NACE</span><span style="font-family:'IBM Plex Mono',monospace;">56.10</span></div>
+              </div>
+            </div>
+            <div style="background:#fff; border:1px solid #E4E1E3; border-radius:9px; padding:16px 18px;">
+              <div style="font-size:12px; font-weight:700; letter-spacing:0.07em; text-transform:uppercase; color:#6E666C; margin-bottom:12px;">Convention collective</div>
+              <div style="font-size:14px; font-weight:600;">CCT HORECA 2025-2027</div>
+              <div style="font-size:12.5px; color:#5B5459; margin-top:4px; line-height:1.5;">Validité 01.01.2025 → 31.12.2027 · 6 blocs de règles paramétrés</div>
+              <div style="display:flex; gap:16px; margin-top:12px; padding-top:12px; border-top:1px solid #EFEDEE;">
+                <div><div style="font-size:11px; color:#6E666C;">Congé annuel</div><div style="font-family:'IBM Plex Mono',monospace; font-size:13px;">28 j</div></div>
+                <div><div style="font-size:11px; color:#6E666C;">Nuit</div><div style="font-family:'IBM Plex Mono',monospace; font-size:13px;">+15 %</div></div>
+                <div><div style="font-size:11px; color:#6E666C;">Dimanche</div><div style="font-family:'IBM Plex Mono',monospace; font-size:13px;">+70 %</div></div>
+              </div>
+            </div>
+          </div>
+          <div style="background:#fff; border:1px solid #E4E1E3; border-radius:9px; padding:16px 18px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+              <div style="font-size:12px; font-weight:700; letter-spacing:0.07em; text-transform:uppercase; color:#6E666C;">Effectif et obligations</div>
+              <span style="font-size:12px; color:#6E666C;">Période de référence : 09.2025 → 08.2026</span>
+            </div>
+            <div style="display:flex; align-items:flex-end; gap:20px; margin-bottom:14px;">
+              <div><div style="font-family:'IBM Plex Mono',monospace; font-size:34px; line-height:1;">13</div><div style="font-size:12px; color:#6B6469; margin-top:4px;">effectif moyen</div></div>
+              <div style="flex:1;">
+                <div style="height:8px; border-radius:4px; background:#F1EFF0; overflow:hidden;"><div style="width:87%; height:100%; background:#B7791F;"></div></div>
+                <div style="display:flex; justify-content:space-between; font-size:11.5px; color:#6E666C; margin-top:5px;"><span>0</span><span>seuil délégation : 15</span></div>
+              </div>
+            </div>
+            <div style="display:flex; gap:12px; padding:12px 14px; background:#FDF3E2; border-radius:7px;">
+              <span style="color:#B7791F; font-weight:700; font-size:13px;">▲</span>
+              <div style="font-size:13px; color:#7D5312; line-height:1.55;">À 2 salariés du seuil de la délégation du personnel. Au franchissement : 1 délégué effectif et 1 suppléant, scrutin majoritaire, élections dans les délais légaux. <span style="font-family:'IBM Plex Mono',monospace;">art. L.412-1</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ 12 ÉDITEUR CCT + 13 RÉFÉRENTIEL ══ -->
+  <div style="display:flex; gap:32px; align-items:flex-start;">
+    <div style="display:flex; flex-direction:column; gap:12px;" data-screen-label="12 Éditeur de CCT">
+      <div style="display:flex; align-items:baseline; gap:12px;"><span style="font-family:'IBM Plex Mono',monospace; font-size:13px; color:#6E666C;">12</span><h2 style="margin:0; font-size:20px; font-weight:700;">Éditeur de convention collective</h2></div>
+      <div style="width:704px; background:#F6F5F6; border:1px solid #DCD8DA; border-radius:10px; overflow:hidden; box-shadow:0 10px 30px rgba(31,41,55,0.08);">
+        <div style="display:flex; align-items:center; justify-content:space-between; background:#714B67; padding:0 16px; height:44px;"><span style="color:#fff; font-weight:700; font-size:14px;">LuxRH · Référentiel</span><span style="color:#EADFE6; font-size:12.5px;">Brouillon · non activé</span></div>
+        <div style="padding:20px;">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:14px;">
+            <div>
+              <h3 style="margin:0 0 3px; font-size:20px; font-weight:700;">CCT HORECA 2025-2027</h3>
+              <div style="font-size:13px; color:#5B5459;">Secteur HORECA · validité 01.01.2025 → 31.12.2027</div>
+            </div>
+            <div style="display:flex; gap:8px;">
+              <button style="font-family:inherit; font-size:12.5px; font-weight:500; color:#4A4348; background:#fff; border:1px solid #D6D2D4; border-radius:5px; padding:7px 12px; cursor:pointer;">Dupliquer</button>
+              <button style="font-family:inherit; font-size:12.5px; font-weight:600; color:#fff; background:#714B67; border:1px solid #714B67; border-radius:5px; padding:7px 12px; cursor:pointer;">Activer</button>
+            </div>
+          </div>
+          <div style="display:flex; gap:14px; align-items:start;">
+            <div style="width:190px; flex:none; background:#fff; border:1px solid #E4E1E3; border-radius:8px; padding:8px; display:flex; flex-direction:column; gap:2px;">
+              <span style="font-size:12.5px; color:#4A4348; padding:8px 10px; display:flex; justify-content:space-between;">Grille de salaires<span style="color:#1E7E34;">✓</span></span>
+              <span style="font-size:12.5px; font-weight:600; color:#714B67; background:#F3ECF1; padding:8px 10px; border-radius:5px; display:flex; justify-content:space-between;">Majorations<span style="color:#1E7E34;">✓</span></span>
+              <span style="font-size:12.5px; color:#4A4348; padding:8px 10px; display:flex; justify-content:space-between;">Durée de travail<span style="color:#1E7E34;">✓</span></span>
+              <span style="font-size:12.5px; color:#4A4348; padding:8px 10px; display:flex; justify-content:space-between;">Congés<span style="color:#1E7E34;">✓</span></span>
+              <span style="font-size:12.5px; color:#4A4348; padding:8px 10px; display:flex; justify-content:space-between;">Primes<span style="color:#6E666C;">○</span></span>
+              <span style="font-size:12.5px; color:#4A4348; padding:8px 10px; display:flex; justify-content:space-between;">Préavis &amp; essai<span style="color:#1E7E34;">✓</span></span>
+              <span style="font-size:12.5px; color:#4A4348; padding:8px 10px; display:flex; justify-content:space-between;">Jours fériés d'usage<span style="color:#6E666C;">○</span></span>
+            </div>
+            <div style="flex:1; background:#fff; border:1px solid #E4E1E3; border-radius:8px; padding:18px;">
+              <div style="font-size:15px; font-weight:700; margin-bottom:4px;">Majorations</div>
+              <div style="font-size:12.5px; color:#5B5459; margin-bottom:16px;">Aucune règle n'est écrite en code : ce formulaire alimente le moteur.</div>
+              <div style="display:flex; flex-direction:column; gap:14px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; gap:12px;">
+                  <div><div style="font-size:13.5px; font-weight:600;">Travail de nuit</div><div style="font-size:12px; color:#6B6469;">22:00 – 06:00 · aucune majoration légale générale</div></div>
+                  <div style="border:1px solid #D6D2D4; border-radius:5px; display:flex; overflow:hidden; flex:none;"><span style="padding:8px 12px; font-family:'IBM Plex Mono',monospace; font-size:13.5px;">15</span><span style="padding:8px 10px; background:#F6F5F6; border-left:1px solid #E4E1E3; font-size:13px; color:#6B6469;">%</span></div>
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:center; gap:12px;">
+                  <div><div style="font-size:13.5px; font-weight:600;">Dimanche</div><div style="font-size:12px; color:#186429;">Minimum légal 70 % — respecté</div></div>
+                  <div style="border:1px solid #D6D2D4; border-radius:5px; display:flex; overflow:hidden; flex:none;"><span style="padding:8px 12px; font-family:'IBM Plex Mono',monospace; font-size:13.5px;">70</span><span style="padding:8px 10px; background:#F6F5F6; border-left:1px solid #E4E1E3; font-size:13px; color:#6B6469;">%</span></div>
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:center; gap:12px;">
+                  <div><div style="font-size:13.5px; font-weight:600;">Jour férié travaillé</div><div style="font-size:12px; color:#6B6469;">300 % au total, légal</div></div>
+                  <div style="border:1px solid #E4E1E3; border-radius:5px; display:flex; overflow:hidden; flex:none; background:#F6F5F6;"><span style="padding:8px 12px; font-family:'IBM Plex Mono',monospace; font-size:13.5px; color:#6E666C;">300</span><span style="padding:8px 10px; background:#EFEDEE; border-left:1px solid #E4E1E3; font-size:13px; color:#6E666C;">%</span></div>
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; padding-top:14px; border-top:1px solid #F2F0F1;">
+                  <div><div style="font-size:13.5px; font-weight:600;">Heure supplémentaire</div><div style="font-size:12px; color:#6B6469;">Compensation en argent · 140 % légal</div></div>
+                  <div style="border:1px solid #D6D2D4; border-radius:5px; display:flex; overflow:hidden; flex:none;"><span style="padding:8px 12px; font-family:'IBM Plex Mono',monospace; font-size:13.5px;">140</span><span style="padding:8px 10px; background:#F6F5F6; border-left:1px solid #E4E1E3; font-size:13px; color:#6B6469;">%</span></div>
+                </div>
+              </div>
+              <div style="margin-top:16px; padding:11px 13px; background:#E4F1F2; border-radius:7px; font-size:12.5px; color:#125D61; line-height:1.55;">Une valeur inférieure au minimum légal est refusée à l'enregistrement : la CCT ne peut pas être moins favorable que la loi.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex; flex-direction:column; gap:12px;" data-screen-label="13 Référentiel légal">
+      <div style="display:flex; align-items:baseline; gap:12px;"><span style="font-family:'IBM Plex Mono',monospace; font-size:13px; color:#6E666C;">13</span><h2 style="margin:0; font-size:20px; font-weight:700;">Référentiel légal daté</h2></div>
+      <div style="width:704px; background:#F6F5F6; border:1px solid #DCD8DA; border-radius:10px; overflow:hidden; box-shadow:0 10px 30px rgba(31,41,55,0.08);">
+        <div style="display:flex; align-items:center; justify-content:space-between; background:#714B67; padding:0 16px; height:44px;"><span style="color:#fff; font-weight:700; font-size:14px;">LuxRH · Référentiel</span><span style="width:24px; height:24px; border-radius:50%; background:#F3ECF1; color:#714B67; font-size:10px; font-weight:700; display:flex; align-items:center; justify-content:center;">SL</span></div>
+        <div style="padding:20px;">
+          <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:14px;">
+            <div>
+              <h3 style="margin:0 0 3px; font-size:20px; font-weight:700;">Paramètres sociaux</h3>
+              <div style="font-size:13px; color:#5B5459;">Calcul daté : les valeurs lues sont celles en vigueur à la date du calcul.</div>
+            </div>
+            <div style="border:1px solid #D6D2D4; border-radius:5px; padding:7px 12px; font-size:13px; background:#fff; display:flex; gap:8px; align-items:center;"><span style="color:#6E666C;">Au</span><span style="font-family:'IBM Plex Mono',monospace;">09.09.2026</span></div>
+          </div>
+          <div style="background:#fff; border:1px solid #E4E1E3; border-radius:8px; overflow:hidden; margin-bottom:14px;">
+            <div style="display:grid; grid-template-columns:2fr 1fr 1.2fr 0.8fr; padding:9px 14px; background:#FAF9FA; border-bottom:1px solid #E4E1E3; font-size:11px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:#6E666C;"><span>Paramètre</span><span style="text-align:right;">Valeur</span><span style="text-align:right;">En vigueur</span><span style="text-align:right;">Source</span></div>
+            <div style="display:grid; grid-template-columns:2fr 1fr 1.2fr 0.8fr; padding:10px 14px; border-bottom:1px solid #F2F0F1; font-size:13px; align-items:center;"><span>SSM mensuel non qualifié</span><span style="font-family:'IBM Plex Mono',monospace; text-align:right;">2 771,33 €</span><span style="font-family:'IBM Plex Mono',monospace; text-align:right; color:#5B5459;">01.06.2026 →</span><span style="text-align:right;"><a href="#" style="font-size:12.5px;">CCSS</a></span></div>
+            <div style="display:grid; grid-template-columns:2fr 1fr 1.2fr 0.8fr; padding:10px 14px; border-bottom:1px solid #F2F0F1; font-size:13px; align-items:center; background:#FDFCFD;"><span>SSM mensuel qualifié</span><span style="font-family:'IBM Plex Mono',monospace; text-align:right;">3 325,59 €</span><span style="font-family:'IBM Plex Mono',monospace; text-align:right; color:#5B5459;">01.06.2026 →</span><span style="text-align:right;"><a href="#" style="font-size:12.5px;">CCSS</a></span></div>
+            <div style="display:grid; grid-template-columns:2fr 1fr 1.2fr 0.8fr; padding:10px 14px; border-bottom:1px solid #F2F0F1; font-size:13px; align-items:center;"><span>Maximum cotisable mensuel</span><span style="font-family:'IBM Plex Mono',monospace; text-align:right;">13 856,63 €</span><span style="font-family:'IBM Plex Mono',monospace; text-align:right; color:#5B5459;">01.06.2026 →</span><span style="text-align:right;"><a href="#" style="font-size:12.5px;">CCSS</a></span></div>
+            <div style="display:grid; grid-template-columns:2fr 1fr 1.2fr 0.8fr; padding:10px 14px; border-bottom:1px solid #F2F0F1; font-size:13px; align-items:center; background:#FDFCFD;"><span>Abattement dépendance</span><span style="font-family:'IBM Plex Mono',monospace; text-align:right;">692,83 €</span><span style="font-family:'IBM Plex Mono',monospace; text-align:right; color:#5B5459;">01.06.2026 →</span><span style="text-align:right;"><a href="#" style="font-size:12.5px;">CCSS</a></span></div>
+            <div style="display:grid; grid-template-columns:2fr 1fr 1.2fr 0.8fr; padding:10px 14px; border-bottom:1px solid #F2F0F1; font-size:13px; align-items:center;"><span>Cotisation pension · salarié</span><span style="font-family:'IBM Plex Mono',monospace; text-align:right;">8,50 %</span><span style="font-family:'IBM Plex Mono',monospace; text-align:right; color:#5B5459;">01.01.2026 →</span><span style="text-align:right;"><a href="#" style="font-size:12.5px;">CCSS</a></span></div>
+            <div style="display:grid; grid-template-columns:2fr 1fr 1.2fr 0.8fr; padding:10px 14px; font-size:13px; align-items:center; background:#FDFCFD;"><span>Total part salariale</span><span style="font-family:'IBM Plex Mono',monospace; text-align:right; font-weight:600;">12,95 %</span><span style="font-family:'IBM Plex Mono',monospace; text-align:right; color:#5B5459;">01.01.2026 →</span><span style="text-align:right; color:#6E666C; font-size:12.5px;">calculé</span></div>
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
+            <div style="background:#fff; border:1px solid #E4E1E3; border-radius:9px; padding:16px;">
+              <div style="font-size:13.5px; font-weight:700; margin-bottom:10px;">Historique — pension salarié</div>
+              <div style="display:flex; flex-direction:column; gap:8px; font-size:12.5px;">
+                <div style="display:flex; justify-content:space-between;"><span style="font-family:'IBM Plex Mono',monospace; color:#5B5459;">01.01.2026 →</span><span style="font-family:'IBM Plex Mono',monospace; font-weight:600;">8,50 %</span></div>
+                <div style="display:flex; justify-content:space-between;"><span style="font-family:'IBM Plex Mono',monospace; color:#5B5459;">…→ 31.12.2025</span><span style="font-family:'IBM Plex Mono',monospace; color:#5B5459;">8,00 %</span></div>
+              </div>
+              <div style="margin-top:11px; padding-top:11px; border-top:1px solid #EFEDEE; font-size:12px; color:#6B6469; line-height:1.5;">Une paie de décembre 2025 recalculée aujourd'hui utilise 8,00 %.</div>
+            </div>
+            <div style="background:#fff; border:1px solid #E4E1E3; border-radius:9px; padding:16px;">
+              <div style="font-size:13.5px; font-weight:700; margin-bottom:10px;">Mise à jour</div>
+              <div style="display:flex; flex-direction:column; gap:9px; font-size:12.5px;">
+                <div style="display:flex; gap:8px;"><span style="color:#1E7E34;">✓</span><span style="color:#4A4348;">Saisie par M. Weiland · 04.06.2026</span></div>
+                <div style="display:flex; gap:8px;"><span style="color:#1E7E34;">✓</span><span style="color:#4A4348;">Double lecture par S. Lambert · 05.06.2026</span></div>
+                <div style="display:flex; gap:8px;"><span style="color:#1E7E34;">✓</span><span style="color:#4A4348;">50 cas de test rejoués sans écart</span></div>
+                <div style="display:flex; gap:8px;"><span style="color:#B7791F;">▲</span><span style="color:#7D5312;">Veille fiscale au 01.01.2027 à programmer</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ 14 ESPACE SALARIÉ MOBILE ══ -->
+  <div style="display:flex; flex-direction:column; gap:12px;" data-screen-label="14 Espace salarié mobile">
+    <div style="display:flex; align-items:baseline; gap:12px;"><span style="font-family:'IBM Plex Mono',monospace; font-size:13px; color:#6E666C;">14</span><h2 style="margin:0; font-size:20px; font-weight:700;">Espace salarié — mobile</h2></div>
+    <div style="display:flex; gap:24px;">
+
+      <div style="width:375px; background:#fff; border:1px solid #DCD8DA; border-radius:26px; overflow:hidden; box-shadow:0 10px 30px rgba(31,41,55,0.1);">
+        <div style="background:#714B67; padding:12px 18px 16px; color:#fff;">
+          <div style="display:flex; justify-content:space-between; align-items:center; font-size:12px; color:#E4D6E0; margin-bottom:14px;"><span style="font-family:'IBM Plex Mono',monospace;">09:41</span><span>LuxRH</span></div>
+          <div style="font-size:13px; color:#E4D6E0;">Bonjour</div>
+          <div style="font-size:21px; font-weight:700; letter-spacing:-0.3px;">Marta Ferreira</div>
+        </div>
+        <div style="padding:16px;">
+          <div style="font-size:12px; font-weight:700; letter-spacing:0.07em; text-transform:uppercase; color:#6E666C; margin-bottom:10px;">Mon planning · semaine 42</div>
+          <div style="display:flex; flex-direction:column; gap:8px;">
+            <div style="display:flex; gap:12px; align-items:center; border:1px solid #E4E1E3; border-radius:9px; padding:12px 14px; min-height:56px;">
+              <div style="width:42px; flex:none; text-align:center;"><div style="font-size:11px; color:#6E666C;">LUN</div><div style="font-family:'IBM Plex Mono',monospace; font-size:17px; font-weight:500;">12</div></div>
+              <div style="flex:1;"><div style="font-family:'IBM Plex Mono',monospace; font-size:14px; font-weight:500;">11:00 – 15:00</div><div style="font-size:12.5px; color:#5B5459;">Service midi · salle</div></div>
+            </div>
+            <div style="display:flex; gap:12px; align-items:center; border:1px solid #E4E1E3; border-radius:9px; padding:12px 14px; min-height:56px;">
+              <div style="width:42px; flex:none; text-align:center;"><div style="font-size:11px; color:#6E666C;">MAR</div><div style="font-family:'IBM Plex Mono',monospace; font-size:17px; font-weight:500;">13</div></div>
+              <div style="flex:1;"><div style="font-family:'IBM Plex Mono',monospace; font-size:14px; font-weight:500;">17:00 – 23:30</div><div style="font-size:12.5px; color:#5B5459;">Service soir · salle</div></div>
+            </div>
+            <div style="display:flex; gap:12px; align-items:center; border:1px solid #E4E1E3; border-radius:9px; padding:12px 14px; min-height:56px; background:#FAF9FA;">
+              <div style="width:42px; flex:none; text-align:center;"><div style="font-size:11px; color:#6E666C;">MER</div><div style="font-family:'IBM Plex Mono',monospace; font-size:17px; font-weight:500; color:#6E666C;">14</div></div>
+              <div style="flex:1;"><div style="font-size:13.5px; color:#6B6469;">Planning non publié</div><div style="font-size:12.5px; color:#6E666C;">En cours de préparation</div></div>
+            </div>
+          </div>
+
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:16px;">
+            <div style="border:1px solid #E4E1E3; border-radius:9px; padding:13px;"><div style="font-size:11.5px; color:#6E666C;">Solde de congés</div><div style="font-family:'IBM Plex Mono',monospace; font-size:22px; margin-top:3px;">14,0 j</div></div>
+            <div style="border:1px solid #E4E1E3; border-radius:9px; padding:13px;"><div style="font-size:11.5px; color:#6E666C;">Heures supp.</div><div style="font-family:'IBM Plex Mono',monospace; font-size:22px; margin-top:3px;">6,5 h</div></div>
+          </div>
+
+          <button style="font-family:inherit; width:100%; margin-top:14px; font-size:15px; font-weight:600; color:#fff; background:#714B67; border:1px solid #714B67; border-radius:8px; padding:14px; cursor:pointer; min-height:48px;">Demander un congé</button>
+          <div style="display:flex; gap:10px; margin-top:10px;">
+            <button style="font-family:inherit; flex:1; font-size:14px; font-weight:500; color:#4A4348; background:#fff; border:1px solid #D6D2D4; border-radius:8px; padding:13px; cursor:pointer; min-height:48px;">Maladie</button>
+            <button style="font-family:inherit; flex:1; font-size:14px; font-weight:500; color:#4A4348; background:#fff; border:1px solid #D6D2D4; border-radius:8px; padding:13px; cursor:pointer; min-height:48px;">Mes documents</button>
+          </div>
+        </div>
+        <div style="display:flex; border-top:1px solid #E4E1E3; padding:10px 0 16px;">
+          <span style="flex:1; text-align:center; font-size:11.5px; font-weight:600; color:#714B67;">Planning</span>
+          <span style="flex:1; text-align:center; font-size:11.5px; color:#6E666C;">Congés</span>
+          <span style="flex:1; text-align:center; font-size:11.5px; color:#6E666C;">Documents</span>
+          <span style="flex:1; text-align:center; font-size:11.5px; color:#6E666C;">Profil</span>
+        </div>
+      </div>
+
+      <div style="width:375px; background:#fff; border:1px solid #DCD8DA; border-radius:26px; overflow:hidden; box-shadow:0 10px 30px rgba(31,41,55,0.1);">
+        <div style="background:#714B67; padding:12px 18px 16px; color:#fff;">
+          <div style="display:flex; justify-content:space-between; align-items:center; font-size:12px; color:#E4D6E0; margin-bottom:14px;"><span style="font-family:'IBM Plex Mono',monospace;">09:43</span><span>LuxRH</span></div>
+          <div style="font-size:19px; font-weight:700; letter-spacing:-0.3px;">Demander un congé</div>
+        </div>
+        <div style="padding:16px;">
+          <div style="display:flex; flex-direction:column; gap:14px;">
+            <div style="display:flex; flex-direction:column; gap:6px;">
+              <label style="font-size:13px; font-weight:600; color:#3A3438;">Type</label>
+              <div style="border:1px solid #D6D2D4; border-radius:8px; padding:13px 14px; font-size:15px; display:flex; justify-content:space-between; min-height:48px; box-sizing:border-box; align-items:center;"><span>Congé annuel</span><span style="color:#6E666C; font-size:11px;">▾</span></div>
+            </div>
+            <div style="display:flex; gap:10px;">
+              <div style="flex:1; display:flex; flex-direction:column; gap:6px;">
+                <label style="font-size:13px; font-weight:600; color:#3A3438;">Du</label>
+                <div style="border:1px solid #D6D2D4; border-radius:8px; padding:13px 14px; font-family:'IBM Plex Mono',monospace; font-size:15px; min-height:48px; box-sizing:border-box;">26.10</div>
+              </div>
+              <div style="flex:1; display:flex; flex-direction:column; gap:6px;">
+                <label style="font-size:13px; font-weight:600; color:#3A3438;">Au</label>
+                <div style="border:1px solid #D6D2D4; border-radius:8px; padding:13px 14px; font-family:'IBM Plex Mono',monospace; font-size:15px; min-height:48px; box-sizing:border-box;">30.10</div>
+              </div>
+            </div>
+            <div style="background:#E4F1F2; border-radius:9px; padding:14px;">
+              <div style="display:flex; justify-content:space-between; font-size:14px; margin-bottom:7px;"><span style="color:#125D61;">Jours décomptés</span><span style="font-family:'IBM Plex Mono',monospace; font-weight:600; color:#01585D;">5 j</span></div>
+              <div style="display:flex; justify-content:space-between; font-size:14px;"><span style="color:#125D61;">Solde après la demande</span><span style="font-family:'IBM Plex Mono',monospace; font-weight:600; color:#01585D;">9,0 j</span></div>
+              <div style="font-size:12.5px; color:#125D61; line-height:1.5; margin-top:9px; padding-top:9px; border-top:1px solid #C5E2E4;">Aucun jour férié sur la période. Votre responsable est notifié dès l'envoi.</div>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:6px;">
+              <label style="font-size:13px; font-weight:600; color:#3A3438;">Commentaire (facultatif)</label>
+              <div style="border:1px solid #D6D2D4; border-radius:8px; padding:13px 14px; font-size:14.5px; color:#6E666C; min-height:72px; box-sizing:border-box;">Vacances scolaires</div>
+            </div>
+          </div>
+          <button style="font-family:inherit; width:100%; margin-top:18px; font-size:15px; font-weight:600; color:#fff; background:#714B67; border:1px solid #714B67; border-radius:8px; padding:14px; cursor:pointer; min-height:48px;">Envoyer la demande</button>
+          <button style="font-family:inherit; width:100%; margin-top:10px; font-size:15px; font-weight:500; color:#4A4348; background:#fff; border:1px solid #D6D2D4; border-radius:8px; padding:14px; cursor:pointer; min-height:48px;">Annuler</button>
+        </div>
+      </div>
+
+      <div style="width:400px; align-self:center; padding:24px; background:#fff; border:1px solid #E4E1E3; border-radius:10px;">
+        <div style="font-size:12px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:#6E666C; margin-bottom:12px;">Règles mobiles</div>
+        <div style="display:flex; flex-direction:column; gap:12px; font-size:13.5px; line-height:1.6; color:#4A4348;">
+          <div>Toute cible tactile fait au moins 48 px de haut ; les champs de date sont pleine largeur.</div>
+          <div>Le salarié ne voit jamais une donnée d'un collègue — le cloisonnement est imposé en base, pas dans l'écran.</div>
+          <div>Un planning non publié s'affiche explicitement comme tel plutôt que de disparaître : aucun silence.</div>
+          <div>La demande montre son impact avant l'envoi — jours décomptés, solde restant, jours fériés.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</x-dc>
+</body>
+</html>

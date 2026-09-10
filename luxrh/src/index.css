@@ -1,0 +1,28 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html { -webkit-font-smoothing: antialiased; }
+  body { @apply bg-canvas text-ink font-sans text-base m-0; }
+  /* Accessibilité : cible tactile de 44 px minimum, focus toujours visible. */
+  :focus-visible { @apply outline-none ring-2 ring-action ring-offset-1 ring-offset-white; }
+  ::selection { @apply bg-violet-veil; }
+}
+
+@layer components {
+  .lux-card { @apply bg-white border border-rule rounded-md shadow-card; }
+  .lux-label { @apply text-2xs font-semibold uppercase tracking-[0.1em] text-ink-faint; }
+  .lux-input {
+    @apply w-full min-h-[38px] px-3 py-2 text-base bg-white border border-rule-strong rounded
+           text-ink placeholder:text-ink-faint
+           focus:border-action focus:ring-1 focus:ring-action disabled:bg-rule-rail disabled:text-ink-faint;
+  }
+  .lux-th { @apply text-left text-2xs font-semibold uppercase tracking-[0.08em] text-ink-faint px-3 py-2; }
+  .lux-td { @apply px-3 py-2.5 text-sm text-ink-body align-middle; }
+  .lux-skeleton {
+    background: linear-gradient(90deg, #EFEDEE 0px, #F6F5F6 160px, #EFEDEE 320px);
+    background-size: 640px 100%;
+    @apply animate-shimmer rounded;
+  }
+}

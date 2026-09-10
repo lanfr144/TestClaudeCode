@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  body { margin:0; background:#F6F5F6; font-family:'Public Sans', system-ui, sans-serif; -webkit-font-smoothing:antialiased; }
+  a { color:#017E84; text-decoration:none; }
+  a:hover { color:#01686D; text-decoration:underline; }
+  @keyframes lux-shimmer { 0% { background-position:-320px 0; } 100% { background-position:320px 0; } }
+  @keyframes lux-spin { to { transform:rotate(360deg); } }
+</style>
+</helmet>
+
+<div style="max-width:1180px; margin:0 auto; padding:48px 32px 96px; color:#1F2937;">
+
+  <header style="display:flex; flex-direction:column; gap:14px; padding-bottom:32px; border-bottom:1px solid #E4E1E3;">
+    <div style="display:flex; align-items:center; gap:12px;">
+      <div style="width:34px; height:34px; border-radius:8px; background:#714B67; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:700; font-size:15px; letter-spacing:-0.5px;">LR</div>
+      <span style="font-size:13px; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; color:#6E666C;">LuxRH · Design System v1</span>
+    </div>
+    <h1 style="margin:0; font-size:44px; line-height:1.08; font-weight:700; letter-spacing:-1.2px; max-width:20ch;">Le système visuel de l'assistant RH luxembourgeois</h1>
+    <p style="margin:0; max-width:66ch; font-size:17px; line-height:1.6; color:#5B5459;">Un langage sobre et dense, hérité de l'univers Odoo : violet d'application, turquoise d'action, gris de travail. Chaque composant sert la même promesse produit — l'application ne se contente pas de calculer, elle avertit et cite sa source.</p>
+  </header>
+
+  <section style="padding-top:48px;">
+    <div style="display:flex; align-items:baseline; gap:14px; margin-bottom:20px;">
+      <span style="font-family:'IBM Plex Mono', monospace; font-size:12px; color:#6E666C;">01</span>
+      <h2 style="margin:0; font-size:24px; font-weight:700; letter-spacing:-0.4px;">Couleurs</h2>
+    </div>
+
+    <p style="margin:0 0 18px; font-size:14px; color:#6B6469;">Marque et application</p>
+    <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(168px,1fr)); gap:12px; margin-bottom:32px;">
+      <div style="border:1px solid #E4E1E3; border-radius:8px; overflow:hidden; background:#fff;">
+        <div style="height:82px; background:#714B67;"></div>
+        <div style="padding:10px 12px;"><div style="font-size:13px; font-weight:600;">Violet primaire</div><div style="font-family:'IBM Plex Mono',monospace; font-size:12px; color:#6E666C;">#714B67</div></div>
+      </div>
+      <div style="border:1px solid #E4E1E3; border-radius:8px; overflow:hidden; background:#fff;">
+        <div style="height:82px; background:#5C3D54;"></div>
+        <div style="padding:10px 12px;"><div style="font-size:13px; font-weight:600;">Violet profond</div><div style="font-family:'IBM Plex Mono',monospace; font-size:12px; color:#6E666C;">#5C3D54</div></div>
+      </div>
+      <div style="border:1px solid #E4E1E3; border-radius:8px; overflow:hidden; background:#fff;">
+        <div style="height:82px; background:#F3ECF1;"></div>
+        <div style="padding:10px 12px;"><div style="font-size:13px; font-weight:600;">Violet voile</div><div style="font-family:'IBM Plex Mono',monospace; font-size:12px; color:#6E666C;">#F3ECF1</div></div>
+      </div>
+      <div style="border:1px solid #E4E1E3; border-radius:8px; overflow:hidden; background:#fff;">
+        <div style="height:82px; background:#017E84;"></div>
+        <div style="padding:10px 12px;"><div style="font-size:13px; font-weight:600;">Turquoise action</div><div style="font-family:'IBM Plex Mono',monospace; font-size:12px; color:#6E666C;">#017E84</div></div>
+      </div>
+      <div style="border:1px solid #E4E1E3; border-radius:8px; overflow:hidden; background:#fff;">
+        <div style="height:82px; background:#E4F1F2;"></div>
+        <div style="padding:10px 12px;"><div style="font-size:13px; font-weight:600;">Turquoise voile</div><div style="font-family:'IBM Plex Mono',monospace; font-size:12px; color:#6E666C;">#E4F1F2</div></div>
+      </div>
+      <div style="border:1px solid #E4E1E3; border-radius:8px; overflow:hidden; background:#fff;">
+        <div style="height:82px; background:#F5C842;"></div>
+        <div style="padding:10px 12px;"><div style="font-size:13px; font-weight:600;">Jaune surligne</div><div style="font-family:'IBM Plex Mono',monospace; font-size:12px; color:#6E666C;">#F5C842</div></div>
+      </div>
+    </div>
+
+    <p style="margin:0 0 18px; font-size:14px; color:#6B6469;">Neutres — le gris de travail porte 90 % de l'écran</p>
+    <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(140px,1fr)); gap:12px; margin-bottom:32px;">
+      <div style="border:1px solid #E4E1E3; border-radius:8px; overflow:hidden; background:#fff;"><div style="height:62px; background:#1F2937;"></div><div style="padding:9px 11px;"><div style="font-size:12px; font-weight:600;">Encre</div><div style="font-family:'IBM Plex Mono',monospace; font-size:11px; color:#6E666C;">#1F2937</div></div></div>
+      <div style="border:1px solid #E4E1E3; border-radius:8px; overflow:hidden; background:#fff;"><div style="height:62px; background:#5B5459;"></div><div style="padding:9px 11px;"><div style="font-size:12px; font-weight:600;">Texte second</div><div style="font-family:'IBM Plex Mono',monospace; font-size:11px; color:#6E666C;">#5B5459</div></div></div>
+      <div style="border:1px solid #E4E1E3; border-radius:8px; overflow:hidden; background:#fff;"><div style="height:62px; background:#6E666C;"></div><div style="padding:9px 11px;"><div style="font-size:12px; font-weight:600;">Texte tertiaire</div><div style="font-family:'IBM Plex Mono',monospace; font-size:11px; color:#6E666C;">#6E666C</div></div></div>
+      <div style="border:1px solid #E4E1E3; border-radius:8px; overflow:hidden; background:#fff;"><div style="height:62px; background:#E4E1E3;"></div><div style="padding:9px 11px;"><div style="font-size:12px; font-weight:600;">Bordure</div><div style="font-family:'IBM Plex Mono',monospace; font-size:11px; color:#6E666C;">#E4E1E3</div></div></div>
+      <div style="border:1px solid #E4E1E3; border-radius:8px; overflow:hidden; background:#fff;"><div style="height:62px; background:#F6F5F6;"></div><div style="padding:9px 11px;"><div style="font-size:12px; font-weight:600;">Fond app</div><div style="font-family:'IBM Plex Mono',monospace; font-size:11px; color:#6E666C;">#F6F5F6</div></div></div>
+      <div style="border:1px solid #E4E1E3; border-radius:8px; overflow:hidden; background:#fff;"><div style="height:62px; background:#FFFFFF; box-shadow:inset 0 0 0 1px #EFEDEE;"></div><div style="padding:9px 11px;"><div style="font-size:12px; font-weight:600;">Surface</div><div style="font-family:'IBM Plex Mono',monospace; font-size:11px; color:#6E666C;">#FFFFFF</div></div></div>
+    </div>
+
+    <p style="margin:0 0 18px; font-size:14px; color:#6B6469;">Sémantique de conformité — la couleur porte une conséquence juridique, jamais une décoration</p>
+    <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(210px,1fr)); gap:12px;">
+      <div style="border:1px solid #E4E1E3; border-radius:8px; background:#fff; padding:14px;">
+        <div style="display:flex; gap:8px; margin-bottom:10px;"><span style="width:26px; height:26px; border-radius:6px; background:#C0392B;"></span><span style="width:26px; height:26px; border-radius:6px; background:#FBEAE8;"></span></div>
+        <div style="font-size:13px; font-weight:600;">Bloquant</div>
+        <div style="font-size:12px; color:#6B6469; line-height:1.45;">Empêche la publication ou la validation.</div>
+        <div style="font-family:'IBM Plex Mono',monospace; font-size:11px; color:#6E666C; margin-top:6px;">#C0392B / #FBEAE8</div>
+      </div>
+      <div style="border:1px solid #E4E1E3; border-radius:8px; background:#fff; padding:14px;">
+        <div style="display:flex; gap:8px; margin-bottom:10px;"><span style="width:26px; height:26px; border-radius:6px; background:#B7791F;"></span><span style="width:26px; height:26px; border-radius:6px; background:#FDF3E2;"></span></div>
+        <div style="font-size:13px; font-weight:600;">Avertissement</div>
+        <div style="font-size:12px; color:#6B6469; line-height:1.45;">Point d'attention, n'empêche pas d'avancer.</div>
+        <div style="font-family:'IBM Plex Mono',monospace; font-size:11px; color:#6E666C; margin-top:6px;">#B7791F / #FDF3E2</div>
+      </div>
+      <div style="border:1px solid #E4E1E3; border-radius:8px; background:#fff; padding:14px;">
+        <div style="display:flex; gap:8px; margin-bottom:10px;"><span style="width:26px; height:26px; border-radius:6px; background:#017E84;"></span><span style="width:26px; height:26px; border-radius:6px; background:#E4F1F2;"></span></div>
+        <div style="font-size:13px; font-weight:600;">Information</div>
+        <div style="font-size:12px; color:#6B6469; line-height:1.45;">Échéance à surveiller, base légale, explication.</div>
+        <div style="font-family:'IBM Plex Mono',monospace; font-size:11px; color:#6E666C; margin-top:6px;">#017E84 / #E4F1F2</div>
+      </div>
+      <div style="border:1px solid #E4E1E3; border-radius:8px; background:#fff; padding:14px;">
+        <div style="display:flex; gap:8px; margin-bottom:10px;"><span style="width:26px; height:26px; border-radius:6px; background:#1E7E34;"></span><span style="width:26px; height:26px; border-radius:6px; background:#E8F5EA;"></span></div>
+        <div style="font-size:13px; font-weight:600;">Conforme</div>
+        <div style="font-size:12px; color:#6B6469; line-height:1.45;">Contrôle passé, obligation traitée.</div>
+        <div style="font-family:'IBM Plex Mono',monospace; font-size:11px; color:#6E666C; margin-top:6px;">#1E7E34 / #E8F5EA</div>
+      </div>
+    </div>
+  </section>
+
+  <section style="padding-top:56px;">
+    <div style="display:flex; align-items:baseline; gap:14px; margin-bottom:20px;">
+      <span style="font-family:'IBM Plex Mono', monospace; font-size:12px; color:#6E666C;">02</span>
+      <h2 style="margin:0; font-size:24px; font-weight:700; letter-spacing:-0.4px;">Typographie</h2>
+    </div>
+    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(300px,1fr)); gap:16px;">
+      <div style="background:#fff; border:1px solid #E4E1E3; border-radius:10px; padding:24px;">
+        <div style="font-size:12px; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:#6E666C; margin-bottom:16px;">Public Sans — interface</div>
+        <div style="display:flex; flex-direction:column; gap:14px;">
+          <div><div style="font-size:32px; font-weight:700; letter-spacing:-0.6px; line-height:1.15;">Titre d'écran</div><div style="font-family:'IBM Plex Mono',monospace; font-size:11px; color:#6E666C;">32 / 700 / -0.6</div></div>
+          <div><div style="font-size:20px; font-weight:600; letter-spacing:-0.2px;">Titre de section</div><div style="font-family:'IBM Plex Mono',monospace; font-size:11px; color:#6E666C;">20 / 600</div></div>
+          <div><div style="font-size:14px; font-weight:600;">Libellé de champ</div><div style="font-family:'IBM Plex Mono',monospace; font-size:11px; color:#6E666C;">14 / 600</div></div>
+          <div><div style="font-size:14px; line-height:1.6; color:#4A4348;">Texte courant — la densité prime : un gestionnaire lit 200 lignes par jour, pas une page marketing.</div><div style="font-family:'IBM Plex Mono',monospace; font-size:11px; color:#6E666C;">14 / 400 / 1.6</div></div>
+          <div><div style="font-size:12px; color:#6B6469;">Légende et aide contextuelle</div><div style="font-family:'IBM Plex Mono',monospace; font-size:11px; color:#6E666C;">12 / 400</div></div>
+        </div>
+      </div>
+      <div style="background:#fff; border:1px solid #E4E1E3; border-radius:10px; padding:24px;">
+        <div style="font-size:12px; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:#6E666C; margin-bottom:16px;">IBM Plex Mono — chiffres et droit</div>
+        <div style="display:flex; flex-direction:column; gap:14px;">
+          <div><div style="font-family:'IBM Plex Mono',monospace; font-size:24px; font-weight:500; letter-spacing:-0.5px;">2 771,33 €</div><div style="font-family:'IBM Plex Mono',monospace; font-size:11px; color:#6E666C;">Montants, taux, compteurs</div></div>
+          <div><div style="font-family:'IBM Plex Mono',monospace; font-size:13px; color:#714B67;">art. L.211-12 · Code du travail</div><div style="font-family:'IBM Plex Mono',monospace; font-size:11px; color:#6E666C;">Références légales</div></div>
+          <div><div style="font-family:'IBM Plex Mono',monospace; font-size:13px; color:#4A4348;">1990 12 34 567 · matricule</div><div style="font-family:'IBM Plex Mono',monospace; font-size:11px; color:#6E666C;">Identifiants et matricules</div></div>
+          <div style="border-top:1px dashed #E4E1E3; padding-top:14px; font-size:13px; line-height:1.6; color:#6B6469;">Règle : tout ce qui doit être vérifié caractère par caractère passe en mono. Tout ce qui se lit en diagonale reste en Public Sans.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section style="padding-top:56px;">
+    <div style="display:flex; align-items:baseline; gap:14px; margin-bottom:20px;">
+      <span style="font-family:'IBM Plex Mono', monospace; font-size:12px; color:#6E666C;">03</span>
+      <h2 style="margin:0; font-size:24px; font-weight:700; letter-spacing:-0.4px;">Boutons</h2>
+    </div>
+    <div style="background:#fff; border:1px solid #E4E1E3; border-radius:10px; padding:28px; display:flex; flex-direction:column; gap:26px;">
+      <div style="display:flex; flex-wrap:wrap; align-items:center; gap:12px;">
+        <button style="font-family:inherit; font-size:14px; font-weight:600; color:#fff; background:#714B67; border:1px solid #714B67; border-radius:5px; padding:9px 18px; cursor:pointer; min-height:40px;" style-hover="background:#5C3D54; border-color:#5C3D54;">Enregistrer</button>
+        <button style="font-family:inherit; font-size:14px; font-weight:600; color:#017E84; background:#fff; border:1px solid #017E84; border-radius:5px; padding:9px 18px; cursor:pointer; min-height:40px;" style-hover="background:#E4F1F2;">Publier le planning</button>
+        <button style="font-family:inherit; font-size:14px; font-weight:500; color:#4A4348; background:#fff; border:1px solid #D6D2D4; border-radius:5px; padding:9px 18px; cursor:pointer; min-height:40px;" style-hover="background:#F6F5F6;">Annuler</button>
+        <button style="font-family:inherit; font-size:14px; font-weight:600; color:#C0392B; background:#fff; border:1px solid #E8C4BF; border-radius:5px; padding:9px 18px; cursor:pointer; min-height:40px;" style-hover="background:#FBEAE8;">Supprimer</button>
+        <button style="font-family:inherit; font-size:14px; font-weight:600; color:#6E666C; background:#F1EFF0; border:1px solid #E4E1E3; border-radius:5px; padding:9px 18px; min-height:40px;">Publier (bloqué)</button>
+      </div>
+      <div style="display:flex; flex-wrap:wrap; align-items:center; gap:12px; padding-top:22px; border-top:1px solid #EFEDEE;">
+        <button style="font-family:inherit; font-size:13px; font-weight:600; color:#fff; background:#714B67; border:1px solid #714B67; border-radius:4px; padding:6px 13px; cursor:pointer; min-height:32px;">Compact 32</button>
+        <button style="font-family:inherit; font-size:14px; font-weight:600; color:#fff; background:#714B67; border:1px solid #714B67; border-radius:5px; padding:9px 18px; cursor:pointer; min-height:40px;">Standard 40</button>
+        <button style="font-family:inherit; font-size:15px; font-weight:600; color:#fff; background:#714B67; border:1px solid #714B67; border-radius:6px; padding:13px 26px; cursor:pointer; min-height:48px;">Large 48 · mobile</button>
+        <span style="font-size:12px; color:#6E666C; max-width:34ch; line-height:1.5;">Sur l'espace salarié mobile, aucune cible sous 44 px.</span>
+      </div>
+    </div>
+  </section>
+
+  <section style="padding-top:56px;">
+    <div style="display:flex; align-items:baseline; gap:14px; margin-bottom:20px;">
+      <span style="font-family:'IBM Plex Mono', monospace; font-size:12px; color:#6E666C;">04</span>
+      <h2 style="margin:0; font-size:24px; font-weight:700; letter-spacing:-0.4px;">Champs et sélecteurs</h2>
+    </div>
+    <div style="background:#fff; border:1px solid #E4E1E3; border-radius:10px; padding:28px; display:grid; grid-template-columns:repeat(auto-fit, minmax(260px,1fr)); gap:24px;">
+      <div style="display:flex; flex-direction:column; gap:6px;">
+        <label style="font-size:13px; font-weight:600; color:#3A3438;">Raison sociale</label>
+        <div style="border:1px solid #D6D2D4; border-radius:5px; padding:10px 12px; font-size:14px; color:#1F2937; background:#fff;">Brasserie du Glacis Sàrl</div>
+        <span style="font-size:12px; color:#6E666C;">Champ au repos</span>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:6px;">
+        <label style="font-size:13px; font-weight:600; color:#3A3438;">Matricule CCSS</label>
+        <div style="border:1px solid #714B67; box-shadow:0 0 0 3px rgba(113,75,103,0.14); border-radius:5px; padding:10px 12px; font-family:'IBM Plex Mono',monospace; font-size:14px; color:#1F2937; background:#fff;">2019 24 15 883<span style="color:#714B67;">|</span></div>
+        <span style="font-size:12px; color:#6E666C;">Focus — 13 chiffres, clé vérifiée</span>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:6px;">
+        <label style="font-size:13px; font-weight:600; color:#3A3438;">Matricule national</label>
+        <div style="border:1px solid #C0392B; border-radius:5px; padding:10px 12px; font-family:'IBM Plex Mono',monospace; font-size:14px; color:#1F2937; background:#FEF8F7;">1988 09 22 104</div>
+        <span style="font-size:12px; color:#C0392B; font-weight:500;">Clé de contrôle invalide.</span>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:6px;">
+        <label style="font-size:13px; font-weight:600; color:#3A3438;">Convention collective</label>
+        <div style="border:1px solid #D6D2D4; border-radius:5px; padding:10px 12px; font-size:14px; background:#fff; display:flex; justify-content:space-between; align-items:center;"><span>CCT HORECA 2025-2027</span><span style="color:#6E666C; font-size:11px;">▾</span></div>
+        <span style="font-size:12px; color:#6E666C;">Select</span>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:6px;">
+        <label style="font-size:13px; font-weight:600; color:#3A3438;">Classe d'impôt</label>
+        <div style="display:flex; gap:0; border:1px solid #D6D2D4; border-radius:5px; overflow:hidden; width:fit-content;">
+          <span style="padding:9px 18px; font-size:14px; font-weight:600; background:#714B67; color:#fff;">1</span>
+          <span style="padding:9px 18px; font-size:14px; color:#4A4348; border-left:1px solid #D6D2D4;">1a</span>
+          <span style="padding:9px 18px; font-size:14px; color:#4A4348; border-left:1px solid #D6D2D4;">2</span>
+        </div>
+        <span style="font-size:12px; color:#6E666C;">Groupe segmenté</span>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:6px;">
+        <label style="font-size:13px; font-weight:600; color:#3A3438;">Statut de résidence</label>
+        <div style="display:flex; flex-direction:column; gap:8px; padding-top:4px;">
+          <span style="display:flex; align-items:center; gap:9px; font-size:14px;"><span style="width:16px; height:16px; border-radius:50%; border:5px solid #714B67; background:#fff; box-sizing:border-box;"></span>Résident</span>
+          <span style="display:flex; align-items:center; gap:9px; font-size:14px; color:#4A4348;"><span style="width:16px; height:16px; border-radius:50%; border:1px solid #C9C4C7; background:#fff; box-sizing:border-box;"></span>Frontalier (FR / BE / DE)</span>
+        </div>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:6px;">
+        <label style="font-size:13px; font-weight:600; color:#3A3438;">Champ verrouillé</label>
+        <div style="border:1px solid #E4E1E3; border-radius:5px; padding:10px 12px; font-size:14px; color:#6E666C; background:#F6F5F6;">Indice 992,24 — depuis le 01.06.2026</div>
+        <span style="font-size:12px; color:#6E666C;">Lu dans le référentiel, non éditable ici</span>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:6px;">
+        <label style="font-size:13px; font-weight:600; color:#3A3438;">Salaire mensuel brut</label>
+        <div style="border:1px solid #D6D2D4; border-radius:5px; display:flex; align-items:stretch; overflow:hidden; background:#fff;">
+          <span style="flex:1; padding:10px 12px; font-family:'IBM Plex Mono',monospace; font-size:14px;">3 400,00</span>
+          <span style="padding:10px 14px; background:#F6F5F6; border-left:1px solid #E4E1E3; font-size:14px; color:#6B6469;">€</span>
+        </div>
+        <span style="font-size:12px; color:#1E7E34; font-weight:500;">≥ SSM qualifié (3 325,59 €) et ≥ grille CCT.</span>
+      </div>
+    </div>
+  </section>
+
+  <section style="padding-top:56px;">
+    <div style="display:flex; align-items:baseline; gap:14px; margin-bottom:20px;">
+      <span style="font-family:'IBM Plex Mono', monospace; font-size:12px; color:#6E666C;">05</span>
+      <h2 style="margin:0; font-size:24px; font-weight:700; letter-spacing:-0.4px;">Badges et alertes de conformité</h2>
+    </div>
+    <div style="background:#fff; border:1px solid #E4E1E3; border-radius:10px; padding:28px; display:flex; flex-direction:column; gap:24px;">
+      <div style="display:flex; flex-wrap:wrap; gap:9px;">
+        <span style="font-size:12px; font-weight:600; padding:4px 10px; border-radius:12px; background:#FBEAE8; color:#A5302A;">Bloquant</span>
+        <span style="font-size:12px; font-weight:600; padding:4px 10px; border-radius:12px; background:#FDF3E2; color:#8C5C13;">Avertissement</span>
+        <span style="font-size:12px; font-weight:600; padding:4px 10px; border-radius:12px; background:#E4F1F2; color:#01646A;">À surveiller</span>
+        <span style="font-size:12px; font-weight:600; padding:4px 10px; border-radius:12px; background:#E8F5EA; color:#186429;">Conforme</span>
+        <span style="font-size:12px; font-weight:600; padding:4px 10px; border-radius:12px; background:#F3ECF1; color:#5C3D54;">En essai</span>
+        <span style="font-size:12px; font-weight:600; padding:4px 10px; border-radius:12px; background:#F1EFF0; color:#5B5459;">Brouillon</span>
+        <span style="font-size:12px; font-weight:600; padding:4px 10px; border-radius:12px; background:#F1EFF0; color:#5B5459; display:inline-flex; align-items:center; gap:6px;"><span style="width:6px; height:6px; border-radius:50%; background:#6E666C;"></span>Non publié</span>
+        <span style="font-size:12px; font-weight:600; padding:4px 10px; border-radius:12px; background:#E8F5EA; color:#186429; display:inline-flex; align-items:center; gap:6px;"><span style="width:6px; height:6px; border-radius:50%; background:#1E7E34;"></span>Publié</span>
+      </div>
+
+      <div style="display:flex; gap:14px; padding:16px 18px; border-radius:8px; background:#FBEAE8; border-left:4px solid #C0392B;">
+        <span style="font-size:15px; font-weight:700; color:#C0392B; line-height:1.4;">!</span>
+        <div style="display:flex; flex-direction:column; gap:6px;">
+          <div style="font-size:14px; font-weight:700; color:#8E2A22;">Repos journalier de 11 h non respecté — Marta Ferreira, nuit du 14 au 15 octobre</div>
+          <div style="font-size:13px; line-height:1.55; color:#7A3E38;">Fin de service 23:30, reprise 07:00 : 7 h 30 de repos. Le planning ne peut pas être publié tant que la violation subsiste.</div>
+          <div style="display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-top:2px;">
+            <span style="font-family:'IBM Plex Mono',monospace; font-size:12px; color:#8E2A22; background:#F6D9D5; padding:3px 8px; border-radius:4px;">art. L.211-16</span>
+            <a href="#" style="font-size:13px; font-weight:600; color:#8E2A22;">Voir la règle et sa source</a>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex; gap:14px; padding:16px 18px; border-radius:8px; background:#FDF3E2; border-left:4px solid #B7791F;">
+        <span style="font-size:15px; font-weight:700; color:#B7791F; line-height:1.4;">▲</span>
+        <div style="display:flex; flex-direction:column; gap:6px;">
+          <div style="font-size:14px; font-weight:700; color:#7D5312;">Effectif à 13 salariés — seuil de la délégation du personnel proche</div>
+          <div style="font-size:13px; line-height:1.55; color:#7D5312;">À 15 salariés sur les 12 mois de référence, la mise en place d'une délégation devient obligatoire, avec élections dans les délais légaux.</div>
+          <span style="font-family:'IBM Plex Mono',monospace; font-size:12px; color:#7D5312; background:#F7E6C4; padding:3px 8px; border-radius:4px; width:fit-content;">art. L.412-1</span>
+        </div>
+      </div>
+
+      <div style="display:flex; gap:14px; padding:16px 18px; border-radius:8px; background:#E4F1F2; border-left:4px solid #017E84;">
+        <span style="font-size:15px; font-weight:700; color:#017E84; line-height:1.4;">i</span>
+        <div style="display:flex; flex-direction:column; gap:4px;">
+          <div style="font-size:14px; font-weight:700; color:#01585D;">Arbitrage appliqué : la CCT l'emporte sur la loi</div>
+          <div style="font-size:13px; line-height:1.55; color:#125D61;">Congé annuel retenu : 28 jours (CCT HORECA) contre 26 jours (minimum légal). La disposition la plus favorable au salarié est appliquée.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section style="padding-top:56px;">
+    <div style="display:flex; align-items:baseline; gap:14px; margin-bottom:20px;">
+      <span style="font-family:'IBM Plex Mono', monospace; font-size:12px; color:#6E666C;">06</span>
+      <h2 style="margin:0; font-size:24px; font-weight:700; letter-spacing:-0.4px;">Bloc « base légale »</h2>
+    </div>
+    <p style="margin:0 0 18px; max-width:70ch; font-size:14px; line-height:1.6; color:#5B5459;">Le composant signature du produit. Il accompagne toute valeur retenue, toute alerte, toute ligne de calcul : la règle, sa source, la valeur utilisée, sa date de validité.</p>
+    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(320px,1fr)); gap:16px;">
+      <div style="background:#fff; border:1px solid #E4E1E3; border-radius:10px; padding:20px; display:flex; flex-direction:column; gap:12px;">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span style="width:22px; height:22px; border-radius:4px; background:#F3ECF1; color:#714B67; font-size:12px; font-weight:700; display:flex; align-items:center; justify-content:center;">§</span>
+          <span style="font-size:12px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:#6E666C;">Base légale</span>
+        </div>
+        <div style="font-family:'IBM Plex Mono',monospace; font-size:14px; color:#714B67; font-weight:500;">art. L.211-12 — Code du travail</div>
+        <div style="font-size:13px; line-height:1.6; color:#4A4348;">La durée de travail ne peut excéder 10 heures par jour ni 48 heures par semaine.</div>
+        <div style="display:flex; flex-wrap:wrap; gap:16px; padding-top:12px; border-top:1px solid #EFEDEE;">
+          <div><div style="font-size:11px; color:#6E666C;">Valeur utilisée</div><div style="font-family:'IBM Plex Mono',monospace; font-size:13px; font-weight:500;">10 h / jour</div></div>
+          <div><div style="font-size:11px; color:#6E666C;">Validité</div><div style="font-family:'IBM Plex Mono',monospace; font-size:13px; font-weight:500;">depuis 01.01.2024</div></div>
+          <div><div style="font-size:11px; color:#6E666C;">Source</div><div style="font-size:13px;"><a href="#">Legilux</a></div></div>
+        </div>
+      </div>
+      <div style="background:#fff; border:1px solid #E4E1E3; border-radius:10px; padding:20px; display:flex; flex-direction:column; gap:12px;">
+        <div style="font-size:12px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:#6E666C;">Hiérarchie des normes</div>
+        <div style="display:flex; flex-direction:column; gap:1px; background:#EFEDEE; border:1px solid #EFEDEE; border-radius:6px; overflow:hidden;">
+          <div style="display:flex; justify-content:space-between; padding:10px 12px; background:#fff; font-size:13px;"><span style="color:#5B5459;">Code du travail</span><span style="font-family:'IBM Plex Mono',monospace;">26 jours</span></div>
+          <div style="display:flex; justify-content:space-between; padding:10px 12px; background:#E8F5EA; font-size:13px;"><span style="color:#186429; font-weight:600;">CCT HORECA · retenu</span><span style="font-family:'IBM Plex Mono',monospace; font-weight:600; color:#186429;">28 jours</span></div>
+          <div style="display:flex; justify-content:space-between; padding:10px 12px; background:#fff; font-size:13px;"><span style="color:#5B5459;">Contrat individuel</span><span style="font-family:'IBM Plex Mono',monospace;">non stipulé</span></div>
+        </div>
+        <div style="font-size:12px; color:#6B6469; line-height:1.55;">Loi → CCT → contrat, la plus favorable au salarié l'emporte, et l'application dit laquelle a gagné.</div>
+      </div>
+    </div>
+  </section>
+
+  <section style="padding-top:56px;">
+    <div style="display:flex; align-items:baseline; gap:14px; margin-bottom:20px;">
+      <span style="font-family:'IBM Plex Mono', monospace; font-size:12px; color:#6E666C;">07</span>
+      <h2 style="margin:0; font-size:24px; font-weight:700; letter-spacing:-0.4px;">Tableaux et listes</h2>
+    </div>
+    <div style="background:#fff; border:1px solid #E4E1E3; border-radius:10px; overflow:hidden;">
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; padding:14px 18px; border-bottom:1px solid #EFEDEE;">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div style="border:1px solid #D6D2D4; border-radius:5px; padding:7px 12px; font-size:13px; color:#6E666C; min-width:220px;">Rechercher un salarié…</div>
+          <span style="font-size:12px; font-weight:600; padding:5px 11px; border-radius:5px; background:#F3ECF1; color:#5C3D54;">Contrat actif ×</span>
+        </div>
+        <span style="font-size:13px; color:#6E666C;">14 salariés</span>
+      </div>
+      <div style="display:grid; grid-template-columns:2.2fr 1.4fr 1fr 1.2fr 1fr; padding:10px 18px; background:#FAF9FA; border-bottom:1px solid #EFEDEE; font-size:11px; font-weight:700; letter-spacing:0.07em; text-transform:uppercase; color:#6E666C;">
+        <span>Salarié</span><span>Poste</span><span>Contrat</span><span>Échéance</span><span>Conformité</span>
+      </div>
+      <div style="display:grid; grid-template-columns:2.2fr 1.4fr 1fr 1.2fr 1fr; padding:13px 18px; border-bottom:1px solid #F2F0F1; font-size:14px; align-items:center;">
+        <span style="display:flex; align-items:center; gap:10px;"><span style="width:28px; height:28px; border-radius:50%; background:#F3ECF1; color:#714B67; font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center;">MF</span>Marta Ferreira</span>
+        <span style="color:#4A4348;">Cheffe de rang</span><span style="color:#4A4348;">CDI</span>
+        <span style="font-family:'IBM Plex Mono',monospace; font-size:13px; color:#4A4348;">—</span>
+        <span><span style="font-size:12px; font-weight:600; padding:4px 10px; border-radius:12px; background:#E8F5EA; color:#186429;">Conforme</span></span>
+      </div>
+      <div style="display:grid; grid-template-columns:2.2fr 1.4fr 1fr 1.2fr 1fr; padding:13px 18px; border-bottom:1px solid #F2F0F1; font-size:14px; align-items:center; background:#FDFCFD;">
+        <span style="display:flex; align-items:center; gap:10px;"><span style="width:28px; height:28px; border-radius:50%; background:#F3ECF1; color:#714B67; font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center;">JK</span>Jonas Klein</span>
+        <span style="color:#4A4348;">Commis de cuisine</span><span style="color:#4A4348;">CDD</span>
+        <span style="font-family:'IBM Plex Mono',monospace; font-size:13px; color:#8C5C13;">31.10.2026</span>
+        <span><span style="font-size:12px; font-weight:600; padding:4px 10px; border-radius:12px; background:#FDF3E2; color:#8C5C13;">2e renouvellement</span></span>
+      </div>
+      <div style="display:grid; grid-template-columns:2.2fr 1.4fr 1fr 1.2fr 1fr; padding:13px 18px; font-size:14px; align-items:center;">
+        <span style="display:flex; align-items:center; gap:10px;"><span style="width:28px; height:28px; border-radius:50%; background:#F3ECF1; color:#714B67; font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center;">AD</span>Aïcha Diallo</span>
+        <span style="color:#4A4348;">Réceptionniste</span><span style="color:#4A4348;">CDI</span>
+        <span style="font-family:'IBM Plex Mono',monospace; font-size:13px; color:#A5302A;">essai · 22.09.2026</span>
+        <span><span style="font-size:12px; font-weight:600; padding:4px 10px; border-radius:12px; background:#FBEAE8; color:#A5302A;">Échéance proche</span></span>
+      </div>
+    </div>
+    <p style="margin:12px 0 0; font-size:12px; color:#6E666C;">Lignes de 46 px, alternance légère, colonne de conformité toujours à droite — c'est la colonne qu'on scanne.</p>
+  </section>
+
+  <section style="padding-top:56px;">
+    <div style="display:flex; align-items:baseline; gap:14px; margin-bottom:20px;">
+      <span style="font-family:'IBM Plex Mono', monospace; font-size:12px; color:#6E666C;">08</span>
+      <h2 style="margin:0; font-size:24px; font-weight:700; letter-spacing:-0.4px;">Cartes et panneaux</h2>
+    </div>
+    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(250px,1fr)); gap:16px;">
+      <div style="background:#fff; border:1px solid #E4E1E3; border-radius:10px; padding:20px;">
+        <div style="font-size:12px; font-weight:600; letter-spacing:0.07em; text-transform:uppercase; color:#6E666C; margin-bottom:10px;">Compteur</div>
+        <div style="font-family:'IBM Plex Mono',monospace; font-size:34px; font-weight:500; letter-spacing:-1px; line-height:1;">13<span style="font-size:18px; color:#6E666C;"> / 15</span></div>
+        <div style="font-size:13px; color:#5B5459; margin-top:8px; line-height:1.5;">Effectif sur 12 mois de référence</div>
+        <div style="height:6px; border-radius:3px; background:#F1EFF0; margin-top:12px; overflow:hidden;"><div style="width:87%; height:100%; background:#B7791F;"></div></div>
+      </div>
+      <div style="background:#fff; border:1px solid #E4E1E3; border-radius:10px; padding:20px;">
+        <div style="font-size:12px; font-weight:600; letter-spacing:0.07em; text-transform:uppercase; color:#6E666C; margin-bottom:10px;">Carte d'échéance</div>
+        <div style="font-size:15px; font-weight:600; line-height:1.4;">Dernier jour pour notifier la rupture d'essai</div>
+        <div style="font-family:'IBM Plex Mono',monospace; font-size:20px; color:#A5302A; margin-top:8px;">15.09.2026</div>
+        <div style="font-size:13px; color:#5B5459; margin-top:4px;">Aïcha Diallo · dans 6 jours</div>
+      </div>
+      <div style="background:#5C3D54; border-radius:10px; padding:20px; color:#fff;">
+        <div style="font-size:12px; font-weight:600; letter-spacing:0.07em; text-transform:uppercase; color:#D8C6D2; margin-bottom:10px;">Panneau d'accent</div>
+        <div style="font-size:15px; line-height:1.5; color:#F4EDF2;">Réservé aux totaux de synthèse et aux en-têtes de simulation. Un seul par écran.</div>
+      </div>
+      <div style="background:#fff; border:1px dashed #D6D2D4; border-radius:10px; padding:20px;">
+        <div style="font-size:12px; font-weight:600; letter-spacing:0.07em; text-transform:uppercase; color:#6E666C; margin-bottom:10px;">Zone d'ajout</div>
+        <div style="font-size:14px; color:#6B6469; line-height:1.5;">+ Ajouter un shift, un avenant, une règle de CCT</div>
+      </div>
+    </div>
+  </section>
+
+  <section style="padding-top:56px;">
+    <div style="display:flex; align-items:baseline; gap:14px; margin-bottom:20px;">
+      <span style="font-family:'IBM Plex Mono', monospace; font-size:12px; color:#6E666C;">09</span>
+      <h2 style="margin:0; font-size:24px; font-weight:700; letter-spacing:-0.4px;">Shell d'application</h2>
+    </div>
+    <div style="background:#fff; border:1px solid #E4E1E3; border-radius:10px; overflow:hidden;">
+      <div style="display:flex; align-items:center; justify-content:space-between; background:#714B67; padding:0 18px; height:48px;">
+        <div style="display:flex; align-items:center; gap:22px;">
+          <span style="color:#fff; font-weight:700; font-size:15px; letter-spacing:-0.3px;">LuxRH</span>
+          <div style="display:flex; gap:2px;">
+            <span style="color:#fff; font-size:13.5px; font-weight:600; padding:6px 12px; border-radius:4px; background:rgba(255,255,255,0.16);">Planning</span>
+            <span style="color:#EADFE6; font-size:13.5px; padding:6px 12px;">Employés</span>
+            <span style="color:#EADFE6; font-size:13.5px; padding:6px 12px;">Contrats</span>
+            <span style="color:#EADFE6; font-size:13.5px; padding:6px 12px;">Congés</span>
+            <span style="color:#EADFE6; font-size:13.5px; padding:6px 12px;">Vigilance</span>
+          </div>
+        </div>
+        <div style="display:flex; align-items:center; gap:14px;">
+          <span style="display:flex; align-items:center; gap:7px; background:rgba(255,255,255,0.13); color:#fff; font-size:13px; padding:5px 11px; border-radius:4px;">Brasserie du Glacis <span style="color:#D8C6D2; font-size:10px;">▾</span></span>
+          <span style="position:relative; color:#fff; font-size:13px;">Alertes<span style="position:absolute; top:-6px; right:-12px; background:#C0392B; color:#fff; font-size:10px; font-weight:700; border-radius:9px; padding:1px 5px;">4</span></span>
+          <span style="width:26px; height:26px; border-radius:50%; background:#F3ECF1; color:#714B67; font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center;">SL</span>
+        </div>
+      </div>
+      <div style="display:flex; min-height:170px;">
+        <div style="width:210px; border-right:1px solid #EFEDEE; padding:14px 10px; display:flex; flex-direction:column; gap:2px; background:#FAF9FA;">
+          <span style="font-size:11px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:#6E666C; padding:6px 10px;">Exploitation</span>
+          <span style="font-size:13.5px; font-weight:600; color:#714B67; background:#F3ECF1; padding:8px 10px; border-radius:5px;">Grille hebdomadaire</span>
+          <span style="font-size:13.5px; color:#4A4348; padding:8px 10px;">Modèles de shifts</span>
+          <span style="font-size:13.5px; color:#4A4348; padding:8px 10px;">Registre du temps</span>
+          <span style="font-size:13.5px; color:#4A4348; padding:8px 10px; display:flex; justify-content:space-between; align-items:center;">Demandes<span style="background:#C0392B; color:#fff; font-size:10px; font-weight:700; border-radius:9px; padding:1px 6px;">3</span></span>
+        </div>
+        <div style="flex:1; padding:20px 22px;">
+          <div style="display:flex; align-items:center; gap:8px; font-size:12px; color:#6E666C; margin-bottom:10px;"><span>Brasserie du Glacis</span><span>›</span><span>Planning</span><span>›</span><span style="color:#4A4348;">Semaine 42</span></div>
+          <h3 style="margin:0 0 6px; font-size:22px; font-weight:700; letter-spacing:-0.4px;">Zone de contenu</h3>
+          <p style="margin:0; font-size:14px; color:#5B5459; line-height:1.6; max-width:60ch;">Barre violette pour l'identité et la société active, rail gris clair pour le module, fil d'Ariane systématique en multi-sociétés : on doit toujours savoir dans quel dossier client on travaille.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section style="padding-top:56px;">
+    <div style="display:flex; align-items:baseline; gap:14px; margin-bottom:20px;">
+      <span style="font-family:'IBM Plex Mono', monospace; font-size:12px; color:#6E666C;">10</span>
+      <h2 style="margin:0; font-size:24px; font-weight:700; letter-spacing:-0.4px;">États vides et chargement</h2>
+    </div>
+    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(300px,1fr)); gap:16px;">
+      <div style="background:#fff; border:1px solid #E4E1E3; border-radius:10px; padding:34px 26px; display:flex; flex-direction:column; align-items:center; text-align:center; gap:10px;">
+        <div style="width:46px; height:46px; border-radius:10px; background:#F3ECF1; display:flex; align-items:center; justify-content:center; color:#714B67; font-size:20px;">+</div>
+        <div style="font-size:16px; font-weight:600;">Aucun shift cette semaine</div>
+        <div style="font-size:13.5px; color:#5B5459; line-height:1.55; max-width:38ch;">Partez d'un modèle de shift ou dupliquez la semaine précédente. Les congés et jours fériés sont déjà positionnés.</div>
+        <div style="display:flex; gap:10px; margin-top:6px;">
+          <button style="font-family:inherit; font-size:13px; font-weight:600; color:#fff; background:#714B67; border:1px solid #714B67; border-radius:5px; padding:8px 15px; cursor:pointer;">Dupliquer S41</button>
+          <button style="font-family:inherit; font-size:13px; font-weight:500; color:#4A4348; background:#fff; border:1px solid #D6D2D4; border-radius:5px; padding:8px 15px; cursor:pointer;">Modèles</button>
+        </div>
+      </div>
+      <div style="background:#fff; border:1px solid #E4E1E3; border-radius:10px; padding:24px;">
+        <div style="font-size:12px; font-weight:600; letter-spacing:0.07em; text-transform:uppercase; color:#6E666C; margin-bottom:16px;">Chargement — squelette</div>
+        <div style="display:flex; flex-direction:column; gap:12px;">
+          <div style="height:14px; width:62%; border-radius:4px; background:linear-gradient(90deg,#F1EFF0 25%,#E7E4E6 50%,#F1EFF0 75%); background-size:320px 100%; animation:lux-shimmer 1.3s infinite linear;"></div>
+          <div style="height:14px; width:88%; border-radius:4px; background:linear-gradient(90deg,#F1EFF0 25%,#E7E4E6 50%,#F1EFF0 75%); background-size:320px 100%; animation:lux-shimmer 1.3s infinite linear;"></div>
+          <div style="height:14px; width:44%; border-radius:4px; background:linear-gradient(90deg,#F1EFF0 25%,#E7E4E6 50%,#F1EFF0 75%); background-size:320px 100%; animation:lux-shimmer 1.3s infinite linear;"></div>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px; margin-top:22px; padding-top:18px; border-top:1px solid #EFEDEE;">
+          <span style="width:18px; height:18px; border-radius:50%; border:2px solid #E4E1E3; border-top-color:#714B67; animation:lux-spin 0.8s linear infinite; display:inline-block;"></span>
+          <span style="font-size:13px; color:#5B5459;">Validation légale du planning en cours…</span>
+        </div>
+        <div style="display:flex; gap:12px; margin-top:18px; padding:12px 14px; border-radius:8px; background:#FBEAE8;">
+          <span style="font-size:13px; color:#8E2A22; line-height:1.5;"><strong>Échec du calcul du solde.</strong> Paramètre CCT manquant pour la période. Aucune erreur silencieuse : l'écran dit quoi, pourquoi, et quoi faire.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer style="margin-top:64px; padding:20px 22px; border-radius:10px; background:#F1EFF0; border:1px solid #E4E1E3;">
+    <p style="margin:0; font-size:13px; line-height:1.6; color:#5B5459;">Mention obligatoire à reprendre sur tout écran à conséquence juridique : <em>« LuxRH est un outil d'aide à la décision. Il ne se substitue pas à un conseil juridique. »</em></p>
+  </footer>
+
+</div>
+
+</x-dc>
+</body>
+</html>

@@ -1,0 +1,17 @@
+# Dépendances
+node_modules/
+.venv/
+__pycache__/
+*.pyc
+
+# Sorties de build
+dist/
+.vite/
+
+# Secrets et configuration locale — ce dépôt est public
+.env
+.env.local
+*.local
+
+# Artefacts de l'outil de conception
+.thumbnail
