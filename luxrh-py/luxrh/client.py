@@ -13,6 +13,9 @@ from typing import Any
 
 import streamlit as st
 from supabase import Client, create_client
+# Le client synchrone exige SyncClientOptions : la classe de base ClientOptions
+# ne porte pas l'attribut `storage` qu'il attend.
+from supabase.lib.client_options import SyncClientOptions
 
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -42,7 +45,17 @@ def _base_client() -> Client:
             "Configuration Supabase manquante : renseignez VITE_SUPABASE_URL et "
             "VITE_SUPABASE_ANON_KEY dans luxrh-py/.env ou dans luxrh/.env.local."
         )
-    return create_client(url, key)
+    # PKCE renvoie le jeton de confirmation en paramètre de requête (`?code=`).
+    # Streamlit ne peut pas lire un fragment d'URL (`#...`) : le navigateur ne le
+    # transmet jamais au serveur. Sans PKCE, aucun lien de confirmation n'est
+    # exploitable ici.
+    return create_client(url, key, options=SyncClientOptions(flow_type="pkce"))
+
+
+def app_url() -> str:
+    """URL de retour des liens de confirmation, à autoriser côté Supabase."""
+    env = _load_env()
+    return os.environ.get("LUXRH_APP_URL") or env.get("LUXRH_APP_URL") or "http://localhost:8501"
 
 
 def client() -> Client:
@@ -63,6 +76,10 @@ def client() -> Client:
 
 def sign_in(email: str, password: str) -> None:
     result = _base_client().auth.sign_in_with_password({"email": email, "password": password})
+    _store_session(result)
+
+
+def _store_session(result) -> None:
     st.session_state["session"] = {
         "access_token": result.session.access_token,
         "refresh_token": result.session.refresh_token,
@@ -72,29 +89,55 @@ def sign_in(email: str, password: str) -> None:
     st.cache_data.clear()
 
 
+class EmailAlreadyRegistered(Exception):
+    """L'adresse existe déjà : Supabase répond « succès » sans envoyer de courriel."""
+
+
 def sign_up(email: str, password: str, full_name: str, org_name: str, org_kind: str) -> bool:
-    """Retourne True si une session est ouverte immédiatement."""
+    """Ouvre un espace. Retourne True si une session est ouverte immédiatement.
+
+    Lève EmailAlreadyRegistered lorsque l'adresse est déjà prise. Supabase ne le
+    dit pas explicitement, pour ne pas révéler quels comptes existent, mais
+    renvoie alors un utilisateur dépourvu d'identité.
+    """
     result = _base_client().auth.sign_up(
         {
             "email": email,
             "password": password,
             "options": {
+                "email_redirect_to": app_url(),
                 "data": {
                     "full_name": full_name,
                     "organization_name": org_name,
                     "organization_kind": org_kind,
-                }
+                },
             },
         }
     )
+
+    if result.user and not (result.user.identities or []):
+        raise EmailAlreadyRegistered(email)
+
     if result.session:
-        st.session_state["session"] = {
-            "access_token": result.session.access_token,
-            "refresh_token": result.session.refresh_token,
-            "user_id": result.user.id,
-            "email": result.user.email,
-        }
+        _store_session(result)
         return True
+    return False
+
+
+def consume_confirmation_code() -> bool:
+    """Ouvre la session à partir du `?code=` déposé par le lien de confirmation."""
+    code = st.query_params.get("code")
+    if not code or st.session_state.get("session"):
+        return False
+    try:
+        result = _base_client().auth.exchange_code_for_session({"auth_code": code})
+        if result.session:
+            _store_session(result)
+            st.query_params.clear()
+            return True
+    except Exception as error:  # lien expiré, déjà consommé, ou autre navigateur
+        st.session_state["confirmation_error"] = str(error)
+    st.query_params.clear()
     return False
 
 

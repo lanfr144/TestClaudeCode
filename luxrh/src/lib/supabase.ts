@@ -11,8 +11,21 @@ if (!url || !key) {
 }
 
 export const supabase = createClient<Database>(url, key, {
-  auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false },
+  auth: {
+    persistSession: true,
+    autoRefreshToken: true,
+    // Le lien de confirmation renvoie vers l'application avec un jeton : sans
+    // cette option, il n'est jamais consommé et l'utilisateur reste déconnecté.
+    detectSessionInUrl: true,
+    // PKCE renvoie le jeton en paramètre de requête plutôt qu'en fragment,
+    // ce qui le rend lisible par un serveur — indispensable pour Streamlit,
+    // et plus sûr ici aussi.
+    flowType: 'pkce',
+  },
 })
+
+/** URL de retour des liens de confirmation, autorisée côté Supabase. */
+export const appUrl = () => window.location.origin
 
 /**
  * Appelle une fonction du moteur de règles. Aucune règle légale n'est évaluée

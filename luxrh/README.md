@@ -41,6 +41,51 @@ Ce sont des **comptes de démonstration, à supprimer avant toute mise en produc
 Depuis un espace vide, le bouton **« Charger le jeu de démonstration »** (écran *Sociétés*) appelle
 `fn_seed_demo()` et crée le même jeu de données.
 
+### Inscription et courriel de confirmation
+
+Deux réglages sont à faire **dans le tableau de bord Supabase** — ils ne peuvent pas être versionnés,
+car ils appartiennent au projet et non au code.
+
+**1. Où le lien de confirmation renvoie** — *Authentication → URL Configuration*
+
+| Champ | Valeur |
+|---|---|
+| Site URL | `http://localhost:5173` |
+| Redirect URLs | `http://localhost:5173/**`, `http://localhost:5174/**`, `http://localhost:8501/**` |
+
+Sans cela, le lien reçu par courriel renvoie vers la valeur par défaut `http://localhost:3000`, où
+rien n'écoute : la confirmation aboutit, mais l'utilisateur atterrit sur une page morte.
+
+Le port 5174 est celui que Vite choisit quand 5173 est déjà pris par une autre instance.
+
+**2. Envoi des courriels** — *Authentication → Emails*
+
+Le service intégré de Supabase est limité à **quelques messages par heure** et n'est pas destiné à
+la production. Pour un usage réel, renseignez votre propre SMTP.
+
+Pour le développement local, le plus simple reste de **désactiver la confirmation par courriel**
+(*Authentication → Sign In / Providers → Email → Confirm email*) : l'inscription ouvre alors la
+session immédiatement, sans aller-retour par la boîte aux lettres.
+
+#### Ce que fait l'application
+
+- Les deux clients utilisent le **flux PKCE** : le jeton revient en paramètre de requête (`?code=`)
+  et non en fragment (`#...`). C'est indispensable côté Streamlit — un fragment d'URL n'est jamais
+  transmis au serveur, donc Python ne peut pas le lire.
+- Chaque application passe sa propre URL de retour à l'inscription, plutôt que de dépendre de la
+  Site URL du projet.
+- Le lien doit être ouvert **depuis le navigateur qui a servi à l'inscription** : PKCE y conserve le
+  vérificateur. Un lien ouvert ailleurs échoue, et l'application le dit.
+
+#### Adresse déjà enregistrée
+
+Supabase répond **HTTP 200 sans envoyer de courriel** lorsque l'adresse existe déjà : c'est
+délibéré, pour ne pas révéler quels comptes existent. La réponse se distingue à sa liste
+d'identités vide et à un identifiant factice.
+
+Les deux applications détectent ce cas et l'annoncent — annoncer une création qui n'a pas eu lieu
+serait une erreur silencieuse.
+
 ### Tests
 
 ```bash

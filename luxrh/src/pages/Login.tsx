@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react'
-import { supabase } from '@/lib/supabase'
+import { appUrl, supabase } from '@/lib/supabase'
 import { Button, ErrorNote, Field, Input } from '@/components/ui'
 
 type Mode = 'signin' | 'signup'
@@ -29,6 +29,9 @@ export default function Login() {
           email,
           password,
           options: {
+            // Sans cette redirection, le lien de confirmation renvoie vers la
+            // « Site URL » du projet Supabase, qui n'est pas cette application.
+            emailRedirectTo: appUrl(),
             data: {
               full_name: fullName,
               organization_name: orgName,
@@ -37,7 +40,22 @@ export default function Login() {
           },
         })
         if (error) throw error
-        if (!data.session) setNotice('Compte créé. Confirmez votre adresse e-mail pour vous connecter.')
+
+        // Quand l'adresse est déjà enregistrée, Supabase répond « succès » sans
+        // envoyer de courriel, pour ne pas révéler quels comptes existent. Le
+        // signe distinctif est la liste d'identités vide. Le dire clairement
+        // vaut mieux que d'annoncer une création qui n'a pas eu lieu.
+        if (data.user && (data.user.identities?.length ?? 0) === 0) {
+          setError(
+            `Cette adresse est déjà enregistrée. Aucun courriel n'a été envoyé. ` +
+              `Connectez-vous, ou utilisez « mot de passe oublié » si vous l'avez perdu.`,
+          )
+        } else if (!data.session) {
+          setNotice(
+            'Compte créé. Un courriel de confirmation vient de partir : ouvrez le lien ' +
+              'depuis ce navigateur pour activer votre espace.',
+          )
+        }
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err))

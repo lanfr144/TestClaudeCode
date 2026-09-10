@@ -80,7 +80,16 @@ def login_screen() -> None:
                         if db.sign_up(email, password, full_name, org_name, org_kind):
                             st.rerun()
                         else:
-                            st.info("Compte créé. Confirmez votre adresse e-mail pour vous connecter.")
+                            st.info(
+                                "Compte créé. Un courriel de confirmation vient de partir : "
+                                f"le lien vous ramènera sur {db.app_url()}."
+                            )
+                    except db.EmailAlreadyRegistered:
+                        st.error(
+                            "Cette adresse est déjà enregistrée. Aucun courriel n’a été envoyé — "
+                            "Supabase ne le signale pas, pour ne pas révéler quels comptes "
+                            "existent. Connectez-vous avec l’onglet précédent."
+                        )
                     except Exception as error:
                         st.error(str(error))
 
@@ -176,7 +185,19 @@ def sidebar() -> str:
 
 
 def main() -> None:
+    # Le lien de confirmation renvoie ici avec un `?code=` : l'échanger contre
+    # une session ouvre directement l'espace, sans repasser par la connexion.
+    if db.consume_confirmation_code():
+        st.rerun()
+
     if not db.is_signed_in():
+        if st.session_state.get("confirmation_error"):
+            st.error(
+                "Le lien de confirmation n’a pas pu être utilisé : "
+                f"{st.session_state.pop('confirmation_error')}. "
+                "Un lien n’est valable qu’une fois, et depuis le navigateur qui a servi à "
+                "l’inscription."
+            )
         login_screen()
         return
 
