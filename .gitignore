@@ -15,3 +15,6 @@ dist/
 
 # Artefacts de l'outil de conception
 .thumbnail
+
+# Projet Node distinct, sans rapport avec LuxRH (plusieurs centaines de Mo).
+video/

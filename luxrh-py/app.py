@@ -14,6 +14,7 @@ from luxrh import client as db
 from luxrh import design as ds
 from luxrh import views_compliance as compliance
 from luxrh import views_core as core
+from luxrh import views_portability as portability
 from luxrh import views_time as timekeeping
 
 st.set_page_config(page_title="LuxRH — Assistant RH & Paie", page_icon="⚖️", layout="wide")
@@ -112,13 +113,14 @@ PAGES: dict[str, tuple[str, callable]] = {
     "companies": ("Sociétés", core.companies_view),
     "company_detail": ("Fiche société", core.company_detail),
     "referential": ("Référentiel", compliance.referential),
+    "portability": ("Portabilité", portability.portability),
 }
 
 GROUPS = [
     ("Pilotage", ["dashboard", "vigilance", "dismissal"]),
     ("Exploitation", ["planning", "overtime", "leave", "sick", "vouchers"]),
     ("Dossiers", ["employees", "employee_detail", "contracts", "premiums"]),
-    ("Administration", ["companies", "company_detail", "referential"]),
+    ("Administration", ["companies", "company_detail", "referential", "portability"]),
 ]
 
 

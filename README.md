@@ -14,9 +14,12 @@ contre le Code du travail, et un tableau de bord permanent des échéances et de
 |---|---|
 | [`luxrh/`](luxrh/) | Application **React + TypeScript** (Vite) — l'outil opérationnel |
 | [`luxrh-py/`](luxrh-py/) | Application **Python + Streamlit** — mêmes écrans, même moteur |
-| `luxrh/supabase/migrations/` | Le **moteur de règles** : 42 migrations PostgreSQL |
+| `luxrh/supabase/migrations/` | Le **moteur de règles** : 44 migrations PostgreSQL |
 | `luxrh/supabase/functions/` | Edge Function de génération des contrats en PDF |
-| `luxrh/tests/` | 128 vérifications exécutées contre l'API réelle |
+| `luxrh/tests/` | 154 vérifications exécutées contre l'API réelle |
+| [`docs/`](docs/) | Couverture du droit du travail, choix de la base de données |
+| `schema/` | Schémas Oracle et MySQL, dérivés du catalogue PostgreSQL |
+| `tools/` | Émetteur de schéma portable |
 | `PRD_LuxRH.md` | Le cahier des charges d'origine |
 | `Design System LuxRH.dc.html` · `Maquettes LuxRH.dc.html` | Design system et 14 maquettes hi-fi |
 
@@ -47,6 +50,17 @@ cd luxrh && npm install && npm run dev        # http://localhost:5173
 cd luxrh-py && .venv/Scripts/python -m streamlit run app.py   # http://localhost:8501
 ```
 
+L'application Python accepte le choix de la base par argument :
+
+```bash
+.venv/Scripts/python -m streamlit run app.py -- --db oracle --dsn hote:1521/XEPDB1 --user luxrh
+```
+
+Supabase, Oracle et MySQL portent les données ; **seul PostgreSQL porte le moteur de règles**,
+qui est écrit en PL/pgSQL. Sur les deux autres, une évaluation de règle échoue en le disant
+plutôt que de rendre une valeur vraisemblable. Le détail, et les limites à connaître — dont
+l'absence d'isolation par ligne sur MySQL — sont dans [`docs/bases-de-données.md`](docs/bases-de-donnees.md).
+
 Chaque application a son README : [React](luxrh/README.md) · [Streamlit](luxrh-py/README.md).
 
 ### Configuration
@@ -71,12 +85,20 @@ extraordinaires daté, documents à validité, travailleurs handicapés, enfants
 confidentialité, accord préalable sur les heures supplémentaires, chèques-repas, primes et leurs
 plafonds légaux.
 
+S'y ajoutent la **portabilité** — export et rechargement des données personnelles, du dossier
+d'une société, de la fiduciaire entière et du référentiel — et le **choix de la base par
+argument**.
+
 **Reste ouvert** : le calcul de paie brut → net (V2 du PRD, dont le socle est posé), la détection
 des recalculs après chargement rétroactif d'un paramètre, la facturation de la fiduciaire, l'import
 CSV de l'existant et les exports comptables.
 
-Le détail — y compris ce que le référentiel ne couvre pas encore et pourquoi aucune valeur n'a été
-inventée — est dans le [README de l'application React](luxrh/README.md).
+Ce que l'outil couvre du droit du travail et des conventions collectives, et **ce qu'il ne couvre
+pas**, est établi table par table dans
+[`docs/couverture-droit-du-travail.md`](docs/couverture-droit-du-travail.md). En bref : le cœur
+calculable est là ; manquent le barème d'impôt (la table existe, elle est vide), l'historique des
+taux CCSS, le reclassement professionnel, six congés légaux et huit clauses conventionnelles
+courantes.
 
 ---
 

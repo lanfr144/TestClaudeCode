@@ -1,7 +1,7 @@
 import { useApp } from '@/context/AppContext'
 import { useAuditLog, useLegalParameters } from '@/lib/queries'
-import { supabase } from '@/lib/supabase'
-import { Badge, Button, Card, ErrorNote, Loading, Table } from '@/components/ui'
+import { PortabilityCard } from '@/components/Portability'
+import { Badge, Card, ErrorNote, Loading, Table } from '@/components/ui'
 import { ROLE_LABEL, date, num } from '@/lib/format'
 
 /** Catégories de données et durées de conservation — registre RGPD. */
@@ -14,22 +14,6 @@ export default function Settings() {
   const { activeCompanyId, activeCompany, profile } = useApp()
   const audit = useAuditLog(activeCompanyId ?? undefined)
   const params = useLegalParameters()
-
-  async function exportMyData() {
-    const { data } = await supabase.auth.getUser()
-    const payload = {
-      exported_at: new Date().toISOString(),
-      user: { id: data.user?.id, email: data.user?.email },
-      profile,
-      note: 'Export des données personnelles au titre du droit d’accès (art. 15 RGPD).',
-    }
-    const url = URL.createObjectURL(new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' }))
-    const a = document.createElement('a')
-    a.href = url
-    a.download = 'mes-donnees-luxrh.json'
-    a.click()
-    URL.revokeObjectURL(url)
-  }
 
   return (
     <div className="space-y-4">
@@ -99,9 +83,10 @@ export default function Settings() {
             </div>
             <div>
               <p className="lux-label">Droit d’accès et d’export</p>
-              <Button size="sm" className="mt-1.5" onClick={exportMyData}>
-                Exporter mes données personnelles
-              </Button>
+              <p className="mt-1 text-xs text-ink-muted">
+                Voir la carte « Portabilité et reprise » ci-dessous : l’export est produit par le serveur,
+                qui vérifie le droit d’en faire la demande et journalise celle-ci.
+              </p>
             </div>
             <p className="text-xs text-ink-muted">
               Données hébergées dans l’Union européenne. Aucune décision automatisée à effet juridique n’est
@@ -110,6 +95,8 @@ export default function Settings() {
           </div>
         </Card>
       </div>
+
+      <PortabilityCard />
 
       <Card
         dense

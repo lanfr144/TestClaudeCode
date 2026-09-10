@@ -13,6 +13,8 @@ from typing import Any
 
 import streamlit as st
 from supabase import Client, create_client
+
+from . import backends
 # Le client synchrone exige SyncClientOptions : la classe de base ClientOptions
 # ne porte pas l'attribut `storage` qu'il attend.
 from supabase.lib.client_options import SyncClientOptions
@@ -157,10 +159,27 @@ def is_signed_in() -> bool:
 # ---------------------------------------------------------------------- moteur
 
 
-def engine(fn: str, **params: Any) -> Any:
+@st.cache_resource
+def backend() -> backends.Backend:
+    """Base choisie par argument (--db), sinon LUXRH_DB, sinon Supabase."""
+    import sys as _sys
+    return backends.construire(backends.lire_choix(_sys.argv), _sys.modules[__name__])
+
+
+def engine_supabase(fn: str, **params: Any) -> Any:
     """Appelle une fonction du moteur de règles PostgreSQL."""
     clean = {k: (v.isoformat() if isinstance(v, date) else v) for k, v in params.items()}
     return client().rpc(fn, clean).execute().data
+
+
+def engine(fn: str, **params: Any) -> Any:
+    """Évalue une règle côté serveur.
+
+    Sur une base qui ne porte pas le moteur, lève EngineUnavailable plutôt que
+    de rendre une valeur vraisemblable : un délai de préavis approximatif se
+    recopie dans un contrat.
+    """
+    return backend().engine(fn, **params)
 
 
 @st.cache_data(ttl=60, show_spinner=False)
@@ -180,6 +199,10 @@ def table(name: str, columns: str = "*") -> Any:
 
 
 def rows(name: str, columns: str = "*", **filters: Any) -> list[dict]:
+    return backend().rows(name, columns, **filters)
+
+
+def rows_supabase(name: str, columns: str = "*", **filters: Any) -> list[dict]:
     query = client().table(name).select(columns)
     order = filters.pop("_order", None)
     desc = filters.pop("_desc", False)
