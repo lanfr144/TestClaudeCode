@@ -77,3 +77,7 @@ CSV de l'existant et les exports comptables.
 
 Le détail — y compris ce que le référentiel ne couvre pas encore et pourquoi aucune valeur n'a été
 inventée — est dans le [README de l'application React](luxrh/README.md).
+
+---
+
+<sub>Dépôt initialement créé pour un test de Claude sur un système RH (`TestClaudeCode`).</sub>
