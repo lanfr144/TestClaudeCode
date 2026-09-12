@@ -7,6 +7,7 @@ import streamlit as st
 
 from . import client as db
 from . import design as ds
+from .design import sans_fin
 
 
 # ============================================================= tableau de bord
@@ -264,9 +265,9 @@ def company_detail() -> None:
             )
             st.markdown(
                 f"<div class='lux-card' style='margin-bottom:6px'>"
-                f"<b>{agreement.get('name','')}</b> {ds.badge('en vigueur' if active else 'échue', 'violet' if active else 'neutral')}"
+                f"<b>{ds.esc(agreement.get('name',''))}</b> {ds.badge('en vigueur' if active else 'échue', 'violet' if active else 'neutral')}"
                 f"<div class='lux-muted'>{ds.fmt_date(link['valid_from'])} → "
-                f"{ds.fmt_date(link['valid_to']) if link['valid_to'] else '…'}</div></div>",
+                f"{ds.fmt_date(link['valid_to']) if not sans_fin(link['valid_to']) else '…'}</div></div>",
                 unsafe_allow_html=True,
             )
 
@@ -290,7 +291,7 @@ def company_detail() -> None:
         st.dataframe(
             pd.DataFrame([{
                 "Du": ds.fmt_date(p["valid_from"]),
-                "Au": ds.fmt_date(p["valid_to"]) if p["valid_to"] else "…",
+                "Au": ds.fmt_date(p["valid_to"]) if not sans_fin(p["valid_to"]) else "…",
                 "Classe d’activité": p.get("activity_class") or "—",
                 "Mutualité": p.get("mutuality_class"),
                 "Facteur accident": p.get("accident_factor"),

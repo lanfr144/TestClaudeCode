@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { useCollectiveAgreements, useLegalParameters } from '@/lib/queries'
+import { useApp } from '@/context/AppContext'
 import { supabase } from '@/lib/supabase'
 import type { Json } from '@/lib/database.types'
 import {
   Badge, Button, Card, ErrorNote, Field, Input, LegalBasis, Loading, Select, Table,
 } from '@/components/ui'
-import { date, eur, num } from '@/lib/format'
+import { date, estEnVigueur, eur, num, sansFin } from '@/lib/format'
 
 const BLOCKS = [
   { key: 'salary_grid', label: 'Grille de salaires' },
@@ -27,6 +28,7 @@ const SURCHARGE_FIELDS = [
 ] as const
 
 export default function CbaEditor() {
+  const { referenceDate } = useApp()
   const { data, isLoading, error } = useCollectiveAgreements()
   const params = useLegalParameters()
   const qc = useQueryClient()
@@ -44,7 +46,9 @@ export default function CbaEditor() {
   }, [rules?.id, block, cba?.id])
 
   const legalMin = (key: string | null) =>
-    key ? params.data?.find((p) => p.param_key === key && !p.valid_to) : undefined
+    key
+      ? params.data?.find((p) => p.param_key === key && estEnVigueur(p, referenceDate))
+      : undefined
 
   const isShared = cba && cba.organization_id === null
 
@@ -120,7 +124,7 @@ export default function CbaEditor() {
         <div>
           <h1 className="text-xl font-bold tracking-tight text-ink">{cba.name}</h1>
           <p className="text-xs text-ink-muted">
-            Secteur {cba.sector} · validité {date(cba.valid_from)} → {date(cba.valid_to)}
+            Secteur {cba.sector} · validité {date(cba.valid_from)} → {sansFin(cba.valid_to) ? '…' : date(cba.valid_to)}
             {isShared && ' · CCT pré-chargée, en lecture seule'}
           </p>
         </div>

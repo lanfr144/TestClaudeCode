@@ -207,8 +207,8 @@ def leave() -> None:
         with st.container(border=True):
             columns = st.columns([3, 2, 2])
             columns[0].markdown(
-                f"**{employee.get('first_name','')} {employee.get('last_name','')}** — "
-                f"{kind.get('label','')}<br>"
+                f"**{ds.esc(employee.get('first_name',''))} {ds.esc(employee.get('last_name',''))}** — "
+                f"{ds.esc(kind.get('label',''))}<br>"
                 f"<span class='lux-muted'>{ds.fmt_date(absence['start_date'])} – "
                 f"{ds.fmt_date(absence['end_date'])} · {ds.fmt_num(absence['days_count'])} jour(s)</span>",
                 unsafe_allow_html=True)
@@ -376,10 +376,10 @@ def overtime() -> None:
         with st.container(border=True):
             columns = st.columns([3, 2, 2, 2])
             columns[0].markdown(
-                f"**{employee.get('first_name','')} {employee.get('last_name','')}**<br>"
+                f"**{ds.esc(employee.get('first_name',''))} {ds.esc(employee.get('last_name',''))}**<br>"
                 f"<span class='lux-muted'>{ds.fmt_date(request['period_start'])} – "
                 f"{ds.fmt_date(request['period_end'])} · {ds.fmt_num(request['hours'])} h · "
-                f"{request['reason']}</span>",
+                f"{ds.esc(request['reason'])}</span>",
                 unsafe_allow_html=True)
             tone = {"approved": "ok", "rejected": "blocking", "requested": "info",
                     "hr_approved": "warning", "cancelled": "neutral"}[request["status"]]

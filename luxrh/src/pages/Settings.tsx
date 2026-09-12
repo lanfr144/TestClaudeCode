@@ -2,7 +2,7 @@ import { useApp } from '@/context/AppContext'
 import { useAuditLog, useLegalParameters } from '@/lib/queries'
 import { PortabilityCard } from '@/components/Portability'
 import { Badge, Card, ErrorNote, Loading, Table } from '@/components/ui'
-import { ROLE_LABEL, date, num } from '@/lib/format'
+import { ROLE_LABEL, date, estEnVigueur, num } from '@/lib/format'
 
 /** Catégories de données et durées de conservation — registre RGPD. */
 const RETENTION = [
@@ -11,7 +11,7 @@ const RETENTION = [
 ]
 
 export default function Settings() {
-  const { activeCompanyId, activeCompany, profile } = useApp()
+  const { activeCompanyId, activeCompany, profile, referenceDate } = useApp()
   const audit = useAuditLog(activeCompanyId ?? undefined)
   const params = useLegalParameters()
 
@@ -64,7 +64,9 @@ export default function Settings() {
               <p className="lux-label">Durées de conservation</p>
               <ul className="mt-1.5 space-y-1 text-sm">
                 {RETENTION.map((r) => {
-                  const p = params.data?.find((x) => x.param_key === r.key && !x.valid_to)
+                  const p = params.data?.find(
+                    (x) => x.param_key === r.key && estEnVigueur(x, referenceDate),
+                  )
                   return (
                     <li key={r.key} className="flex justify-between gap-3 border-b border-rule pb-1">
                       <span className="text-ink-body">{r.data}</span>

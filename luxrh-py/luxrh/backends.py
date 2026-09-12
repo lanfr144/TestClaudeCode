@@ -10,7 +10,8 @@
 Ce que cette couche ne peut pas faire, et le dit
 -----------------------------------------------
 
-Le moteur de règles est écrit en PL/pgSQL : 272 fonctions, quelque 147 Ko de
+Le moteur de règles est écrit en PL/pgSQL : 93 fonctions — 84 fonctions ``fn_*``
+appelables et 9 prédicats d'accès pour les politiques RLS —, quelque 169 Ko de
 source, qui portent l'intégralité du droit du travail luxembourgeois appliqué
 par l'outil. Oracle et MySQL ne l'exécutent pas.
 

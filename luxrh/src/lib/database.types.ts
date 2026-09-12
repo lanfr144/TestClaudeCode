@@ -28,7 +28,7 @@ export type Database = {
           relationship_degree: number | null
           requires_evidence: boolean
           valid_from: string
-          valid_to: string | null
+          valid_to: string
         }
         Insert: {
           absence_type_id: string
@@ -42,8 +42,8 @@ export type Database = {
           period_months?: number | null
           relationship_degree?: number | null
           requires_evidence?: boolean
-          valid_from: string
-          valid_to?: string | null
+          valid_from?: string
+          valid_to?: string
         }
         Update: {
           absence_type_id?: string
@@ -58,7 +58,7 @@ export type Database = {
           relationship_degree?: number | null
           requires_evidence?: boolean
           valid_from?: string
-          valid_to?: string | null
+          valid_to?: string
         }
         Relationships: [
           {
@@ -105,6 +105,7 @@ export type Database = {
       }
       absences: {
         Row: {
+          absence_parente_id: string | null
           absence_type_id: string
           certificate_document_id: string | null
           certificate_original_received: boolean
@@ -124,11 +125,14 @@ export type Database = {
           employee_id: string
           end_date: string
           id: string
+          proposee_par: string | null
+          rang_proposition: number
           requested_by: string | null
           start_date: string
           status: Database["public"]["Enums"]["absence_status"]
         }
         Insert: {
+          absence_parente_id?: string | null
           absence_type_id: string
           certificate_document_id?: string | null
           certificate_original_received?: boolean
@@ -148,11 +152,14 @@ export type Database = {
           employee_id: string
           end_date: string
           id?: string
+          proposee_par?: string | null
+          rang_proposition?: number
           requested_by?: string | null
           start_date: string
           status?: Database["public"]["Enums"]["absence_status"]
         }
         Update: {
+          absence_parente_id?: string | null
           absence_type_id?: string
           certificate_document_id?: string | null
           certificate_original_received?: boolean
@@ -172,11 +179,27 @@ export type Database = {
           employee_id?: string
           end_date?: string
           id?: string
+          proposee_par?: string | null
+          rang_proposition?: number
           requested_by?: string | null
           start_date?: string
           status?: Database["public"]["Enums"]["absence_status"]
         }
         Relationships: [
+          {
+            foreignKeyName: "absence_belongs_to_employees_company"
+            columns: ["employee_id", "company_id"]
+            isOneToOne: false
+            referencedRelation: "employees"
+            referencedColumns: ["id", "company_id"]
+          },
+          {
+            foreignKeyName: "absences_absence_parente_id_fkey"
+            columns: ["absence_parente_id"]
+            isOneToOne: false
+            referencedRelation: "absences"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "absences_absence_type_id_fkey"
             columns: ["absence_type_id"]
@@ -198,12 +221,169 @@ export type Database = {
             referencedRelation: "companies"
             referencedColumns: ["id"]
           },
+        ]
+      }
+      address_checks: {
+        Row: {
+          checked_at: string
+          company_id: string | null
+          country: string | null
+          entity_id: string
+          entity_table: string
+          id: string
+          message: string | null
+          postal_code: string | null
+          status: string
+          zone_code: string | null
+        }
+        Insert: {
+          checked_at?: string
+          company_id?: string | null
+          country?: string | null
+          entity_id: string
+          entity_table: string
+          id?: string
+          message?: string | null
+          postal_code?: string | null
+          status: string
+          zone_code?: string | null
+        }
+        Update: {
+          checked_at?: string
+          company_id?: string | null
+          country?: string | null
+          entity_id?: string
+          entity_table?: string
+          id?: string
+          message?: string | null
+          postal_code?: string | null
+          status?: string
+          zone_code?: string | null
+        }
+        Relationships: [
           {
-            foreignKeyName: "absences_employee_id_fkey"
-            columns: ["employee_id"]
+            foreignKeyName: "address_checks_statut_ref"
+            columns: ["status"]
+            isOneToOne: false
+            referencedRelation: "ref_statut_verification_adresse"
+            referencedColumns: ["code"]
+          },
+        ]
+      }
+      address_zones: {
+        Row: {
+          code: string
+          country: string
+          id: string
+          is_verified: boolean
+          kind: string
+          label: string
+          note: string | null
+          postal_from: number | null
+          postal_to: number | null
+          source: string
+        }
+        Insert: {
+          code: string
+          country: string
+          id?: string
+          is_verified?: boolean
+          kind: string
+          label: string
+          note?: string | null
+          postal_from?: number | null
+          postal_to?: number | null
+          source: string
+        }
+        Update: {
+          code?: string
+          country?: string
+          id?: string
+          is_verified?: boolean
+          kind?: string
+          label?: string
+          note?: string | null
+          postal_from?: number | null
+          postal_to?: number | null
+          source?: string
+        }
+        Relationships: []
+      }
+      adresses_salarie: {
+        Row: {
+          code_postal: string | null
+          company_id: string
+          created_at: string
+          created_by: string | null
+          debut_validite: string
+          deleted_at: string | null
+          deleted_by: string | null
+          employee_id: string
+          fin_validite: string
+          id: string
+          latitude: number | null
+          ligne: string | null
+          localite: string | null
+          longitude: number | null
+          note: string | null
+          origine: string
+          pays: string
+          type_adresse: string
+        }
+        Insert: {
+          code_postal?: string | null
+          company_id: string
+          created_at?: string
+          created_by?: string | null
+          debut_validite?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
+          employee_id: string
+          fin_validite?: string
+          id?: string
+          latitude?: number | null
+          ligne?: string | null
+          localite?: string | null
+          longitude?: number | null
+          note?: string | null
+          origine?: string
+          pays?: string
+          type_adresse: string
+        }
+        Update: {
+          code_postal?: string | null
+          company_id?: string
+          created_at?: string
+          created_by?: string | null
+          debut_validite?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
+          employee_id?: string
+          fin_validite?: string
+          id?: string
+          latitude?: number | null
+          ligne?: string | null
+          localite?: string | null
+          longitude?: number | null
+          note?: string | null
+          origine?: string
+          pays?: string
+          type_adresse?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "adr_appartient_au_salarie"
+            columns: ["employee_id", "company_id"]
             isOneToOne: false
             referencedRelation: "employees"
-            referencedColumns: ["id"]
+            referencedColumns: ["id", "company_id"]
+          },
+          {
+            foreignKeyName: "adresses_salarie_type_adresse_fkey"
+            columns: ["type_adresse"]
+            isOneToOne: false
+            referencedRelation: "ref_type_adresse"
+            referencedColumns: ["code"]
           },
         ]
       }
@@ -222,6 +402,54 @@ export type Database = {
         }
         Relationships: []
       }
+      app_users: {
+        Row: {
+          auth_user_id: string | null
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          deleted_by: string | null
+          email: string
+          full_name: string | null
+          id: string
+          is_admin: boolean
+          password_hash: string | null
+          updated_at: string
+          updated_by: string | null
+          userid: string
+        }
+        Insert: {
+          auth_user_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          email: string
+          full_name?: string | null
+          id?: string
+          is_admin?: boolean
+          password_hash?: string | null
+          updated_at?: string
+          updated_by?: string | null
+          userid: string
+        }
+        Update: {
+          auth_user_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          email?: string
+          full_name?: string | null
+          id?: string
+          is_admin?: boolean
+          password_hash?: string | null
+          updated_at?: string
+          updated_by?: string | null
+          userid?: string
+        }
+        Relationships: []
+      }
       audit_log: {
         Row: {
           action: string
@@ -234,6 +462,9 @@ export type Database = {
           new_value: Json | null
           occurred_at: string
           old_value: Json | null
+          request_id: string | null
+          source_ip: string | null
+          user_agent: string | null
         }
         Insert: {
           action: string
@@ -246,6 +477,9 @@ export type Database = {
           new_value?: Json | null
           occurred_at?: string
           old_value?: Json | null
+          request_id?: string | null
+          source_ip?: string | null
+          user_agent?: string | null
         }
         Update: {
           action?: string
@@ -258,6 +492,9 @@ export type Database = {
           new_value?: Json | null
           occurred_at?: string
           old_value?: Json | null
+          request_id?: string | null
+          source_ip?: string | null
+          user_agent?: string | null
         }
         Relationships: []
       }
@@ -370,6 +607,148 @@ export type Database = {
           },
         ]
       }
+      cct_regle_prime: {
+        Row: {
+          article: string | null
+          assiette: string | null
+          categorie_visee: string | null
+          collective_agreement_id: string
+          condition_code: string
+          debut_validite: string
+          fin_validite: string
+          id: string
+          libelle: string
+          montant: number | null
+          nature_prime: string
+          note: string | null
+          seuil_minutes: number
+          source_url: string
+          taux_pct: number | null
+          unite: string
+        }
+        Insert: {
+          article?: string | null
+          assiette?: string | null
+          categorie_visee?: string | null
+          collective_agreement_id: string
+          condition_code: string
+          debut_validite?: string
+          fin_validite?: string
+          id?: string
+          libelle: string
+          montant?: number | null
+          nature_prime: string
+          note?: string | null
+          seuil_minutes?: number
+          source_url: string
+          taux_pct?: number | null
+          unite: string
+        }
+        Update: {
+          article?: string | null
+          assiette?: string | null
+          categorie_visee?: string | null
+          collective_agreement_id?: string
+          condition_code?: string
+          debut_validite?: string
+          fin_validite?: string
+          id?: string
+          libelle?: string
+          montant?: number | null
+          nature_prime?: string
+          note?: string | null
+          seuil_minutes?: number
+          source_url?: string
+          taux_pct?: number | null
+          unite?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cct_regle_prime_collective_agreement_id_fkey"
+            columns: ["collective_agreement_id"]
+            isOneToOne: false
+            referencedRelation: "collective_agreements"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cct_regle_prime_condition_code_fkey"
+            columns: ["condition_code"]
+            isOneToOne: false
+            referencedRelation: "ref_condition_travail"
+            referencedColumns: ["code"]
+          },
+          {
+            foreignKeyName: "cct_regle_prime_nature_prime_fkey"
+            columns: ["nature_prime"]
+            isOneToOne: false
+            referencedRelation: "ref_nature_prime"
+            referencedColumns: ["code"]
+          },
+          {
+            foreignKeyName: "cct_regle_prime_unite_ref"
+            columns: ["unite"]
+            isOneToOne: false
+            referencedRelation: "ref_unite_prime"
+            referencedColumns: ["code"]
+          },
+        ]
+      }
+      client_sites: {
+        Row: {
+          address_line: string | null
+          city: string | null
+          client_name: string | null
+          company_id: string
+          country: string
+          created_at: string
+          id: string
+          is_active: boolean
+          latitude: number | null
+          longitude: number | null
+          name: string
+          note: string | null
+          postal_code: string | null
+        }
+        Insert: {
+          address_line?: string | null
+          city?: string | null
+          client_name?: string | null
+          company_id: string
+          country?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          latitude?: number | null
+          longitude?: number | null
+          name: string
+          note?: string | null
+          postal_code?: string | null
+        }
+        Update: {
+          address_line?: string | null
+          city?: string | null
+          client_name?: string | null
+          company_id?: string
+          country?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          latitude?: number | null
+          longitude?: number | null
+          name?: string
+          note?: string | null
+          postal_code?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "client_sites_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       collective_agreements: {
         Row: {
           code: string
@@ -383,7 +762,7 @@ export type Database = {
           sector: string
           supersedes_id: string | null
           valid_from: string
-          valid_to: string | null
+          valid_to: string
         }
         Insert: {
           code: string
@@ -396,8 +775,8 @@ export type Database = {
           scope?: Database["public"]["Enums"]["cba_scope"]
           sector: string
           supersedes_id?: string | null
-          valid_from: string
-          valid_to?: string | null
+          valid_from?: string
+          valid_to?: string
         }
         Update: {
           code?: string
@@ -411,7 +790,7 @@ export type Database = {
           sector?: string
           supersedes_id?: string | null
           valid_from?: string
-          valid_to?: string | null
+          valid_to?: string
         }
         Relationships: [
           {
@@ -438,6 +817,8 @@ export type Database = {
           country: string
           created_at: string
           id: string
+          internal_rules_adopted_on: string | null
+          internal_rules_reference: string | null
           legal_form: string | null
           legal_name: string
           nace_code: string | null
@@ -454,6 +835,8 @@ export type Database = {
           country?: string
           created_at?: string
           id?: string
+          internal_rules_adopted_on?: string | null
+          internal_rules_reference?: string | null
           legal_form?: string | null
           legal_name: string
           nace_code?: string | null
@@ -470,6 +853,8 @@ export type Database = {
           country?: string
           created_at?: string
           id?: string
+          internal_rules_adopted_on?: string | null
+          internal_rules_reference?: string | null
           legal_form?: string | null
           legal_name?: string
           nace_code?: string | null
@@ -536,7 +921,7 @@ export type Database = {
           id: string
           note: string | null
           valid_from: string
-          valid_to: string | null
+          valid_to: string
         }
         Insert: {
           collective_agreement_id: string
@@ -545,8 +930,8 @@ export type Database = {
           department_id?: string | null
           id?: string
           note?: string | null
-          valid_from: string
-          valid_to?: string | null
+          valid_from?: string
+          valid_to?: string
         }
         Update: {
           collective_agreement_id?: string
@@ -556,7 +941,7 @@ export type Database = {
           id?: string
           note?: string | null
           valid_from?: string
-          valid_to?: string | null
+          valid_to?: string
         }
         Relationships: [
           {
@@ -635,7 +1020,7 @@ export type Database = {
           note: string | null
           source: string
           valid_from: string
-          valid_to: string | null
+          valid_to: string
         }
         Insert: {
           accident_factor?: number
@@ -647,8 +1032,8 @@ export type Database = {
           mutuality_class?: number | null
           note?: string | null
           source?: string
-          valid_from: string
-          valid_to?: string | null
+          valid_from?: string
+          valid_to?: string
         }
         Update: {
           accident_factor?: number
@@ -661,7 +1046,7 @@ export type Database = {
           note?: string | null
           source?: string
           valid_from?: string
-          valid_to?: string | null
+          valid_to?: string
         }
         Relationships: [
           {
@@ -798,7 +1183,7 @@ export type Database = {
           id: string
           note: string | null
           valid_from: string
-          valid_to: string | null
+          valid_to: string
         }
         Insert: {
           collective_agreement_id: string
@@ -806,8 +1191,8 @@ export type Database = {
           created_at?: string
           id?: string
           note?: string | null
-          valid_from: string
-          valid_to?: string | null
+          valid_from?: string
+          valid_to?: string
         }
         Update: {
           collective_agreement_id?: string
@@ -816,7 +1201,7 @@ export type Database = {
           id?: string
           note?: string | null
           valid_from?: string
-          valid_to?: string | null
+          valid_to?: string
         }
         Relationships: [
           {
@@ -854,7 +1239,7 @@ export type Database = {
           periodicity: string
           rate_pct: number | null
           valid_from: string
-          valid_to: string | null
+          valid_to: string
         }
         Insert: {
           amount?: number | null
@@ -873,8 +1258,8 @@ export type Database = {
           note?: string | null
           periodicity?: string
           rate_pct?: number | null
-          valid_from: string
-          valid_to?: string | null
+          valid_from?: string
+          valid_to?: string
         }
         Update: {
           amount?: number | null
@@ -894,7 +1279,7 @@ export type Database = {
           periodicity?: string
           rate_pct?: number | null
           valid_from?: string
-          valid_to?: string | null
+          valid_to?: string
         }
         Relationships: [
           {
@@ -1109,17 +1494,17 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "contract_belongs_to_employees_company"
+            columns: ["employee_id", "company_id"]
+            isOneToOne: false
+            referencedRelation: "employees"
+            referencedColumns: ["id", "company_id"]
+          },
+          {
             foreignKeyName: "contracts_company_id_fkey"
             columns: ["company_id"]
             isOneToOne: false
             referencedRelation: "companies"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "contracts_employee_id_fkey"
-            columns: ["employee_id"]
-            isOneToOne: false
-            referencedRelation: "employees"
             referencedColumns: ["id"]
           },
           {
@@ -1135,6 +1520,168 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "contracts"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "contracts_unite_essai_ref"
+            columns: ["probation_unit"]
+            isOneToOne: false
+            referencedRelation: "ref_unite_essai"
+            referencedColumns: ["code"]
+          },
+        ]
+      }
+      creneau_condition: {
+        Row: {
+          client_site_id: string | null
+          company_id: string
+          condition_code: string
+          constate_par: string | null
+          created_at: string
+          date_prestation: string
+          deleted_at: string | null
+          deleted_by: string | null
+          employee_id: string
+          heure_debut: string
+          heure_fin: string
+          id: string
+          minutes: number | null
+          note: string | null
+          shift_id: string | null
+          time_entry_id: string | null
+        }
+        Insert: {
+          client_site_id?: string | null
+          company_id: string
+          condition_code: string
+          constate_par?: string | null
+          created_at?: string
+          date_prestation: string
+          deleted_at?: string | null
+          deleted_by?: string | null
+          employee_id: string
+          heure_debut: string
+          heure_fin: string
+          id?: string
+          minutes?: number | null
+          note?: string | null
+          shift_id?: string | null
+          time_entry_id?: string | null
+        }
+        Update: {
+          client_site_id?: string | null
+          company_id?: string
+          condition_code?: string
+          constate_par?: string | null
+          created_at?: string
+          date_prestation?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
+          employee_id?: string
+          heure_debut?: string
+          heure_fin?: string
+          id?: string
+          minutes?: number | null
+          note?: string | null
+          shift_id?: string | null
+          time_entry_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cc_appartient_au_salarie"
+            columns: ["employee_id", "company_id"]
+            isOneToOne: false
+            referencedRelation: "employees"
+            referencedColumns: ["id", "company_id"]
+          },
+          {
+            foreignKeyName: "cc_site_appartient_a_la_societe"
+            columns: ["client_site_id", "company_id"]
+            isOneToOne: false
+            referencedRelation: "client_sites"
+            referencedColumns: ["id", "company_id"]
+          },
+          {
+            foreignKeyName: "creneau_condition_condition_code_fkey"
+            columns: ["condition_code"]
+            isOneToOne: false
+            referencedRelation: "ref_condition_travail"
+            referencedColumns: ["code"]
+          },
+          {
+            foreignKeyName: "creneau_condition_shift_id_fkey"
+            columns: ["shift_id"]
+            isOneToOne: false
+            referencedRelation: "shifts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "creneau_condition_time_entry_id_fkey"
+            columns: ["time_entry_id"]
+            isOneToOne: false
+            referencedRelation: "time_entries"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      data_access_log: {
+        Row: {
+          action: string
+          actor_id: string | null
+          actor_label: string | null
+          company_id: string | null
+          entity_id: string | null
+          entity_table: string
+          id: number
+          is_autonomous: boolean
+          occurred_at: string
+          request_id: string | null
+          row_count: number | null
+          scope: string | null
+          source_ip: string | null
+          subject_employee_id: string | null
+          user_agent: string | null
+        }
+        Insert: {
+          action: string
+          actor_id?: string | null
+          actor_label?: string | null
+          company_id?: string | null
+          entity_id?: string | null
+          entity_table: string
+          id?: never
+          is_autonomous?: boolean
+          occurred_at?: string
+          request_id?: string | null
+          row_count?: number | null
+          scope?: string | null
+          source_ip?: string | null
+          subject_employee_id?: string | null
+          user_agent?: string | null
+        }
+        Update: {
+          action?: string
+          actor_id?: string | null
+          actor_label?: string | null
+          company_id?: string | null
+          entity_id?: string | null
+          entity_table?: string
+          id?: never
+          is_autonomous?: boolean
+          occurred_at?: string
+          request_id?: string | null
+          row_count?: number | null
+          scope?: string | null
+          source_ip?: string | null
+          subject_employee_id?: string | null
+          user_agent?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "data_access_log_action_ref"
+            columns: ["action"]
+            isOneToOne: false
+            referencedRelation: "ref_action_acces"
+            referencedColumns: ["code"]
           },
         ]
       }
@@ -1301,14 +1848,18 @@ export type Database = {
           company_id: string
           created_at: string
           employee_id: string
+          en_situation_handicap: boolean
           first_name: string | null
           id: string
+          invitation_evenements: boolean
           is_dependent: boolean
           last_name: string | null
           note: string | null
           privacy_opt_out: boolean
+          refus_photos_evenements: boolean
           relationship: string
           sex: Database["public"]["Enums"]["sex_kind"] | null
+          taux_handicap_pct: number | null
         }
         Insert: {
           adoption_date?: string | null
@@ -1316,14 +1867,18 @@ export type Database = {
           company_id: string
           created_at?: string
           employee_id: string
+          en_situation_handicap?: boolean
           first_name?: string | null
           id?: string
+          invitation_evenements?: boolean
           is_dependent?: boolean
           last_name?: string | null
           note?: string | null
           privacy_opt_out?: boolean
+          refus_photos_evenements?: boolean
           relationship?: string
           sex?: Database["public"]["Enums"]["sex_kind"] | null
+          taux_handicap_pct?: number | null
         }
         Update: {
           adoption_date?: string | null
@@ -1331,16 +1886,27 @@ export type Database = {
           company_id?: string
           created_at?: string
           employee_id?: string
+          en_situation_handicap?: boolean
           first_name?: string | null
           id?: string
+          invitation_evenements?: boolean
           is_dependent?: boolean
           last_name?: string | null
           note?: string | null
           privacy_opt_out?: boolean
+          refus_photos_evenements?: boolean
           relationship?: string
           sex?: Database["public"]["Enums"]["sex_kind"] | null
+          taux_handicap_pct?: number | null
         }
         Relationships: [
+          {
+            foreignKeyName: "child_belongs_to_employees_company"
+            columns: ["employee_id", "company_id"]
+            isOneToOne: false
+            referencedRelation: "employees"
+            referencedColumns: ["id", "company_id"]
+          },
           {
             foreignKeyName: "employee_children_company_id_fkey"
             columns: ["company_id"]
@@ -1349,11 +1915,11 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "employee_children_employee_id_fkey"
-            columns: ["employee_id"]
+            foreignKeyName: "employee_children_lien_ref"
+            columns: ["relationship"]
             isOneToOne: false
-            referencedRelation: "employees"
-            referencedColumns: ["id"]
+            referencedRelation: "ref_lien_enfant"
+            referencedColumns: ["code"]
           },
         ]
       }
@@ -1370,7 +1936,7 @@ export type Database = {
           rate_pct: number
           recognized_on: string | null
           valid_from: string
-          valid_to: string | null
+          valid_to: string
         }
         Insert: {
           authority?: string | null
@@ -1383,8 +1949,8 @@ export type Database = {
           note?: string | null
           rate_pct: number
           recognized_on?: string | null
-          valid_from: string
-          valid_to?: string | null
+          valid_from?: string
+          valid_to?: string
         }
         Update: {
           authority?: string | null
@@ -1398,9 +1964,16 @@ export type Database = {
           rate_pct?: number
           recognized_on?: string | null
           valid_from?: string
-          valid_to?: string | null
+          valid_to?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "disability_belongs_to_employees_company"
+            columns: ["employee_id", "company_id"]
+            isOneToOne: false
+            referencedRelation: "employees"
+            referencedColumns: ["id", "company_id"]
+          },
           {
             foreignKeyName: "employee_disabilities_company_id_fkey"
             columns: ["company_id"]
@@ -1409,18 +1982,141 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "employee_disabilities_employee_id_fkey"
-            columns: ["employee_id"]
-            isOneToOne: false
-            referencedRelation: "employees"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "employee_disabilities_evidence_document_id_fkey"
             columns: ["evidence_document_id"]
             isOneToOne: false
             referencedRelation: "documents"
             referencedColumns: ["id"]
+          },
+        ]
+      }
+      employee_sanctions: {
+        Row: {
+          amendment_contract_id: string | null
+          company_id: string
+          contest_outcome: string | null
+          contested_on: string | null
+          contract_id: string | null
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          deleted_by: string | null
+          effective_from: string | null
+          effective_to: string | null
+          employee_heard_on: string | null
+          employee_id: string
+          employee_response: string | null
+          evidence_document_id: string | null
+          facts_known_on: string
+          facts_on: string
+          id: string
+          note: string | null
+          notified_on: string | null
+          reason: string
+          retention_until: string | null
+          sanction_type: string
+          termination_id: string | null
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          amendment_contract_id?: string | null
+          company_id: string
+          contest_outcome?: string | null
+          contested_on?: string | null
+          contract_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          effective_from?: string | null
+          effective_to?: string | null
+          employee_heard_on?: string | null
+          employee_id: string
+          employee_response?: string | null
+          evidence_document_id?: string | null
+          facts_known_on: string
+          facts_on: string
+          id?: string
+          note?: string | null
+          notified_on?: string | null
+          reason: string
+          retention_until?: string | null
+          sanction_type: string
+          termination_id?: string | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          amendment_contract_id?: string | null
+          company_id?: string
+          contest_outcome?: string | null
+          contested_on?: string | null
+          contract_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          effective_from?: string | null
+          effective_to?: string | null
+          employee_heard_on?: string | null
+          employee_id?: string
+          employee_response?: string | null
+          evidence_document_id?: string | null
+          facts_known_on?: string
+          facts_on?: string
+          id?: string
+          note?: string | null
+          notified_on?: string | null
+          reason?: string
+          retention_until?: string | null
+          sanction_type?: string
+          termination_id?: string | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "employee_sanctions_amendment_contract_id_fkey"
+            columns: ["amendment_contract_id"]
+            isOneToOne: false
+            referencedRelation: "contracts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "employee_sanctions_contract_id_fkey"
+            columns: ["contract_id"]
+            isOneToOne: false
+            referencedRelation: "contracts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "employee_sanctions_evidence_document_id_fkey"
+            columns: ["evidence_document_id"]
+            isOneToOne: false
+            referencedRelation: "documents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "employee_sanctions_sanction_type_fkey"
+            columns: ["sanction_type"]
+            isOneToOne: false
+            referencedRelation: "sanction_types"
+            referencedColumns: ["code"]
+          },
+          {
+            foreignKeyName: "employee_sanctions_termination_id_fkey"
+            columns: ["termination_id"]
+            isOneToOne: false
+            referencedRelation: "contract_terminations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sanction_belongs_to_employees_company"
+            columns: ["employee_id", "company_id"]
+            isOneToOne: false
+            referencedRelation: "employees"
+            referencedColumns: ["id", "company_id"]
           },
         ]
       }
@@ -1479,18 +2175,18 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "employee_statuses_employee_id_fkey"
-            columns: ["employee_id"]
-            isOneToOne: false
-            referencedRelation: "employees"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "employee_statuses_evidence_document_id_fkey"
             columns: ["evidence_document_id"]
             isOneToOne: false
             referencedRelation: "documents"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "status_belongs_to_employees_company"
+            columns: ["employee_id", "company_id"]
+            isOneToOne: false
+            referencedRelation: "employees"
+            referencedColumns: ["id", "company_id"]
           },
         ]
       }
@@ -1509,7 +2205,7 @@ export type Database = {
           rate: number | null
           tax_class: Database["public"]["Enums"]["tax_class"]
           valid_from: string
-          valid_to: string | null
+          valid_to: string
         }
         Insert: {
           card_reference?: string | null
@@ -1524,8 +2220,8 @@ export type Database = {
           professional_expenses_monthly?: number | null
           rate?: number | null
           tax_class: Database["public"]["Enums"]["tax_class"]
-          valid_from: string
-          valid_to?: string | null
+          valid_from?: string
+          valid_to?: string
         }
         Update: {
           card_reference?: string | null
@@ -1541,7 +2237,7 @@ export type Database = {
           rate?: number | null
           tax_class?: Database["public"]["Enums"]["tax_class"]
           valid_from?: string
-          valid_to?: string | null
+          valid_to?: string
         }
         Relationships: [
           {
@@ -1582,8 +2278,11 @@ export type Database = {
           postal_code: string | null
           profession: string | null
           qualification: Database["public"]["Enums"]["qualification_kind"]
+          refus_photos_societe: boolean
           residency: Database["public"]["Enums"]["residency_kind"]
           sex: Database["public"]["Enums"]["sex_kind"]
+          sexe_legal: Database["public"]["Enums"]["sex_kind"] | null
+          souhaite_confidentialite: boolean
           user_id: string | null
         }
         Insert: {
@@ -1607,8 +2306,11 @@ export type Database = {
           postal_code?: string | null
           profession?: string | null
           qualification?: Database["public"]["Enums"]["qualification_kind"]
+          refus_photos_societe?: boolean
           residency: Database["public"]["Enums"]["residency_kind"]
           sex?: Database["public"]["Enums"]["sex_kind"]
+          sexe_legal?: Database["public"]["Enums"]["sex_kind"] | null
+          souhaite_confidentialite?: boolean
           user_id?: string | null
         }
         Update: {
@@ -1632,8 +2334,11 @@ export type Database = {
           postal_code?: string | null
           profession?: string | null
           qualification?: Database["public"]["Enums"]["qualification_kind"]
+          refus_photos_societe?: boolean
           residency?: Database["public"]["Enums"]["residency_kind"]
           sex?: Database["public"]["Enums"]["sex_kind"]
+          sexe_legal?: Database["public"]["Enums"]["sex_kind"] | null
+          souhaite_confidentialite?: boolean
           user_id?: string | null
         }
         Relationships: [
@@ -1649,6 +2354,140 @@ export type Database = {
             columns: ["department_id"]
             isOneToOne: false
             referencedRelation: "departments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      expected_parameters: {
+        Row: {
+          note: string | null
+          param_key: string
+          read_by: string
+        }
+        Insert: {
+          note?: string | null
+          param_key: string
+          read_by: string
+        }
+        Update: {
+          note?: string | null
+          param_key?: string
+          read_by?: string
+        }
+        Relationships: []
+      }
+      export_log: {
+        Row: {
+          byte_size: number
+          created_at: string
+          id: string
+          organization_id: string
+          request_id: string | null
+          requested_by: string | null
+          row_count: number
+          source_ip: string | null
+          subject_id: string | null
+          subject_kind: string
+          user_agent: string | null
+        }
+        Insert: {
+          byte_size?: number
+          created_at?: string
+          id?: string
+          organization_id: string
+          request_id?: string | null
+          requested_by?: string | null
+          row_count?: number
+          source_ip?: string | null
+          subject_id?: string | null
+          subject_kind: string
+          user_agent?: string | null
+        }
+        Update: {
+          byte_size?: number
+          created_at?: string
+          id?: string
+          organization_id?: string
+          request_id?: string | null
+          requested_by?: string | null
+          row_count?: number
+          source_ip?: string | null
+          subject_id?: string | null
+          subject_kind?: string
+          user_agent?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "export_log_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "export_log_sujet_ref"
+            columns: ["subject_kind"]
+            isOneToOne: false
+            referencedRelation: "ref_sujet_export"
+            referencedColumns: ["code"]
+          },
+        ]
+      }
+      fiche_sante: {
+        Row: {
+          allergies: string | null
+          company_id: string
+          deleted_at: string | null
+          deleted_by: string | null
+          employee_id: string | null
+          enfant_id: string | null
+          groupe_sanguin: string | null
+          id: string
+          maj_le: string
+          maj_par: string | null
+          medecin_telephone: string | null
+          medecin_traitant: string | null
+          note: string | null
+          pathologies: string | null
+        }
+        Insert: {
+          allergies?: string | null
+          company_id: string
+          deleted_at?: string | null
+          deleted_by?: string | null
+          employee_id?: string | null
+          enfant_id?: string | null
+          groupe_sanguin?: string | null
+          id?: string
+          maj_le?: string
+          maj_par?: string | null
+          medecin_telephone?: string | null
+          medecin_traitant?: string | null
+          note?: string | null
+          pathologies?: string | null
+        }
+        Update: {
+          allergies?: string | null
+          company_id?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
+          employee_id?: string | null
+          enfant_id?: string | null
+          groupe_sanguin?: string | null
+          id?: string
+          maj_le?: string
+          maj_par?: string | null
+          medecin_telephone?: string | null
+          medecin_traitant?: string | null
+          note?: string | null
+          pathologies?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fiche_sante_enfant_id_fkey"
+            columns: ["enfant_id"]
+            isOneToOne: false
+            referencedRelation: "employee_children"
             referencedColumns: ["id"]
           },
         ]
@@ -1743,7 +2582,7 @@ export type Database = {
           source: string
           unit: string | null
           valid_from: string
-          valid_to: string | null
+          valid_to: string
           validated_at: string | null
           validated_by: string | null
           value_json: Json | null
@@ -1765,8 +2604,8 @@ export type Database = {
           param_key: string
           source: string
           unit?: string | null
-          valid_from: string
-          valid_to?: string | null
+          valid_from?: string
+          valid_to?: string
           validated_at?: string | null
           validated_by?: string | null
           value_json?: Json | null
@@ -1789,7 +2628,7 @@ export type Database = {
           source?: string
           unit?: string | null
           valid_from?: string
-          valid_to?: string | null
+          valid_to?: string
           validated_at?: string | null
           validated_by?: string | null
           value_json?: Json | null
@@ -1847,11 +2686,11 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "meal_voucher_grants_employee_id_fkey"
-            columns: ["employee_id"]
+            foreignKeyName: "voucher_belongs_to_employees_company"
+            columns: ["employee_id", "company_id"]
             isOneToOne: false
             referencedRelation: "employees"
-            referencedColumns: ["id"]
+            referencedColumns: ["id", "company_id"]
           },
         ]
       }
@@ -1936,6 +2775,13 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "overtime_belongs_to_employees_company"
+            columns: ["employee_id", "company_id"]
+            isOneToOne: false
+            referencedRelation: "employees"
+            referencedColumns: ["id", "company_id"]
+          },
+          {
             foreignKeyName: "overtime_requests_company_id_fkey"
             columns: ["company_id"]
             isOneToOne: false
@@ -1943,11 +2789,11 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "overtime_requests_employee_id_fkey"
-            columns: ["employee_id"]
+            foreignKeyName: "overtime_requests_compensation_ref"
+            columns: ["compensation"]
             isOneToOne: false
-            referencedRelation: "employees"
-            referencedColumns: ["id"]
+            referencedRelation: "ref_compensation_heures_sup"
+            referencedColumns: ["code"]
           },
           {
             foreignKeyName: "overtime_requests_schedule_id_fkey"
@@ -1955,6 +2801,67 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "schedules"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "overtime_requests_statut_ref"
+            columns: ["status"]
+            isOneToOne: false
+            referencedRelation: "ref_statut_heures_sup"
+            referencedColumns: ["code"]
+          },
+        ]
+      }
+      personne_indicateur_secours: {
+        Row: {
+          company_id: string
+          created_at: string
+          debut_validite: string
+          employee_id: string | null
+          enfant_id: string | null
+          fin_validite: string
+          id: string
+          indicateur: string
+          pose_par: string | null
+          precision_lieu: string | null
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          debut_validite?: string
+          employee_id?: string | null
+          enfant_id?: string | null
+          fin_validite?: string
+          id?: string
+          indicateur: string
+          pose_par?: string | null
+          precision_lieu?: string | null
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          debut_validite?: string
+          employee_id?: string | null
+          enfant_id?: string | null
+          fin_validite?: string
+          id?: string
+          indicateur?: string
+          pose_par?: string | null
+          precision_lieu?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "personne_indicateur_secours_enfant_id_fkey"
+            columns: ["enfant_id"]
+            isOneToOne: false
+            referencedRelation: "employee_children"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "personne_indicateur_secours_indicateur_fkey"
+            columns: ["indicateur"]
+            isOneToOne: false
+            referencedRelation: "ref_indicateur_secours"
+            referencedColumns: ["code"]
           },
         ]
       }
@@ -2012,6 +2919,13 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "premium_belongs_to_employees_company"
+            columns: ["employee_id", "company_id"]
+            isOneToOne: false
+            referencedRelation: "employees"
+            referencedColumns: ["id", "company_id"]
+          },
+          {
             foreignKeyName: "premiums_company_id_fkey"
             columns: ["company_id"]
             isOneToOne: false
@@ -2026,11 +2940,11 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "premiums_employee_id_fkey"
-            columns: ["employee_id"]
+            foreignKeyName: "premiums_nature_ref"
+            columns: ["kind"]
             isOneToOne: false
-            referencedRelation: "employees"
-            referencedColumns: ["id"]
+            referencedRelation: "ref_nature_prime"
+            referencedColumns: ["code"]
           },
           {
             foreignKeyName: "premiums_termination_id_fkey"
@@ -2144,6 +3058,390 @@ export type Database = {
         }
         Relationships: []
       }
+      ref_action_acces: {
+        Row: {
+          code: string
+          debut_validite: string
+          fin_validite: string
+          libelle: string
+          note: string | null
+          ordre: number
+        }
+        Insert: {
+          code: string
+          debut_validite?: string
+          fin_validite?: string
+          libelle: string
+          note?: string | null
+          ordre?: number
+        }
+        Update: {
+          code?: string
+          debut_validite?: string
+          fin_validite?: string
+          libelle?: string
+          note?: string | null
+          ordre?: number
+        }
+        Relationships: []
+      }
+      ref_compensation_heures_sup: {
+        Row: {
+          code: string
+          debut_validite: string
+          fin_validite: string
+          libelle: string
+          note: string | null
+          ordre: number
+        }
+        Insert: {
+          code: string
+          debut_validite?: string
+          fin_validite?: string
+          libelle: string
+          note?: string | null
+          ordre?: number
+        }
+        Update: {
+          code?: string
+          debut_validite?: string
+          fin_validite?: string
+          libelle?: string
+          note?: string | null
+          ordre?: number
+        }
+        Relationships: []
+      }
+      ref_condition_travail: {
+        Row: {
+          code: string
+          debut_validite: string
+          description: string | null
+          famille: string
+          fin_validite: string
+          libelle: string
+          note: string | null
+          ordre: number
+        }
+        Insert: {
+          code: string
+          debut_validite?: string
+          description?: string | null
+          famille: string
+          fin_validite?: string
+          libelle: string
+          note?: string | null
+          ordre?: number
+        }
+        Update: {
+          code?: string
+          debut_validite?: string
+          description?: string | null
+          famille?: string
+          fin_validite?: string
+          libelle?: string
+          note?: string | null
+          ordre?: number
+        }
+        Relationships: []
+      }
+      ref_indicateur_secours: {
+        Row: {
+          code: string
+          consigne: string
+          debut_validite: string
+          fin_validite: string
+          libelle: string
+          note: string | null
+          ordre: number
+          visible_dispatching: boolean
+          visible_secours: boolean
+        }
+        Insert: {
+          code: string
+          consigne: string
+          debut_validite?: string
+          fin_validite?: string
+          libelle: string
+          note?: string | null
+          ordre?: number
+          visible_dispatching?: boolean
+          visible_secours?: boolean
+        }
+        Update: {
+          code?: string
+          consigne?: string
+          debut_validite?: string
+          fin_validite?: string
+          libelle?: string
+          note?: string | null
+          ordre?: number
+          visible_dispatching?: boolean
+          visible_secours?: boolean
+        }
+        Relationships: []
+      }
+      ref_lien_enfant: {
+        Row: {
+          code: string
+          debut_validite: string
+          fin_validite: string
+          libelle: string
+          note: string | null
+          ordre: number
+        }
+        Insert: {
+          code: string
+          debut_validite?: string
+          fin_validite?: string
+          libelle: string
+          note?: string | null
+          ordre?: number
+        }
+        Update: {
+          code?: string
+          debut_validite?: string
+          fin_validite?: string
+          libelle?: string
+          note?: string | null
+          ordre?: number
+        }
+        Relationships: []
+      }
+      ref_nature_prime: {
+        Row: {
+          categorie: string
+          code: string
+          debut_validite: string
+          fin_validite: string
+          libelle: string
+          lie_aux_conditions: boolean
+          note: string | null
+          ordre: number
+          source_url: string | null
+        }
+        Insert: {
+          categorie?: string
+          code: string
+          debut_validite?: string
+          fin_validite?: string
+          libelle: string
+          lie_aux_conditions?: boolean
+          note?: string | null
+          ordre?: number
+          source_url?: string | null
+        }
+        Update: {
+          categorie?: string
+          code?: string
+          debut_validite?: string
+          fin_validite?: string
+          libelle?: string
+          lie_aux_conditions?: boolean
+          note?: string | null
+          ordre?: number
+          source_url?: string | null
+        }
+        Relationships: []
+      }
+      ref_pays: {
+        Row: {
+          alpha2: string
+          alpha3: string
+          debut_validite: string
+          fin_validite: string
+          frontalier: boolean
+          nom: string
+        }
+        Insert: {
+          alpha2: string
+          alpha3: string
+          debut_validite?: string
+          fin_validite?: string
+          frontalier?: boolean
+          nom: string
+        }
+        Update: {
+          alpha2?: string
+          alpha3?: string
+          debut_validite?: string
+          fin_validite?: string
+          frontalier?: boolean
+          nom?: string
+        }
+        Relationships: []
+      }
+      ref_statut_heures_sup: {
+        Row: {
+          code: string
+          debut_validite: string
+          fin_validite: string
+          libelle: string
+          note: string | null
+          ordre: number
+        }
+        Insert: {
+          code: string
+          debut_validite?: string
+          fin_validite?: string
+          libelle: string
+          note?: string | null
+          ordre?: number
+        }
+        Update: {
+          code?: string
+          debut_validite?: string
+          fin_validite?: string
+          libelle?: string
+          note?: string | null
+          ordre?: number
+        }
+        Relationships: []
+      }
+      ref_statut_verification_adresse: {
+        Row: {
+          code: string
+          debut_validite: string
+          fin_validite: string
+          libelle: string
+          note: string | null
+          ordre: number
+        }
+        Insert: {
+          code: string
+          debut_validite?: string
+          fin_validite?: string
+          libelle: string
+          note?: string | null
+          ordre?: number
+        }
+        Update: {
+          code?: string
+          debut_validite?: string
+          fin_validite?: string
+          libelle?: string
+          note?: string | null
+          ordre?: number
+        }
+        Relationships: []
+      }
+      ref_sujet_export: {
+        Row: {
+          code: string
+          debut_validite: string
+          fin_validite: string
+          libelle: string
+          note: string | null
+          ordre: number
+        }
+        Insert: {
+          code: string
+          debut_validite?: string
+          fin_validite?: string
+          libelle: string
+          note?: string | null
+          ordre?: number
+        }
+        Update: {
+          code?: string
+          debut_validite?: string
+          fin_validite?: string
+          libelle?: string
+          note?: string | null
+          ordre?: number
+        }
+        Relationships: []
+      }
+      ref_type_adresse: {
+        Row: {
+          code: string
+          debut_validite: string
+          description: string
+          fin_validite: string
+          libelle: string
+          ordre: number
+          sert_au_fiscal: boolean
+          sert_aux_tournees: boolean
+        }
+        Insert: {
+          code: string
+          debut_validite?: string
+          description: string
+          fin_validite?: string
+          libelle: string
+          ordre?: number
+          sert_au_fiscal?: boolean
+          sert_aux_tournees?: boolean
+        }
+        Update: {
+          code?: string
+          debut_validite?: string
+          description?: string
+          fin_validite?: string
+          libelle?: string
+          ordre?: number
+          sert_au_fiscal?: boolean
+          sert_aux_tournees?: boolean
+        }
+        Relationships: []
+      }
+      ref_unite_essai: {
+        Row: {
+          code: string
+          debut_validite: string
+          fin_validite: string
+          libelle: string
+          note: string | null
+          ordre: number
+        }
+        Insert: {
+          code: string
+          debut_validite?: string
+          fin_validite?: string
+          libelle: string
+          note?: string | null
+          ordre?: number
+        }
+        Update: {
+          code?: string
+          debut_validite?: string
+          fin_validite?: string
+          libelle?: string
+          note?: string | null
+          ordre?: number
+        }
+        Relationships: []
+      }
+      ref_unite_prime: {
+        Row: {
+          code: string
+          debut_validite: string
+          description: string | null
+          fin_validite: string
+          libelle: string
+          note: string | null
+          ordre: number
+        }
+        Insert: {
+          code: string
+          debut_validite?: string
+          description?: string | null
+          fin_validite?: string
+          libelle: string
+          note?: string | null
+          ordre?: number
+        }
+        Update: {
+          code?: string
+          debut_validite?: string
+          description?: string | null
+          fin_validite?: string
+          libelle?: string
+          note?: string | null
+          ordre?: number
+        }
+        Relationships: []
+      }
       reference_periods: {
         Row: {
           company_id: string
@@ -2186,6 +3484,92 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "departments"
             referencedColumns: ["id"]
+          },
+        ]
+      }
+      sanction_categories: {
+        Row: {
+          code: string
+          description: string
+          label: string
+          rank: number
+          valid_from: string
+          valid_to: string
+        }
+        Insert: {
+          code: string
+          description: string
+          label: string
+          rank: number
+          valid_from?: string
+          valid_to?: string
+        }
+        Update: {
+          code?: string
+          description?: string
+          label?: string
+          rank?: number
+          valid_from?: string
+          valid_to?: string
+        }
+        Relationships: []
+      }
+      sanction_types: {
+        Row: {
+          affects_pay: boolean
+          affects_presence: boolean
+          category_code: string
+          code: string
+          description: string
+          ends_contract: boolean
+          is_contract_change: boolean
+          label: string
+          legal_ref: string | null
+          needs_notice: boolean | null
+          note: string | null
+          requires_internal_rules: boolean
+          valid_from: string
+          valid_to: string
+        }
+        Insert: {
+          affects_pay?: boolean
+          affects_presence?: boolean
+          category_code: string
+          code: string
+          description: string
+          ends_contract?: boolean
+          is_contract_change?: boolean
+          label: string
+          legal_ref?: string | null
+          needs_notice?: boolean | null
+          note?: string | null
+          requires_internal_rules?: boolean
+          valid_from?: string
+          valid_to?: string
+        }
+        Update: {
+          affects_pay?: boolean
+          affects_presence?: boolean
+          category_code?: string
+          code?: string
+          description?: string
+          ends_contract?: boolean
+          is_contract_change?: boolean
+          label?: string
+          legal_ref?: string | null
+          needs_notice?: boolean | null
+          note?: string | null
+          requires_internal_rules?: boolean
+          valid_from?: string
+          valid_to?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sanction_types_category_code_fkey"
+            columns: ["category_code"]
+            isOneToOne: false
+            referencedRelation: "sanction_categories"
+            referencedColumns: ["code"]
           },
         ]
       }
@@ -2291,6 +3675,7 @@ export type Database = {
       shifts: {
         Row: {
           break_minutes: number
+          client_site_id: string | null
           company_id: string
           created_at: string
           employee_id: string
@@ -2304,6 +3689,7 @@ export type Database = {
         }
         Insert: {
           break_minutes?: number
+          client_site_id?: string | null
           company_id: string
           created_at?: string
           employee_id: string
@@ -2317,6 +3703,7 @@ export type Database = {
         }
         Update: {
           break_minutes?: number
+          client_site_id?: string | null
           company_id?: string
           created_at?: string
           employee_id?: string
@@ -2330,24 +3717,31 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "shift_belongs_to_employees_company"
+            columns: ["employee_id", "company_id"]
+            isOneToOne: false
+            referencedRelation: "employees"
+            referencedColumns: ["id", "company_id"]
+          },
+          {
+            foreignKeyName: "shift_belongs_to_schedules_company"
+            columns: ["schedule_id", "company_id"]
+            isOneToOne: false
+            referencedRelation: "schedules"
+            referencedColumns: ["id", "company_id"]
+          },
+          {
+            foreignKeyName: "shift_site_belongs_to_company"
+            columns: ["client_site_id", "company_id"]
+            isOneToOne: false
+            referencedRelation: "client_sites"
+            referencedColumns: ["id", "company_id"]
+          },
+          {
             foreignKeyName: "shifts_company_id_fkey"
             columns: ["company_id"]
             isOneToOne: false
             referencedRelation: "companies"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "shifts_employee_id_fkey"
-            columns: ["employee_id"]
-            isOneToOne: false
-            referencedRelation: "employees"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "shifts_schedule_id_fkey"
-            columns: ["schedule_id"]
-            isOneToOne: false
-            referencedRelation: "schedules"
             referencedColumns: ["id"]
           },
           {
@@ -2372,7 +3766,7 @@ export type Database = {
           source: string
           tax_class: Database["public"]["Enums"]["tax_class"]
           valid_from: string
-          valid_to: string | null
+          valid_to: string
         }
         Insert: {
           base_tax?: number
@@ -2385,8 +3779,8 @@ export type Database = {
           rate_over_min: number
           source?: string
           tax_class: Database["public"]["Enums"]["tax_class"]
-          valid_from: string
-          valid_to?: string | null
+          valid_from?: string
+          valid_to?: string
         }
         Update: {
           base_tax?: number
@@ -2400,7 +3794,7 @@ export type Database = {
           source?: string
           tax_class?: Database["public"]["Enums"]["tax_class"]
           valid_from?: string
-          valid_to?: string | null
+          valid_to?: string
         }
         Relationships: []
       }
@@ -2418,7 +3812,7 @@ export type Database = {
           prorated_on_hours: boolean
           source: string
           valid_from: string
-          valid_to: string | null
+          valid_to: string
         }
         Insert: {
           applies_to_classes?: Database["public"]["Enums"]["tax_class"][] | null
@@ -2432,8 +3826,8 @@ export type Database = {
           note?: string | null
           prorated_on_hours?: boolean
           source?: string
-          valid_from: string
-          valid_to?: string | null
+          valid_from?: string
+          valid_to?: string
         }
         Update: {
           applies_to_classes?: Database["public"]["Enums"]["tax_class"][] | null
@@ -2448,7 +3842,7 @@ export type Database = {
           prorated_on_hours?: boolean
           source?: string
           valid_from?: string
-          valid_to?: string | null
+          valid_to?: string
         }
         Relationships: []
       }
@@ -2519,13 +3913,49 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "time_entries_employee_id_fkey"
-            columns: ["employee_id"]
+            foreignKeyName: "time_entry_belongs_to_employees_company"
+            columns: ["employee_id", "company_id"]
             isOneToOne: false
             referencedRelation: "employees"
-            referencedColumns: ["id"]
+            referencedColumns: ["id", "company_id"]
           },
         ]
+      }
+      travel_distances: {
+        Row: {
+          computed_at: string
+          computed_by: string | null
+          destination_ref: string
+          distance_km: number
+          duration_minutes: number | null
+          id: string
+          note: string | null
+          origin_ref: string
+          source: string
+        }
+        Insert: {
+          computed_at?: string
+          computed_by?: string | null
+          destination_ref: string
+          distance_km: number
+          duration_minutes?: number | null
+          id?: string
+          note?: string | null
+          origin_ref: string
+          source: string
+        }
+        Update: {
+          computed_at?: string
+          computed_by?: string | null
+          destination_ref?: string
+          distance_km?: number
+          duration_minutes?: number | null
+          id?: string
+          note?: string | null
+          origin_ref?: string
+          source?: string
+        }
+        Relationships: []
       }
       user_roles: {
         Row: {
@@ -2591,7 +4021,7 @@ export type Database = {
           relationship_degree: number | null
           requires_evidence: boolean
           valid_from: string
-          valid_to: string | null
+          valid_to: string
         }
         SetofOptions: {
           from: "*"
@@ -2627,7 +4057,7 @@ export type Database = {
           source: string
           unit: string | null
           valid_from: string
-          valid_to: string | null
+          valid_to: string
           validated_at: string | null
           validated_by: string | null
           value_json: Json | null
@@ -2640,6 +4070,16 @@ export type Database = {
           isOneToOne: true
           isSetofReturn: false
         }
+      }
+      fn_address_of: { Args: { p_ref: string }; Returns: Json }
+      fn_amend_contract: {
+        Args: {
+          p_changes: Json
+          p_contract: string
+          p_effective_date: string
+          p_reason: string
+        }
+        Returns: Json
       }
       fn_annual_leave_rule: {
         Args: { p_contract: string; p_on?: string }
@@ -2669,6 +4109,7 @@ export type Database = {
         }
         Returns: Json
       }
+      fn_audit_conninfo: { Args: never; Returns: string }
       fn_can_terminate: {
         Args: {
           p_contract: string
@@ -2688,6 +4129,10 @@ export type Database = {
         }
         Returns: Json
       }
+      fn_cba_by_code: {
+        Args: { p_code: string; p_org: string }
+        Returns: string
+      }
       fn_cba_value: {
         Args: {
           p_block: Database["public"]["Enums"]["cba_block"]
@@ -2695,6 +4140,23 @@ export type Database = {
           p_path: string
         }
         Returns: Json
+      }
+      fn_chaine_absence: { Args: { p_absence: string }; Returns: Json }
+      fn_changer_adresse: {
+        Args: {
+          p_code_postal: string
+          p_effet: string
+          p_employee: string
+          p_ligne: string
+          p_localite: string
+          p_pays?: string
+          p_type: string
+        }
+        Returns: Json
+      }
+      fn_check_app_password: {
+        Args: { p_password: string; p_userid: string }
+        Returns: boolean
       }
       fn_check_national_id: {
         Args: {
@@ -2728,6 +4190,16 @@ export type Database = {
         Args: { p_contract: string; p_on?: string }
         Returns: Json
       }
+      fn_create_app_user: {
+        Args: {
+          p_email: string
+          p_full_name?: string
+          p_is_admin?: boolean
+          p_password: string
+          p_userid: string
+        }
+        Returns: Json
+      }
       fn_decrypt_field: { Args: { p_cipher: string }; Returns: string }
       fn_delegation_eligibility: {
         Args: { p_employee: string; p_on?: string }
@@ -2750,6 +4222,24 @@ export type Database = {
         Args: { p_employee: string; p_on?: string }
         Returns: Json
       }
+      fn_employee_rows: {
+        Args: {
+          p_active_on?: string
+          p_company?: string
+          p_department?: string
+          p_employee?: string
+          p_fields?: string[]
+          p_limit?: number
+          p_search?: string
+        }
+        Returns: Database["public"]["CompositeTypes"]["employee_row"][]
+        SetofOptions: {
+          from: "*"
+          to: "employee_row"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
       fn_employee_sensitive: {
         Args: { p_employee: string }
         Returns: {
@@ -2762,6 +4252,11 @@ export type Database = {
         Args: { p_contract: string }
         Returns: Json
       }
+      fn_export_company: { Args: { p_company: string }; Returns: Json }
+      fn_export_employee: { Args: { p_employee: string }; Returns: Json }
+      fn_export_organization: { Args: never; Returns: Json }
+      fn_export_referential: { Args: never; Returns: Json }
+      fn_export_self: { Args: never; Returns: Json }
       fn_fmt: { Args: { n: number }; Returns: string }
       fn_generate_public_holidays: {
         Args: { p_year: number }
@@ -2794,6 +4289,10 @@ export type Database = {
         Args: { p_cba?: string; p_year: number }
         Returns: Json
       }
+      fn_import_referential: {
+        Args: { p_document: Json; p_mode?: string }
+        Returns: Json
+      }
       fn_income_tax: {
         Args: {
           p_class: Database["public"]["Enums"]["tax_class"]
@@ -2801,6 +4300,10 @@ export type Database = {
           p_periodicity?: Database["public"]["Enums"]["tax_periodicity"]
           p_taxable: number
         }
+        Returns: Json
+      }
+      fn_indicateurs_affectation: {
+        Args: { p_employee: string; p_le?: string }
         Returns: Json
       }
       fn_is_public_holiday: {
@@ -2824,6 +4327,29 @@ export type Database = {
         }
         Returns: Json
       }
+      fn_log_access: {
+        Args: {
+          p_action: string
+          p_entity_id: string
+          p_entity_table: string
+          p_row_count?: number
+          p_scope?: string
+          p_subject_employee: string
+        }
+        Returns: undefined
+      }
+      fn_log_access_autonomous: {
+        Args: {
+          p_action: string
+          p_company: string
+          p_entity_id: string
+          p_entity_table: string
+          p_row_count?: number
+          p_scope?: string
+          p_subject_employee: string
+        }
+        Returns: undefined
+      }
       fn_luhn_check_digit: { Args: { p_digits: string }; Returns: number }
       fn_make_national_id:
         | { Args: { p_birth: string; p_serial: number }; Returns: string }
@@ -2836,6 +4362,15 @@ export type Database = {
             Returns: string
           }
       fn_meal_voucher_check: { Args: { p_grant: string }; Returns: Json }
+      fn_migration_source: { Args: { p_version: string }; Returns: string }
+      fn_migrations_list: {
+        Args: never
+        Returns: {
+          name: string
+          taille: number
+          version: string
+        }[]
+      }
       fn_min_salary: {
         Args: { p_contract: string; p_on?: string }
         Returns: Json
@@ -2845,6 +4380,7 @@ export type Database = {
         Args: { p_id: string }
         Returns: Database["public"]["Enums"]["sex_kind"]
       }
+      fn_normaliser_pays: { Args: { p_pays: string }; Returns: string }
       fn_notice_period: {
         Args: {
           p_by_employer: boolean
@@ -2907,7 +4443,7 @@ export type Database = {
           source: string
           unit: string | null
           valid_from: string
-          valid_to: string | null
+          valid_to: string
           validated_at: string | null
           validated_by: string | null
           value_json: Json | null
@@ -2922,16 +4458,45 @@ export type Database = {
         }
       }
       fn_param_num: { Args: { p_key: string; p_on?: string }; Returns: number }
+      fn_payload_rows: { Args: { p_payload: Json }; Returns: number }
+      fn_person_access_report: {
+        Args: { p_employee: string; p_from?: string; p_to?: string }
+        Returns: {
+          agent: string
+          d_ou: string
+          detail: string
+          nature: string
+          quand: string
+          qui: string
+          qui_id: string
+          quoi: string
+          requete: string
+        }[]
+      }
+      fn_poser_adresses_depuis_domicile: {
+        Args: { p_depuis?: string; p_employee: string }
+        Returns: Json
+      }
+      fn_postal_number: {
+        Args: { p_country: string; p_postal: string }
+        Returns: number
+      }
       fn_premium_caps: {
         Args: { p_company: string; p_year: number }
         Returns: Json
       }
       fn_premium_check: { Args: { p_premium: string }; Returns: Json }
+      fn_primes_conditions: {
+        Args: { p_au: string; p_du: string; p_employee: string }
+        Returns: Json
+      }
       fn_probation: {
         Args: { p_contract: string; p_on?: string }
         Returns: Json
       }
       fn_publish_schedule: { Args: { p_schedule: string }; Returns: Json }
+      fn_recalculer_severites: { Args: { p_le?: string }; Returns: Json }
+      fn_redact_encrypted: { Args: { p_row: Json }; Returns: Json }
       fn_reference_period_status: {
         Args: { p_company: string; p_on?: string }
         Returns: Json
@@ -2946,6 +4511,7 @@ export type Database = {
           label: string
           latest_covered: string
           param_key: string
+          read_by: string
           versions: number
         }[]
       }
@@ -2969,10 +4535,33 @@ export type Database = {
           tolerance: number
         }[]
       }
+      fn_refuser_absence: {
+        Args: {
+          p_absence: string
+          p_commentaire?: string
+          p_motif: string
+          p_nouveau_debut: string
+          p_nouveau_fin: string
+        }
+        Returns: Json
+      }
+      fn_repondre_contre_proposition: {
+        Args: { p_absence: string; p_accepte: boolean; p_motif?: string }
+        Returns: Json
+      }
+      fn_request_source: { Args: never; Returns: Json }
+      fn_rows_json: {
+        Args: { p_column: string; p_table: string; p_value: string }
+        Returns: Json
+      }
       fn_salary_reference: {
         Args: { p_contract: string; p_on?: string }
         Returns: Json
       }
+      fn_sanction_check: { Args: { p_sanction: string }; Returns: Json }
+      fn_schedule_travel: { Args: { p_schedule: string }; Returns: Json }
+      fn_schema_catalogue: { Args: never; Returns: Json }
+      fn_schema_catalogue_for_admin: { Args: never; Returns: Json }
       fn_seed_demo: { Args: never; Returns: Json }
       fn_set_company_rates: {
         Args: {
@@ -2995,7 +4584,7 @@ export type Database = {
           note: string | null
           source: string
           valid_from: string
-          valid_to: string | null
+          valid_to: string
         }
         SetofOptions: {
           from: "*"
@@ -3007,6 +4596,21 @@ export type Database = {
       fn_set_employee_sensitive: {
         Args: { p_employee: string; p_iban: string; p_national_id: string }
         Returns: undefined
+      }
+      fn_set_travel_distance: {
+        Args: {
+          p_destination: string
+          p_km: number
+          p_minutes: number
+          p_note?: string
+          p_origin: string
+          p_source: string
+        }
+        Returns: Json
+      }
+      fn_severite_pour_echeance: {
+        Args: { p_echeance: string; p_le?: string }
+        Returns: Json
       }
       fn_shift_end_ts: {
         Args: { p_date: string; p_end: string; p_start: string }
@@ -3020,6 +4624,7 @@ export type Database = {
         Args: { p_date: string; p_start: string }
         Returns: string
       }
+      fn_shift_travel: { Args: { p_shift: string }; Returns: Json }
       fn_sick_counters: {
         Args: { p_employee: string; p_on?: string }
         Returns: Json
@@ -3033,7 +4638,31 @@ export type Database = {
         }
         Returns: Json
       }
+      fn_time_entry_rows: {
+        Args: {
+          p_employee: string
+          p_from: string
+          p_limit?: number
+          p_only_validated?: boolean
+          p_to: string
+        }
+        Returns: Database["public"]["CompositeTypes"]["time_entry_row"][]
+        SetofOptions: {
+          from: "*"
+          to: "time_entry_row"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      fn_travel_distance: {
+        Args: { p_destination: string; p_origin: string }
+        Returns: Json
+      }
       fn_valid_national_id: { Args: { p_id: string }; Returns: boolean }
+      fn_validate_address: {
+        Args: { p_city?: string; p_country: string; p_postal: string }
+        Returns: Json
+      }
       fn_validate_parameter_version: {
         Args: { p_id: string }
         Returns: {
@@ -3052,7 +4681,7 @@ export type Database = {
           source: string
           unit: string | null
           valid_from: string
-          valid_to: string | null
+          valid_to: string
           validated_at: string | null
           validated_by: string | null
           value_json: Json | null
@@ -3068,6 +4697,10 @@ export type Database = {
       }
       fn_validate_schedule: { Args: { p_schedule: string }; Returns: Json }
       fn_verhoeff_check_digit: { Args: { p_digits: string }; Returns: number }
+      fn_verifier_couverture_adresses: {
+        Args: { p_depuis?: string; p_employee: string }
+        Returns: Json
+      }
       has_company_access: { Args: { p_company: string }; Returns: boolean }
       has_role: {
         Args: {
@@ -3089,9 +4722,21 @@ export type Database = {
         | "public_holiday"
         | "unpaid"
         | "compensatory"
-      absence_status: "pending" | "approved" | "refused" | "cancelled"
+      absence_status:
+        | "pending"
+        | "approved"
+        | "refused"
+        | "cancelled"
+        | "proposed"
       alert_state: "open" | "handled" | "dismissed"
-      app_role: "fiduciary_admin" | "manager" | "service_manager" | "employee"
+      app_role:
+        | "fiduciary_admin"
+        | "manager"
+        | "service_manager"
+        | "employee"
+        | "medecine_travail"
+        | "rh_urgence"
+        | "dispatching"
       cba_block:
         | "salary_grid"
         | "worktime"
@@ -3141,14 +4786,47 @@ export type Database = {
         | "frontalier_fr"
         | "frontalier_be"
         | "frontalier_de"
+        | "frontalier_fra"
+        | "frontalier_bel"
+        | "frontalier_deu"
       schedule_status: "draft" | "published"
-      severity_kind: "blocking" | "warning" | "info"
+      severity_kind: "blocking" | "warning" | "info" | "problem"
       sex_kind: "male" | "female" | "unspecified"
       tax_class: "1" | "1a" | "2"
       tax_periodicity: "monthly" | "daily" | "annual"
     }
     CompositeTypes: {
-      [_ in never]: never
+      employee_row: {
+        employee_id: string | null
+        company_id: string | null
+        department_id: string | null
+        first_name: string | null
+        last_name: string | null
+        email: string | null
+        phone: string | null
+        birth_date: string | null
+        residency: Database["public"]["Enums"]["residency_kind"] | null
+        qualification: Database["public"]["Enums"]["qualification_kind"] | null
+        job_title: string | null
+        contract_kind: Database["public"]["Enums"]["contract_kind"] | null
+        start_date: string | null
+        end_date: string | null
+        monthly_gross: number | null
+        weekly_hours: number | null
+        national_id: string | null
+        iban: string | null
+      }
+      time_entry_row: {
+        entry_id: string | null
+        employee_id: string | null
+        entry_date: string | null
+        worked_hours: number | null
+        overtime_hours: number | null
+        night_hours: number | null
+        sunday_hours: number | null
+        holiday_hours: number | null
+        is_validated: boolean | null
+      }
     }
   }
 }
@@ -3281,9 +4959,23 @@ export const Constants = {
         "unpaid",
         "compensatory",
       ],
-      absence_status: ["pending", "approved", "refused", "cancelled"],
+      absence_status: [
+        "pending",
+        "approved",
+        "refused",
+        "cancelled",
+        "proposed",
+      ],
       alert_state: ["open", "handled", "dismissed"],
-      app_role: ["fiduciary_admin", "manager", "service_manager", "employee"],
+      app_role: [
+        "fiduciary_admin",
+        "manager",
+        "service_manager",
+        "employee",
+        "medecine_travail",
+        "rh_urgence",
+        "dispatching",
+      ],
       cba_block: [
         "salary_grid",
         "worktime",
@@ -3338,9 +5030,12 @@ export const Constants = {
         "frontalier_fr",
         "frontalier_be",
         "frontalier_de",
+        "frontalier_fra",
+        "frontalier_bel",
+        "frontalier_deu",
       ],
       schedule_status: ["draft", "published"],
-      severity_kind: ["blocking", "warning", "info"],
+      severity_kind: ["blocking", "warning", "info", "problem"],
       sex_kind: ["male", "female", "unspecified"],
       tax_class: ["1", "1a", "2"],
       tax_periodicity: ["monthly", "daily", "annual"],

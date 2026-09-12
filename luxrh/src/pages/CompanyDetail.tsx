@@ -7,7 +7,7 @@ import {
 import {
   Badge, Button, Card, ErrorNote, Field, Input, LegalBasis, Loading, Select, SeverityMark, Table,
 } from '@/components/ui'
-import { CBA_SCOPE_LABEL, date, num, pct } from '@/lib/format'
+import { CBA_SCOPE_LABEL, date, num, pct, sansFin } from '@/lib/format'
 
 export default function CompanyDetail() {
   const { id } = useParams()
@@ -98,7 +98,7 @@ export default function CompanyDetail() {
                         <p className="truncate text-sm font-semibold text-ink">{ca?.name}</p>
                         <p className="text-2xs text-ink-muted">
                           {CBA_SCOPE_LABEL[ca?.scope ?? 'sector']} · {date(l.valid_from)} →{' '}
-                          {l.valid_to ? date(l.valid_to) : '…'}
+                          {sansFin(l.valid_to) ? '…' : date(l.valid_to)}
                         </p>
                       </div>
                       <Badge tone={active ? 'violet' : 'neutral'}>{active ? 'en vigueur' : 'échue'}</Badge>
@@ -212,7 +212,7 @@ export default function CompanyDetail() {
           {periods.map((p) => (
             <tr key={p.id}>
               <td className="lux-td font-mono">{date(p.valid_from)}</td>
-              <td className="lux-td font-mono">{p.valid_to ? date(p.valid_to) : '…'}</td>
+              <td className="lux-td font-mono">{sansFin(p.valid_to) ? '…' : date(p.valid_to)}</td>
               <td className="lux-td">{p.activity_class ?? '—'}</td>
               <td className="lux-td">{p.mutuality_class ? `Classe ${p.mutuality_class}` : '—'}</td>
               <td className="lux-td font-mono">{num(p.accident_factor, 2)}</td>

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useApp } from '@/context/AppContext'
-import { supabase } from '@/lib/supabase'
+import { callEngine, supabase } from '@/lib/supabase'
 import {
   useCompany, useContractCompliance, useCreateContract, useEmployees,
   useLegalParameters, useUpdateContract,
@@ -9,7 +9,7 @@ import {
 import {
   Badge, Button, Card, ErrorNote, Field, Input, LegalBasis, Loading, Select, SeverityMark,
 } from '@/components/ui'
-import { currentCbas, date, eur, num } from '@/lib/format'
+import { currentCbas, date, estEnVigueur, eur, num } from '@/lib/format'
 
 const STEPS = ['Employé', 'Poste & rémunération', 'Temps de travail', 'Essai & durée', 'Relecture'] as const
 
@@ -76,10 +76,18 @@ export default function ContractWizard() {
 
   const cddReasons =
     (params.data?.find((p) => p.param_key === 'cdd_reasons')?.value_json as unknown as string[] | undefined) ?? []
-  const legalWeekly = params.data?.find((p) => p.param_key === 'normal_weekly_hours' && !p.valid_to)
-  const maxPrl = params.data?.find((p) => p.param_key === 'max_reference_period_months' && !p.valid_to)
-  const minLeave = params.data?.find((p) => p.param_key === 'annual_leave_min_days' && !p.valid_to)
-  const breakThreshold = params.data?.find((p) => p.param_key === 'break_threshold_hours' && !p.valid_to)
+  const legalWeekly = params.data?.find(
+    (p) => p.param_key === 'normal_weekly_hours' && estEnVigueur(p, referenceDate),
+  )
+  const maxPrl = params.data?.find(
+    (p) => p.param_key === 'max_reference_period_months' && estEnVigueur(p, referenceDate),
+  )
+  const minLeave = params.data?.find(
+    (p) => p.param_key === 'annual_leave_min_days' && estEnVigueur(p, referenceDate),
+  )
+  const breakThreshold = params.data?.find(
+    (p) => p.param_key === 'break_threshold_hours' && estEnVigueur(p, referenceDate),
+  )
 
   function toPayload() {
     return {
@@ -106,7 +114,8 @@ export default function ContractWizard() {
       exclusivity_clause: d.exclusivity_clause,
       probation_length: d.probation_length ? Number(d.probation_length) : null,
       probation_unit: d.probation_length ? d.probation_unit : null,
-      index_ref: Number(params.data?.find((p) => p.param_key === 'wage_index' && !p.valid_to)?.value_num ?? 0) || null,
+      index_ref: Number(params.data?.find((p) => p.param_key === 'wage_index' && estEnVigueur(p, referenceDate))
+        ?.value_num ?? 0) || null,
     }
   }
 
@@ -133,12 +142,14 @@ export default function ContractWizard() {
         employeeId = emp.id
         set('employee_id', employeeId)
         if (d.national_id || d.iban) {
-          const { error: e2 } = await supabase.rpc('fn_set_employee_sensitive', {
+          // Passe par callEngine : le moteur valide le matricule et chiffre les
+          // deux champs. Un appel direct laisserait remonter l'erreur PL/pgSQL
+          // sous une forme que le reste de l'application ne traite pas.
+          await callEngine<void>('fn_set_employee_sensitive', {
             p_employee: employeeId,
             p_national_id: d.national_id || '',
             p_iban: d.iban || '',
           })
-          if (e2) throw new Error(e2.message)
         }
       }
       const payload = { ...toPayload(), employee_id: employeeId }

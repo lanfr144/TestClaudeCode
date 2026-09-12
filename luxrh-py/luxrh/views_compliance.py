@@ -7,6 +7,7 @@ import streamlit as st
 
 from . import client as db
 from . import design as ds
+from .design import sans_fin
 
 CATEGORIES = {
     "all": "Toutes",
@@ -111,8 +112,8 @@ def _contract_compliance(contract_id: str) -> None:
     ds.section("Conventions applicables")
     for agreement in compliance["collective_agreements"]:
         st.markdown(
-            f"{ds.badge(agreement['origin'], 'violet')} **{agreement['name']}** "
-            f"<span class='lux-muted'>({agreement['scope']})</span>",
+            f"{ds.badge(agreement['origin'], 'violet')} **{ds.esc(agreement['name'])}** "
+            f"<span class='lux-muted'>({ds.esc(agreement['scope'])})</span>",
             unsafe_allow_html=True)
     ds.arbitration(compliance["annual_leave"], "j")
 
@@ -234,9 +235,9 @@ def dismissal_simulator() -> None:
                 ds.section("Chronologie de la procédure")
                 for step in result["timeline"]:
                     st.markdown(
-                        f"<div class='lux-card'><span class='lux-mono'>{step['when']}</span>"
-                        f"<div style='font-weight:600'>{step['title']}</div>"
-                        f"<div class='lux-muted'>{step['detail']}</div></div>",
+                        f"<div class='lux-card'><span class='lux-mono'>{ds.esc(step['when'])}</span>"
+                        f"<div style='font-weight:600'>{ds.esc(step['title'])}</div>"
+                        f"<div class='lux-muted'>{ds.esc(step['detail'])}</div></div>",
                         unsafe_allow_html=True)
                 st.warning("Aucune notification ne peut intervenir avant l’issue de la procédure.")
             ds.disclaimer(result.get("disclaimer"))
@@ -372,7 +373,7 @@ def referential() -> None:
     st.dataframe(
         pd.DataFrame([{
             "Du": ds.fmt_date(p["valid_from"]),
-            "Au": ds.fmt_date(p["valid_to"]) if p["valid_to"] else "…",
+            "Au": ds.fmt_date(p["valid_to"]) if not sans_fin(p["valid_to"]) else "…",
             "Valeur": _value(p),
             "Source": p["source"],
             "Note": p["note"] or "",

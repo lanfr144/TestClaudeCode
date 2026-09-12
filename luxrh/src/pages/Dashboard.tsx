@@ -5,7 +5,7 @@ import {
 } from '@/lib/queries'
 import { Badge, Button, Card, ErrorNote, Loading, StatTile } from '@/components/ui'
 import { VigilanceBlock } from '@/components/VigilanceItem'
-import { date, dateLong, num } from '@/lib/format'
+import { date, dateLong, estEnVigueur, num } from '@/lib/format'
 
 export default function Dashboard() {
   const { activeCompanyId, activeCompany, profile, referenceDate } = useApp()
@@ -28,7 +28,9 @@ export default function Dashboard() {
   const ongoing = (absences.data ?? []).filter(
     (a) => a.status === 'approved' && a.start_date <= referenceDate && a.end_date >= referenceDate,
   )
-  const index = params.data?.find((p) => p.param_key === 'wage_index' && !p.valid_to)
+  const index = params.data?.find(
+    (p) => p.param_key === 'wage_index' && estEnVigueur(p, referenceDate),
+  )
   const dc = s.dismissal_counters
   const hc = s.headcount
 

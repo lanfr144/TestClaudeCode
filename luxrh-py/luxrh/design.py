@@ -6,6 +6,7 @@ gris de travail. Le composant signature reste le bloc « base légale ».
 
 from __future__ import annotations
 
+import html
 from datetime import date, datetime
 from typing import Any, Iterable
 
@@ -109,6 +110,25 @@ def inject_css() -> None:
 
 # ---------------------------------------------------------------- formatage
 
+# Date sentinelle de « pas de fin connue ». La migration 70 a rendu `valid_to` non
+# nul sur les treize tables datées : une validité ouverte porte cette date, plus
+# jamais NULL. Elle tient dans un `time_t` 32 bits signé, ce que 9999-12-31 ne
+# fait pas. Les deux applications partagent la convention — voir `FIN_OUVERTE`
+# dans `luxrh/src/lib/format.ts`.
+FIN_OUVERTE = "2037-12-31"
+
+
+def sans_fin(valeur: Any) -> bool:
+    """Vrai si la validité n'a pas de fin connue : NULL hier, date sentinelle aujourd'hui.
+
+    Sans elle, un écran afficherait « 31/12/2037 » là où il disait « … » — une date
+    inventée présentée comme une échéance réelle.
+    """
+    if not valeur:
+        return True
+    return str(valeur)[:10] >= FIN_OUVERTE
+
+
 def fmt_date(value: Any) -> str:
     if not value:
         return "—"
@@ -139,11 +159,29 @@ def fmt_pct(value: Any) -> str:
 
 # --------------------------------------------------------------- composants
 
+def esc(value: Any) -> str:
+    """Échappe une donnée avant de l'insérer dans du HTML.
+
+    Ces composants s'affichent avec ``unsafe_allow_html=True`` : Streamlit y insère
+    le balisage tel quel. Or les textes viennent du moteur, qui compose ses messages
+    avec des données saisies — un nom de salarié, une note, un intitulé de poste.
+    Sans échappement, un nom contenant du balisage s'exécuterait dans le navigateur
+    de la personne qui consulte le dossier.
+
+    À n'appliquer qu'aux **données**. Le HTML que ces composants produisent
+    eux-mêmes (``badge``, ``severity_mark``, ``legal_ref_chip``) passe sans
+    échappement, sinon il s'afficherait en toutes lettres.
+    """
+    if value is None:
+        return ""
+    return html.escape(str(value), quote=True)
+
+
 def badge(label: str, tone: str = "neutral") -> str:
     bg, fg, border = TONES.get(tone, TONES["neutral"])
     return (
         f'<span class="lux-badge" style="background:{bg};color:{fg};'
-        f'border-color:{border}40">{label}</span>'
+        f'border-color:{border}40">{esc(label)}</span>'
     )
 
 
@@ -151,7 +189,7 @@ def severity_mark(severity: str) -> str:
     bg, fg, border = TONES.get(severity, TONES["neutral"])
     return (
         f'<span class="lux-badge" style="background:{bg};color:{fg};border-color:{border}40" '
-        f'title="{SEVERITY_LABEL.get(severity, severity)}">{GLYPHS.get(severity, "·")}</span>'
+        f'title="{esc(SEVERITY_LABEL.get(severity, severity))}">{GLYPHS.get(severity, "·")}</span>'
     )
 
 
@@ -163,16 +201,16 @@ def legal_basis(reference: str | None, text: str | None = None, value: str | Non
     parts = [
         '<div class="lux-legal">',
         '<div class="lux-label">Base légale</div>',
-        f'<div class="lux-mono" style="color:{VIOLET};margin-top:2px">{reference}</div>',
+        f'<div class="lux-mono" style="color:{VIOLET};margin-top:2px">{esc(reference)}</div>',
     ]
     if text:
-        parts.append(f'<div style="font-size:13px;margin-top:6px;color:#4A4348">{text}</div>')
+        parts.append(f'<div style="font-size:13px;margin-top:6px;color:#4A4348">{esc(text)}</div>')
     cells = []
     for caption, content in (("Valeur utilisée", value), ("Validité", validity), ("Source", source)):
         if content:
             cells.append(
                 f'<div><div style="font-size:11px;color:{INK_FAINT}">{caption}</div>'
-                f'<div style="font-size:13px;font-weight:600">{content}</div></div>'
+                f'<div style="font-size:13px;font-weight:600">{esc(content)}</div></div>'
             )
     if cells:
         parts.append(
@@ -188,7 +226,7 @@ def legal_ref_chip(reference: str | None) -> str:
         return ""
     return (
         f'<span class="lux-mono" style="background:{RAIL};padding:2px 6px;'
-        f'border-radius:4px">{reference}</span>'
+        f'border-radius:4px">{esc(reference)}</span>'
     )
 
 
@@ -197,7 +235,7 @@ def alert_card(severity: str, title: str, detail: str, consequence: str | None =
     bg, fg, border = TONES.get(severity, TONES["neutral"])
     right_html = (
         f'<div style="text-align:right;font-size:12px;font-weight:600;color:{fg};'
-        f'white-space:nowrap">{right}</div>' if right else ""
+        f'white-space:nowrap">{esc(right)}</div>' if right else ""
     )
     st.markdown(
         f"""
@@ -205,9 +243,9 @@ def alert_card(severity: str, title: str, detail: str, consequence: str | None =
           <div style="display:flex;gap:10px;align-items:flex-start">
             {severity_mark(severity)}
             <div style="flex:1;min-width:0">
-              <div style="font-size:13px;font-weight:600">{title}</div>
-              <div style="font-size:12px;color:{INK_MUTED};margin-top:2px">{detail}</div>
-              {f'<div style="font-size:12px;color:#4A4348;margin-top:4px">Conséquence : {consequence}</div>' if consequence else ''}
+              <div style="font-size:13px;font-weight:600">{esc(title)}</div>
+              <div style="font-size:12px;color:{INK_MUTED};margin-top:2px">{esc(detail)}</div>
+              {f'<div style="font-size:12px;color:#4A4348;margin-top:4px">Conséquence : {esc(consequence)}</div>' if consequence else ''}
               <div style="margin-top:6px">{legal_ref_chip(legal_ref)}</div>
             </div>
             {right_html}
@@ -223,9 +261,9 @@ def stat(label: str, value: Any, hint: str | None = None, tone: str = "neutral")
     st.markdown(
         f"""
         <div class="lux-card">
-          <div class="lux-label">{label}</div>
-          <div class="lux-stat" style="color:{fg if tone != 'neutral' else INK}">{value}</div>
-          {f'<div class="lux-muted">{hint}</div>' if hint else ''}
+          <div class="lux-label">{esc(label)}</div>
+          <div class="lux-stat" style="color:{fg if tone != 'neutral' else INK}">{esc(value)}</div>
+          {f'<div class="lux-muted">{esc(hint)}</div>' if hint else ''}
         </div>
         """,
         unsafe_allow_html=True,
@@ -236,7 +274,7 @@ def arbitration(data: dict, unit: str = "") -> None:
     """Hiérarchie des normes : loi → CCT → contrat, la plus favorable l'emporte."""
     if not data:
         return
-    st.markdown(f'<div class="lux-label">Hiérarchie des normes — {data.get("label","")}</div>',
+    st.markdown(f'<div class="lux-label">Hiérarchie des normes — {esc(data.get("label",""))}</div>',
                 unsafe_allow_html=True)
     rows = [
         ("Code du travail", data.get("law_value"), "Code du travail"),
@@ -251,7 +289,7 @@ def arbitration(data: dict, unit: str = "") -> None:
                 f"""
                 <div class="lux-card" style="background:{VIOLET_VEIL if retained else '#fff'};
                      border-color:{VIOLET if retained else RULE};margin:0">
-                  <div style="font-size:11px;color:{INK_FAINT}">{label}
+                  <div style="font-size:11px;color:{INK_FAINT}">{esc(label)}
                     {badge('retenu','violet') if retained else ''}</div>
                   <div style="font-size:18px;font-weight:600;color:{VIOLET_DEEP if retained else '#4A4348'}">
                     {(fmt_num(value) + ' ' + unit).strip() if value is not None else
@@ -271,15 +309,15 @@ def disclaimer(text: str | None = None) -> None:
     st.markdown(
         f'<div class="lux-card" style="background:#fff"><span style="font-size:12px;color:{INK_MUTED}">'
         f'<b style="color:#4A4348">LuxRH est un outil d’aide à la décision.</b> '
-        f'{text or "Il ne se substitue pas à un conseil juridique."}</span></div>',
+        f'{esc(text) or "Il ne se substitue pas à un conseil juridique."}</span></div>',
         unsafe_allow_html=True,
     )
 
 
 def section(title: str, subtitle: str | None = None) -> None:
     st.markdown(
-        f'<div style="margin:4px 0 10px"><div style="font-size:17px;font-weight:700">{title}</div>'
-        f'{f"<div class=\'lux-muted\'>{subtitle}</div>" if subtitle else ""}</div>',
+        f'<div style="margin:4px 0 10px"><div style="font-size:17px;font-weight:700">{esc(title)}</div>'
+        f'{f"<div class=\'lux-muted\'>{esc(subtitle)}</div>" if subtitle else ""}</div>',
         unsafe_allow_html=True,
     )
 
@@ -292,8 +330,8 @@ def checks_list(checks: Iterable[dict]) -> None:
                         border-bottom:1px solid {RULE}">
               {severity_mark(check.get('severity','info'))}
               <div style="min-width:0">
-                <div style="font-size:13px;font-weight:500">{check.get('label','')}</div>
-                <div style="font-size:12px;color:{INK_MUTED}">{check.get('detail','')}</div>
+                <div style="font-size:13px;font-weight:500">{esc(check.get('label',''))}</div>
+                <div style="font-size:12px;color:{INK_MUTED}">{esc(check.get('detail',''))}</div>
                 <div style="margin-top:4px">{legal_ref_chip(check.get('legal_ref'))}</div>
               </div>
             </div>

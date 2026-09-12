@@ -111,6 +111,37 @@ export const STATUS_KIND_LABEL: Record<string, string> = {
   protected_other: 'Autre statut protégé',
 }
 
+/**
+ * Date sentinelle de « pas de fin connue ».
+ *
+ * La migration 70 a rendu `valid_to` non nul sur les treize tables datées : une
+ * validité ouverte porte cette date, plus jamais NULL. Elle tient dans un `time_t`
+ * 32 bits signé, ce que 9999-12-31 ne fait pas.
+ */
+export const FIN_OUVERTE = '2037-12-31'
+
+/**
+ * Vrai si la ligne est en vigueur a la date donnee.
+ *
+ * Borne basse inclusive, borne haute exclusive — la meme convention que le moteur.
+ * Cette fonction existe parce que six ecrans testaient `!row.valid_to` pour
+ * reconnaitre la version courante : depuis que la colonne est non nulle, ce test
+ * est toujours faux et l'ecran perd silencieusement la valeur en vigueur. Passer
+ * par une fonction nommee evite que la question se repose.
+ */
+export function estEnVigueur(
+  row: { valid_from?: string | null; valid_to?: string | null },
+  on: string,
+): boolean {
+  if (row.valid_from && row.valid_from > on) return false
+  return !row.valid_to || row.valid_to > on
+}
+
+/** Vrai si la validite n'a pas de fin connue : NULL hier, date sentinelle aujourd'hui. */
+export function sansFin(valid_to: string | null | undefined): boolean {
+  return !valid_to || valid_to >= FIN_OUVERTE
+}
+
 /** Convention applicable a une date, extraite de la table de liaison. */
 export function currentCbas<
   T extends {

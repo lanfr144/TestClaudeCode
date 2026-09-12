@@ -7,7 +7,7 @@ import {
 import {
   Badge, Button, Card, ErrorNote, Field, Input, LegalBasis, Loading, SeverityMark, Table,
 } from '@/components/ui'
-import { date, num } from '@/lib/format'
+import { date, num, sansFin } from '@/lib/format'
 import type { LegalParameter } from '@/lib/queries'
 
 const FAMILY_LABEL: Record<string, string> = {
@@ -105,7 +105,7 @@ export default function Referential() {
                 </td>
                 <td className="lux-td whitespace-nowrap font-mono font-semibold text-ink">{formatValue(p)}</td>
                 <td className="lux-td whitespace-nowrap">
-                  {date(p.valid_from)} → {p.valid_to ? date(p.valid_to) : ''}
+                  {date(p.valid_from)} → {sansFin(p.valid_to) ? '…' : date(p.valid_to)}
                 </td>
                 <td className="lux-td font-mono">{p.index_ref ? num(p.index_ref, 2) : '—'}</td>
                 <td className="lux-td">{p.source}</td>
@@ -170,7 +170,7 @@ export default function Referential() {
                       >
                         <div className="flex items-center justify-between gap-2">
                           <span className="text-2xs text-ink-muted">
-                            {date(h.valid_from)} → {h.valid_to ? date(h.valid_to) : '…'}
+                            {date(h.valid_from)} → {sansFin(h.valid_to) ? '…' : date(h.valid_to)}
                           </span>
                           {current && <Badge tone="violet">en vigueur</Badge>}
                         </div>

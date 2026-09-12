@@ -73,7 +73,12 @@ console.log('\n== Ce que l’export doit refuser ==')
 
 console.log('\n== Réversibilité ==')
 {
-  const [bg] = await get(manager, 'companies?select=id,legal_name&limit=1')
+  // `limit=1` sans `order by` renvoie la première ligne dans l'ordre physique de
+  // la table — qui change dès qu'un `update` la réécrit. Le test tombait alors
+  // sur une société sans service et échouait pour une raison sans rapport avec
+  // ce qu'il vérifie. On demande explicitement une société qui en a.
+  const [bg] = await get(manager,
+    'companies?select=id,legal_name,departments!inner(id)&order=legal_name&limit=1')
   const [good, doc] = await rpc(manager, 'fn_export_company', { p_company: bg.id })
   good ? ok(`société exportée`, bg.legal_name) : ko('export société', JSON.stringify(doc))
   rows(doc, 'employees') >= 1 ? ok('salariés inclus', `${rows(doc, 'employees')}`) : ko('salariés', '0')
