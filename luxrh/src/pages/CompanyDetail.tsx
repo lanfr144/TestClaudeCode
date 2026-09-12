@@ -34,7 +34,7 @@ export default function CompanyDetail() {
   )
   const cbaLinks = c.conventions_de_la_societe ?? []
   const activeCbas = cbaLinks.filter(
-    (l) => l.debut_validite <= referenceDate && (!l.fin_validite || l.fin_validite > referenceDate),
+    (l) => l.debut_validite <= referenceDate && l.fin_validite > referenceDate,
   )
 
   return (
@@ -84,7 +84,7 @@ export default function CompanyDetail() {
           ) : (
             <ul className="space-y-2.5">
               {cbaLinks.map((l) => {
-                const active = l.debut_validite <= referenceDate && (!l.fin_validite || l.fin_validite > referenceDate)
+                const active = l.debut_validite <= referenceDate && l.fin_validite > referenceDate
                 const ca = l.conventions_collectives
                 const rules = (ca?.regles_convention ?? []) as { bloc: string; regles: Record<string, unknown> }[]
                 const leaveRules = rules.find((b) => b.bloc === 'leave')?.regles as

@@ -114,43 +114,45 @@ export const STATUS_KIND_LABEL: Record<string, string> = {
 /**
  * Date sentinelle de « pas de fin connue ».
  *
- * La migration 70 a rendu `fin_validite` non nul sur les treize tables datées : une
- * validité ouverte porte cette date, plus jamais NULL. Elle tient dans un `time_t`
- * 32 bits signé, ce que 9999-12-31 ne fait pas.
+ * `debut_validite` et `fin_validite` sont **non nuls** depuis la migration 70 :
+ * une validité ouverte porte cette date, jamais NULL. Elle tient dans un `time_t`
+ * 32 bits signé, ce que 9999-12-31 ne fait pas — raison pour laquelle le projet
+ * n'emploie qu'elle, y compris dans les schémas Oracle et MySQL dérivés.
  */
 export const FIN_OUVERTE = '2037-12-31'
 
 /**
- * Vrai si la ligne est en vigueur a la date donnee.
+ * Vrai si la ligne est en vigueur à la date donnée.
  *
- * Borne basse inclusive, borne haute exclusive — la meme convention que le moteur.
- * Cette fonction existe parce que six ecrans testaient `!row.fin_validite` pour
- * reconnaitre la version courante : depuis que la colonne est non nulle, ce test
- * est toujours faux et l'ecran perd silencieusement la valeur en vigueur. Passer
- * par une fonction nommee evite que la question se repose.
+ * Borne basse incluse, borne haute exclue — la convention du moteur.
+ *
+ * Les deux bornes sont exigées, et non optionnelles. C'est délibéré : tant que la
+ * signature tolérait `string | null`, le corps devait prévoir le nul, et chaque
+ * lecteur en concluait que la colonne pouvait l'être. Une colonne `not null` dont
+ * tout le code se méfie n'est pas un invariant, c'est une convention à laquelle
+ * personne ne croit. Le compilateur l'impose désormais à l'appelant.
  */
 export function estEnVigueur(
-  row: { debut_validite?: string | null; fin_validite?: string | null },
-  on: string,
+  ligne: { debut_validite: string; fin_validite: string },
+  le: string,
 ): boolean {
-  if (row.debut_validite && row.debut_validite > on) return false
-  return !row.fin_validite || row.fin_validite > on
+  return ligne.debut_validite <= le && ligne.fin_validite > le
 }
 
-/** Vrai si la validite n'a pas de fin connue : NULL hier, date sentinelle aujourd'hui. */
-export function sansFin(fin_validite: string | null | undefined): boolean {
-  return !fin_validite || fin_validite >= FIN_OUVERTE
+/** Vrai si la validité n'a pas de fin connue, c'est-à-dire si elle porte la sentinelle. */
+export function sansFin(fin_validite: string): boolean {
+  return fin_validite >= FIN_OUVERTE
 }
 
-/** Convention applicable a une date, extraite de la table de liaison. */
+/** Convention applicable à une date, extraite de la table de liaison. */
 export function currentCbas<
   T extends {
     debut_validite: string
-    fin_validite: string | null
+    fin_validite: string
     conventions_collectives: { nom: string; code: string; portee?: string | null } | null
   },
 >(links: T[] | null | undefined, on: string): T[] {
-  return (links ?? []).filter((l) => l.debut_validite <= on && (!l.fin_validite || l.fin_validite > on))
+  return (links ?? []).filter((l) => estEnVigueur(l, on))
 }
 
 export const ABSENCE_STATUS_LABEL: Record<string, string> = {

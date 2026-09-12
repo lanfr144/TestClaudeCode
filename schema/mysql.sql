@@ -2659,8 +2659,8 @@ for each row begin
       from `adresses_salarie` b
      where b.`id` <> new.`id`
        and new.`salarie_id` <=> b.`salarie_id` and new.`type_adresse` <=> b.`type_adresse`
-       and new.`debut_validite` < ifnull(b.`fin_validite`, '9999-12-31')
-       and ifnull(new.`fin_validite`, '9999-12-31') > b.`debut_validite`
+       and new.`debut_validite` < b.`fin_validite`
+       and new.`fin_validite` > b.`debut_validite`
   ) into v_conflit;
   if v_conflit then
     signal sqlstate '45000'
@@ -2675,8 +2675,8 @@ for each row begin
       from `adresses_salarie` b
      where b.`id` <> new.`id`
        and new.`salarie_id` <=> b.`salarie_id` and new.`type_adresse` <=> b.`type_adresse`
-       and new.`debut_validite` < ifnull(b.`fin_validite`, '9999-12-31')
-       and ifnull(new.`fin_validite`, '9999-12-31') > b.`debut_validite`
+       and new.`debut_validite` < b.`fin_validite`
+       and new.`fin_validite` > b.`debut_validite`
   ) into v_conflit;
   if v_conflit then
     signal sqlstate '45000'
@@ -2694,8 +2694,8 @@ for each row begin
       from `attributions_titres_repas` b
      where b.`id` <> new.`id`
        and new.`salarie_id` <=> b.`salarie_id`
-       and new.`debut_periode` < ifnull(b.`fin_periode`, '9999-12-31')
-       and ifnull(new.`fin_periode`, '9999-12-31') > b.`debut_periode`
+       and new.`debut_periode` < b.`fin_periode`
+       and new.`fin_periode` > b.`debut_periode`
   ) into v_conflit;
   if v_conflit then
     signal sqlstate '45000'
@@ -2710,8 +2710,8 @@ for each row begin
       from `attributions_titres_repas` b
      where b.`id` <> new.`id`
        and new.`salarie_id` <=> b.`salarie_id`
-       and new.`debut_periode` < ifnull(b.`fin_periode`, '9999-12-31')
-       and ifnull(new.`fin_periode`, '9999-12-31') > b.`debut_periode`
+       and new.`debut_periode` < b.`fin_periode`
+       and new.`fin_periode` > b.`debut_periode`
   ) into v_conflit;
   if v_conflit then
     signal sqlstate '45000'
@@ -2729,8 +2729,8 @@ for each row begin
       from `contrats` b
      where b.`id` <> new.`id`
        and new.`salarie_id` <=> b.`salarie_id`
-       and new.`date_debut` < ifnull(b.`date_fin`, '9999-12-31')
-       and ifnull(new.`date_fin`, '9999-12-31') > b.`date_debut`
+       and new.`date_debut` < ifnull(b.`date_fin`, '2037-12-31')
+       and ifnull(new.`date_fin`, '2037-12-31') > b.`date_debut`
   ) into v_conflit;
   if v_conflit then
     signal sqlstate '45000'
@@ -2745,8 +2745,8 @@ for each row begin
       from `contrats` b
      where b.`id` <> new.`id`
        and new.`salarie_id` <=> b.`salarie_id`
-       and new.`date_debut` < ifnull(b.`date_fin`, '9999-12-31')
-       and ifnull(new.`date_fin`, '9999-12-31') > b.`date_debut`
+       and new.`date_debut` < ifnull(b.`date_fin`, '2037-12-31')
+       and ifnull(new.`date_fin`, '2037-12-31') > b.`date_debut`
   ) into v_conflit;
   if v_conflit then
     signal sqlstate '45000'
@@ -2764,8 +2764,8 @@ for each row begin
       from `droits_absence` b
      where b.`id` <> new.`id`
        and new.`type_absence_id` <=> b.`type_absence_id`
-       and new.`debut_validite` < ifnull(b.`fin_validite`, '9999-12-31')
-       and ifnull(new.`fin_validite`, '9999-12-31') > b.`debut_validite`
+       and new.`debut_validite` < b.`fin_validite`
+       and new.`fin_validite` > b.`debut_validite`
   ) into v_conflit;
   if v_conflit then
     signal sqlstate '45000'
@@ -2780,8 +2780,8 @@ for each row begin
       from `droits_absence` b
      where b.`id` <> new.`id`
        and new.`type_absence_id` <=> b.`type_absence_id`
-       and new.`debut_validite` < ifnull(b.`fin_validite`, '9999-12-31')
-       and ifnull(new.`fin_validite`, '9999-12-31') > b.`debut_validite`
+       and new.`debut_validite` < b.`fin_validite`
+       and new.`fin_validite` > b.`debut_validite`
   ) into v_conflit;
   if v_conflit then
     signal sqlstate '45000'
@@ -2799,8 +2799,8 @@ for each row begin
       from `fiches_retenue_impot` b
      where b.`id` <> new.`id`
        and new.`salarie_id` <=> b.`salarie_id`
-       and new.`debut_validite` < ifnull(b.`fin_validite`, '9999-12-31')
-       and ifnull(new.`fin_validite`, '9999-12-31') > b.`debut_validite`
+       and new.`debut_validite` < b.`fin_validite`
+       and new.`fin_validite` > b.`debut_validite`
   ) into v_conflit;
   if v_conflit then
     signal sqlstate '45000'
@@ -2815,8 +2815,8 @@ for each row begin
       from `fiches_retenue_impot` b
      where b.`id` <> new.`id`
        and new.`salarie_id` <=> b.`salarie_id`
-       and new.`debut_validite` < ifnull(b.`fin_validite`, '9999-12-31')
-       and ifnull(new.`fin_validite`, '9999-12-31') > b.`debut_validite`
+       and new.`debut_validite` < b.`fin_validite`
+       and new.`fin_validite` > b.`debut_validite`
   ) into v_conflit;
   if v_conflit then
     signal sqlstate '45000'
@@ -2834,8 +2834,8 @@ for each row begin
       from `handicaps_salarie` b
      where b.`id` <> new.`id`
        and new.`salarie_id` <=> b.`salarie_id`
-       and new.`debut_validite` < ifnull(b.`fin_validite`, '9999-12-31')
-       and ifnull(new.`fin_validite`, '9999-12-31') > b.`debut_validite`
+       and new.`debut_validite` < b.`fin_validite`
+       and new.`fin_validite` > b.`debut_validite`
   ) into v_conflit;
   if v_conflit then
     signal sqlstate '45000'
@@ -2850,8 +2850,8 @@ for each row begin
       from `handicaps_salarie` b
      where b.`id` <> new.`id`
        and new.`salarie_id` <=> b.`salarie_id`
-       and new.`debut_validite` < ifnull(b.`fin_validite`, '9999-12-31')
-       and ifnull(new.`fin_validite`, '9999-12-31') > b.`debut_validite`
+       and new.`debut_validite` < b.`fin_validite`
+       and new.`fin_validite` > b.`debut_validite`
   ) into v_conflit;
   if v_conflit then
     signal sqlstate '45000'
@@ -2869,8 +2869,8 @@ for each row begin
       from `parametres_legaux` b
      where b.`id` <> new.`id`
        and new.`cle_parametre` <=> b.`cle_parametre`
-       and new.`debut_validite` < ifnull(b.`fin_validite`, '9999-12-31')
-       and ifnull(new.`fin_validite`, '9999-12-31') > b.`debut_validite`
+       and new.`debut_validite` < b.`fin_validite`
+       and new.`fin_validite` > b.`debut_validite`
   ) into v_conflit;
   if v_conflit then
     signal sqlstate '45000'
@@ -2885,8 +2885,8 @@ for each row begin
       from `parametres_legaux` b
      where b.`id` <> new.`id`
        and new.`cle_parametre` <=> b.`cle_parametre`
-       and new.`debut_validite` < ifnull(b.`fin_validite`, '9999-12-31')
-       and ifnull(new.`fin_validite`, '9999-12-31') > b.`debut_validite`
+       and new.`debut_validite` < b.`fin_validite`
+       and new.`fin_validite` > b.`debut_validite`
   ) into v_conflit;
   if v_conflit then
     signal sqlstate '45000'
@@ -2904,8 +2904,8 @@ for each row begin
       from `periodes_taux_societe` b
      where b.`id` <> new.`id`
        and new.`societe_id` <=> b.`societe_id`
-       and new.`debut_validite` < ifnull(b.`fin_validite`, '9999-12-31')
-       and ifnull(new.`fin_validite`, '9999-12-31') > b.`debut_validite`
+       and new.`debut_validite` < b.`fin_validite`
+       and new.`fin_validite` > b.`debut_validite`
   ) into v_conflit;
   if v_conflit then
     signal sqlstate '45000'
@@ -2920,8 +2920,8 @@ for each row begin
       from `periodes_taux_societe` b
      where b.`id` <> new.`id`
        and new.`societe_id` <=> b.`societe_id`
-       and new.`debut_validite` < ifnull(b.`fin_validite`, '9999-12-31')
-       and ifnull(new.`fin_validite`, '9999-12-31') > b.`debut_validite`
+       and new.`debut_validite` < b.`fin_validite`
+       and new.`fin_validite` > b.`debut_validite`
   ) into v_conflit;
   if v_conflit then
     signal sqlstate '45000'

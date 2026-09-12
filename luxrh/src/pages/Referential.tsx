@@ -40,7 +40,7 @@ export default function Referential() {
   const inForce = useMemo(
     () =>
       (data ?? []).filter(
-        (p) => p.debut_validite <= referenceDate && (!p.fin_validite || p.fin_validite > referenceDate),
+        (p) => p.debut_validite <= referenceDate && p.fin_validite > referenceDate,
       ),
     [data, referenceDate],
   )

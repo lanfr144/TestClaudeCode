@@ -41,7 +41,7 @@ export type CompanyCbaLink = Tables['conventions_de_la_societe']['Row'] & {
 export type CompanyListRow = Company & {
   conventions_de_la_societe: {
     debut_validite: string
-    fin_validite: string | null
+    fin_validite: string
     conventions_collectives: { nom: string; code: string; secteur: string; portee: string } | null
   }[]
 }
@@ -59,7 +59,7 @@ export type ContractDetailRow = Contract & {
   conventions_du_contrat: {
     id: string
     debut_validite: string
-    fin_validite: string | null
+    fin_validite: string
     conventions_collectives: { nom: string; code: string; portee: string } | null
   }[]
 }

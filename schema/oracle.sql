@@ -2679,8 +2679,8 @@ create or replace trigger adresses_salarie_no_overlap
              join "ADRESSES_SALARIE" b on b."ID" <> a."ID"
             where a."ID" = g_ids(i)
               and (a."SALARIE_ID" = b."SALARIE_ID" or (a."SALARIE_ID" is null and b."SALARIE_ID" is null)) and (a."TYPE_ADRESSE" = b."TYPE_ADRESSE" or (a."TYPE_ADRESSE" is null and b."TYPE_ADRESSE" is null))
-              and a."DEBUT_VALIDITE" < nvl(b."FIN_VALIDITE", date '9999-12-31')
-              and nvl(a."FIN_VALIDITE", date '9999-12-31') > b."DEBUT_VALIDITE");
+              and a."DEBUT_VALIDITE" < b."FIN_VALIDITE"
+              and a."FIN_VALIDITE" > b."DEBUT_VALIDITE");
         raise_application_error(-20001,
           'Deux periodes se recouvrent sur adresses_salarie : une date ne peut avoir qu''une valeur');
       exception
@@ -2720,8 +2720,8 @@ create or replace trigger attributions_titres_repa_no_overlap
              join "ATTRIBUTIONS_TITRES_REPAS" b on b."ID" <> a."ID"
             where a."ID" = g_ids(i)
               and (a."SALARIE_ID" = b."SALARIE_ID" or (a."SALARIE_ID" is null and b."SALARIE_ID" is null))
-              and a."DEBUT_PERIODE" < nvl(b."FIN_PERIODE", date '9999-12-31')
-              and nvl(a."FIN_PERIODE", date '9999-12-31') > b."DEBUT_PERIODE");
+              and a."DEBUT_PERIODE" < b."FIN_PERIODE"
+              and a."FIN_PERIODE" > b."DEBUT_PERIODE");
         raise_application_error(-20001,
           'Deux periodes se recouvrent sur attributions_titres_repas : une date ne peut avoir qu''une valeur');
       exception
@@ -2761,8 +2761,8 @@ create or replace trigger contrats_no_overlap
              join "CONTRATS" b on b."ID" <> a."ID"
             where a."ID" = g_ids(i)
               and (a."SALARIE_ID" = b."SALARIE_ID" or (a."SALARIE_ID" is null and b."SALARIE_ID" is null))
-              and a."DATE_DEBUT" < nvl(b."DATE_FIN", date '9999-12-31')
-              and nvl(a."DATE_FIN", date '9999-12-31') > b."DATE_DEBUT");
+              and a."DATE_DEBUT" < nvl(b."DATE_FIN", date '2037-12-31')
+              and nvl(a."DATE_FIN", date '2037-12-31') > b."DATE_DEBUT");
         raise_application_error(-20001,
           'Deux periodes se recouvrent sur contrats : une date ne peut avoir qu''une valeur');
       exception
@@ -2802,8 +2802,8 @@ create or replace trigger droits_absence_no_overlap
              join "DROITS_ABSENCE" b on b."ID" <> a."ID"
             where a."ID" = g_ids(i)
               and (a."TYPE_ABSENCE_ID" = b."TYPE_ABSENCE_ID" or (a."TYPE_ABSENCE_ID" is null and b."TYPE_ABSENCE_ID" is null))
-              and a."DEBUT_VALIDITE" < nvl(b."FIN_VALIDITE", date '9999-12-31')
-              and nvl(a."FIN_VALIDITE", date '9999-12-31') > b."DEBUT_VALIDITE");
+              and a."DEBUT_VALIDITE" < b."FIN_VALIDITE"
+              and a."FIN_VALIDITE" > b."DEBUT_VALIDITE");
         raise_application_error(-20001,
           'Deux periodes se recouvrent sur droits_absence : une date ne peut avoir qu''une valeur');
       exception
@@ -2843,8 +2843,8 @@ create or replace trigger fiches_retenue_impot_no_overlap
              join "FICHES_RETENUE_IMPOT" b on b."ID" <> a."ID"
             where a."ID" = g_ids(i)
               and (a."SALARIE_ID" = b."SALARIE_ID" or (a."SALARIE_ID" is null and b."SALARIE_ID" is null))
-              and a."DEBUT_VALIDITE" < nvl(b."FIN_VALIDITE", date '9999-12-31')
-              and nvl(a."FIN_VALIDITE", date '9999-12-31') > b."DEBUT_VALIDITE");
+              and a."DEBUT_VALIDITE" < b."FIN_VALIDITE"
+              and a."FIN_VALIDITE" > b."DEBUT_VALIDITE");
         raise_application_error(-20001,
           'Deux periodes se recouvrent sur fiches_retenue_impot : une date ne peut avoir qu''une valeur');
       exception
@@ -2884,8 +2884,8 @@ create or replace trigger handicaps_salarie_no_overlap
              join "HANDICAPS_SALARIE" b on b."ID" <> a."ID"
             where a."ID" = g_ids(i)
               and (a."SALARIE_ID" = b."SALARIE_ID" or (a."SALARIE_ID" is null and b."SALARIE_ID" is null))
-              and a."DEBUT_VALIDITE" < nvl(b."FIN_VALIDITE", date '9999-12-31')
-              and nvl(a."FIN_VALIDITE", date '9999-12-31') > b."DEBUT_VALIDITE");
+              and a."DEBUT_VALIDITE" < b."FIN_VALIDITE"
+              and a."FIN_VALIDITE" > b."DEBUT_VALIDITE");
         raise_application_error(-20001,
           'Deux periodes se recouvrent sur handicaps_salarie : une date ne peut avoir qu''une valeur');
       exception
@@ -2925,8 +2925,8 @@ create or replace trigger parametres_legaux_no_overlap
              join "PARAMETRES_LEGAUX" b on b."ID" <> a."ID"
             where a."ID" = g_ids(i)
               and (a."CLE_PARAMETRE" = b."CLE_PARAMETRE" or (a."CLE_PARAMETRE" is null and b."CLE_PARAMETRE" is null))
-              and a."DEBUT_VALIDITE" < nvl(b."FIN_VALIDITE", date '9999-12-31')
-              and nvl(a."FIN_VALIDITE", date '9999-12-31') > b."DEBUT_VALIDITE");
+              and a."DEBUT_VALIDITE" < b."FIN_VALIDITE"
+              and a."FIN_VALIDITE" > b."DEBUT_VALIDITE");
         raise_application_error(-20001,
           'Deux periodes se recouvrent sur parametres_legaux : une date ne peut avoir qu''une valeur');
       exception
@@ -2966,8 +2966,8 @@ create or replace trigger periodes_taux_societe_no_overlap
              join "PERIODES_TAUX_SOCIETE" b on b."ID" <> a."ID"
             where a."ID" = g_ids(i)
               and (a."SOCIETE_ID" = b."SOCIETE_ID" or (a."SOCIETE_ID" is null and b."SOCIETE_ID" is null))
-              and a."DEBUT_VALIDITE" < nvl(b."FIN_VALIDITE", date '9999-12-31')
-              and nvl(a."FIN_VALIDITE", date '9999-12-31') > b."DEBUT_VALIDITE");
+              and a."DEBUT_VALIDITE" < b."FIN_VALIDITE"
+              and a."FIN_VALIDITE" > b."DEBUT_VALIDITE");
         raise_application_error(-20001,
           'Deux periodes se recouvrent sur periodes_taux_societe : une date ne peut avoir qu''une valeur');
       exception

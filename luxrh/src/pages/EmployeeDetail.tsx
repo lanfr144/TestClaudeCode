@@ -41,7 +41,7 @@ export default function EmployeeDetail() {
   if (!e) return <Card title="Employé introuvable">Cet employé n’existe pas ou n’est pas accessible.</Card>
 
   const prob = compliance.data?.probation
-  const taxCard = e.fiches_retenue_impot?.find((t) => !t.fin_validite || t.fin_validite > referenceDate)
+  const taxCard = e.fiches_retenue_impot?.find((t) => t.fin_validite > referenceDate)
   const myAbsences = (absences.data ?? []).filter((a) => a.salarie_id === e.id)
 
   return (

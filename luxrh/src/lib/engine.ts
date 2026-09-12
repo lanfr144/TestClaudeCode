@@ -298,7 +298,7 @@ export interface ApplicableCba {
   portee: CbaScope
   origine: string
   debut_validite: string
-  fin_validite: string | null
+  fin_validite: string
 }
 
 export interface Qualification {

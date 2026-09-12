@@ -350,7 +350,7 @@ def referential() -> None:
     in_force = [
         p for p in parameters
         if p["famille"] == family and p["debut_validite"] <= on.isoformat()
-        and (not p["fin_validite"] or p["fin_validite"] > on.isoformat())
+        and p["fin_validite"] > on.isoformat()
     ]
     st.dataframe(
         pd.DataFrame([{

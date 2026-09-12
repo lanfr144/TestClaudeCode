@@ -122,9 +122,7 @@ def _param(key: str) -> dict | None:
     token = st.session_state.get("session", {}).get("access_token", "")
     on = db.reference_date().isoformat()
     for row in _params_cached(token):
-        if row["cle_parametre"] == key and row["debut_validite"] <= on and (
-            not row["fin_validite"] or row["fin_validite"] > on
-        ):
+        if row["cle_parametre"] == key and row["debut_validite"] <= on and row["fin_validite"] > on:
             return row
     return None
 
@@ -140,7 +138,7 @@ def companies_view() -> None:
     for company in all_companies:
         active = [
             link for link in (company.get("conventions_de_la_societe") or [])
-            if link["debut_validite"] <= on and (not link["fin_validite"] or link["fin_validite"] > on)
+            if link["debut_validite"] <= on and link["fin_validite"] > on
         ]
         table_rows.append({
             "Société": company["raison_sociale"],
@@ -260,8 +258,7 @@ def company_detail() -> None:
             st.caption("Aucune convention rattachée. Seul le Code du travail s’applique.")
         for link in links:
             agreement = link.get("conventions_collectives") or {}
-            active = link["debut_validite"] <= on.isoformat() and (
-                not link["fin_validite"] or link["fin_validite"] > on.isoformat()
+            active = link["debut_validite"] <= on.isoformat() and link["fin_validite"] > on.isoformat(
             )
             st.markdown(
                 f"<div class='lux-card' style='margin-bottom:6px'>"

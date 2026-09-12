@@ -119,13 +119,14 @@ FIN_OUVERTE = "2037-12-31"
 
 
 def sans_fin(valeur: Any) -> bool:
-    """Vrai si la validité n'a pas de fin connue : NULL hier, date sentinelle aujourd'hui.
+    """Vrai si la validité n'a pas de fin connue, c'est-à-dire si elle porte la sentinelle.
 
-    Sans elle, un écran afficherait « 31/12/2037 » là où il disait « … » — une date
-    inventée présentée comme une échéance réelle.
+    Sans elle, un écran afficherait « 31/12/2037 » là où il doit dire « … » — une
+    date de convention présentée comme une échéance réelle.
+
+    `fin_validite` est non nulle depuis la migration 70 : il n'y a plus de cas
+    « absent » à prévoir, et le prévoir quand même laisserait croire le contraire.
     """
-    if not valeur:
-        return True
     return str(valeur)[:10] >= FIN_OUVERTE
 
 

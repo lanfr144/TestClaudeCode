@@ -31,7 +31,9 @@ Ce qu'il vérifie
 4. Toutes les tables et colonnes portent un commentaire.
 5. Les liens relatifs de la documentation pointent sur des fichiers existants.
 6. Les nombres annoncés dans la documentation correspondent au réel.
-7. Le dépôt et la base portent les mêmes migrations (délégué à dump_migrations).
+7. Aucune colonne « not null » n'est traitée comme nullable, et il n'existe
+   qu'une seule date sentinelle dans tout le schéma.
+8. Le dépôt et la base portent les mêmes migrations (délégué à dump_migrations).
 
 Ce qu'il ne fait pas
 --------------------
@@ -238,6 +240,17 @@ def main() -> int:
           f"{len(catalogue['fonctions_anon'])} fonction(s) applicative(s) ouverte(s) à anon")
     for nom in catalogue["fonctions_anon"]:
         signaler("Sécurité", f"fonction {nom} exécutable par anon")
+    for nom in catalogue.get("non_nul_traite_comme_nullable", []):
+        signaler("Code mort",
+                 f"{nom} : la colonne est « not null » dans toutes les tables où elle "
+                 f"apparaît, et la fonction la teste ou l'enrobe comme si elle pouvait "
+                 f"être nulle. Le test ne peut plus être vrai ; le laisser fait croire "
+                 f"au lecteur que la colonne admet des nuls.")
+    for nom in catalogue.get("sentinelles_concurrentes", []):
+        signaler("Code mort",
+                 f"{nom} emploie une date lointaine autre que 2037-12-31. Le projet n'a "
+                 f"qu'une sentinelle ; deux se compareront un jour l'une à l'autre.")
+
     for nom in catalogue.get("extensions_dans_public", []):
         signaler("Sécurité",
                  f"extension {nom} installée dans le schéma public — ses routines de "

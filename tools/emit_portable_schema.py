@@ -373,7 +373,7 @@ def emit(cat: dict, dialect: str) -> str:
             f"jamais directement ici. Premières : " + ', '.join(sans[:6]) + '…')
 
     # ------------------------------------------------- contraintes d'exclusion
-    exclusions = [(t['nom'], co) for t in cat['tables']
+    exclusions = [(t, co) for t in cat['tables']
                   for co in (t['constraints'] or []) if co['type'] == 'x']
     if exclusions:
         out.append("-- CONTRAINTES D'EXCLUSION — sans équivalent hors PostgreSQL.")
@@ -383,8 +383,8 @@ def emit(cat: dict, dialect: str) -> str:
         out.append("-- sans elles, un calcul de paie peut lire deux taux pour le même jour.")
         out.append("-- Un déclencheur les remplace ci-dessous, table par table.")
         out.append("")
-        for nom, co in exclusions:
-            out.extend(exclusion_trigger(nom, co, dialect, q, enums))
+        for table, co in exclusions:
+            out.extend(exclusion_trigger(table, co, dialect, q, enums))
         out.append("")
 
     if reportes:
@@ -399,7 +399,7 @@ def emit(cat: dict, dialect: str) -> str:
     return '\n'.join(out) + '\n'
 
 
-def exclusion_trigger(table: str, co: dict, dialect: str, q, enums) -> list[str]:
+def exclusion_trigger(table_def: dict, co: dict, dialect: str, q, enums) -> list[str]:
     """Reproduit une contrainte d'exclusion de p\u00e9riodes par un d\u00e9clencheur.
 
     Ne v\u00e9rifie que les lignes \u00e9crites
@@ -426,6 +426,7 @@ def exclusion_trigger(table: str, co: dict, dialect: str, q, enums) -> list[str]
     `after each row` **collecte** les identifiants \u00e9crits, la section
     `after statement` les v\u00e9rifie -- la table n'est alors plus en mutation.
     """
+    table = table_def['nom']
     d = co['def']
     egalites = re.findall(r'(\w+)\s+WITH\s+=', d)
     plage = re.search(r'daterange\((\w+),\s*(\w+)', d)
@@ -433,7 +434,30 @@ def exclusion_trigger(table: str, co: dict, dialect: str, q, enums) -> list[str]
         return [f"-- {table}.{co['nom']} : forme non reconnue -- {d}", ""]
     debut, fin_col = plage.groups()
     nom = f"{table[:24]}_no_overlap".lower()
-    INFINI = "date '9999-12-31'" if dialect == 'oracle' else "'9999-12-31'"
+
+    # Pas de sentinelle sur une colonne qui ne peut pas être nulle
+    # -------------------------------------------------------------
+    # Ce générateur enrobait autrefois les deux bornes dans `nvl(..., date
+    # '9999-12-31')`. C'était faux à deux titres depuis la migration 70.
+    #
+    # D'abord, `fin_validite` et `valid_to` sont `not null` : l'enrobage ne
+    # protégeait de rien et masquait l'invariant au lecteur, qui pouvait croire
+    # que la colonne admet des nuls.
+    #
+    # Ensuite, la sentinelle du projet est **2037-12-31**, pas 9999-12-31 —
+    # choisie pour tenir dans un `time_t` 32 bits signé. Deux sentinelles
+    # concurrentes dans un même schéma, c'est la garantie qu'un jour l'une sera
+    # comparée à l'autre.
+    #
+    # On ne pose donc un `coalesce` que là où la colonne est réellement nullable :
+    # `contrats.date_fin` l'est, et doit le rester — un contrat à durée
+    # indéterminée n'a pas de fin, et lui en inventer une dirait que tout CDI
+    # s'arrête en 2037.
+    colonnes = {c['nom']: c for c in (table_def.get('columns') or [])}
+    fin_nullable = not colonnes.get(fin_col, {}).get('notnull', False)
+    SENTINELLE = "date '2037-12-31'" if dialect == 'oracle' else "'2037-12-31'"
+    enrobe_ora = (lambda expr: f"nvl({expr}, {SENTINELLE})") if fin_nullable else (lambda expr: expr)
+    enrobe_my = (lambda expr: f"ifnull({expr}, {SENTINELLE})") if fin_nullable else (lambda expr: expr)
 
     # Les cl\u00e9s d'\u00e9galit\u00e9 peuvent \u00eatre nulles : deux lignes sans CCT partagent
     # bien la m\u00eame port\u00e9e, et doivent donc \u00eatre compar\u00e9es entre elles.
@@ -472,8 +496,8 @@ def exclusion_trigger(table: str, co: dict, dialect: str, q, enums) -> list[str]
             f"             join {q(table)} b on b.{q('id')} <> a.{q('id')}",
             f"            where a.{q('id')} = g_ids(i)",
             f"              and {cles}",
-            f"              and a.{q(debut)} < nvl(b.{q(fin_col)}, {INFINI})",
-            f"              and nvl(a.{q(fin_col)}, {INFINI}) > b.{q(debut)});",
+            f"              and a.{q(debut)} < {enrobe_ora(f'b.{q(fin_col)}')}",
+            f"              and {enrobe_ora(f'a.{q(fin_col)}')} > b.{q(debut)});",
             "        raise_application_error(-20001,",
             f"          'Deux periodes se recouvrent sur {table} : une date ne peut avoir qu''une valeur');",
             "      exception",
@@ -501,8 +525,8 @@ def exclusion_trigger(table: str, co: dict, dialect: str, q, enums) -> list[str]
             f"      from {q(table)} b",
             f"     where b.{q('id')} <> new.{q('id')}",
             f"       and {cles}",
-            f"       and new.{q(debut)} < ifnull(b.{q(fin_col)}, {INFINI})",
-            f"       and ifnull(new.{q(fin_col)}, {INFINI}) > b.{q(debut)}",
+            f"       and new.{q(debut)} < {enrobe_my(f'b.{q(fin_col)}')}",
+            f"       and {enrobe_my(f'new.{q(fin_col)}')} > b.{q(debut)}",
             "  ) into v_conflit;",
             "  if v_conflit then",
             "    signal sqlstate '45000'",

@@ -111,11 +111,28 @@ Python global héberge l'installation Airflow de l'utilisateur et **ne doit pas
 - Commentaires en français, comme le reste du code.
 - **Toute table et toute colonne portent un commentaire.** 75 tables, 836 colonnes, 100 %.
   Une colonne ajoutée sans commentaire est signalée par `verifier_coherence.py`.
-- **`fin_validite` / `fin_validite` ne sont jamais nuls.** Une validité ouverte porte la date
-  sentinelle `2037-12-31`, un début de toujours porte `1970-01-01`. Borne basse incluse,
-  borne haute exclue. Côté React, `estEnVigueur()` et `sansFin()` de `src/lib/format.ts` ;
-  côté Streamlit, `sans_fin()` de `luxrh/design.py`. Ne jamais tester `!row.fin_validite` seul :
-  ce test est toujours faux depuis la migration 70.
+- **`fin_validite` n'est jamais nulle, et le code ne doit pas faire semblant du contraire.**
+  Une validité ouverte porte la sentinelle **`2037-12-31`**, un début de toujours
+  `1970-01-01`. Borne basse incluse, borne haute exclue.
+
+  Il n'existe **qu'une seule date sentinelle dans tout le projet**, schémas Oracle et MySQL
+  dérivés compris. Pas de `9999-12-31` : 2037-12-31 tient dans un `time_t` 32 bits signé, et
+  deux sentinelles concurrentes finissent toujours par être comparées l'une à l'autre.
+
+  Proscrits, partout : `fin_validite is null`, `coalesce(fin_validite, …)`,
+  `nvl(FIN_VALIDITE, …)`, `!row.fin_validite ||`. Ces formes sont mortes depuis la
+  migration 70 — elles ne protègent de rien, elles font croire au lecteur que la colonne
+  admet des nuls, et elles privent le planificateur d'un parcours d'index. Une colonne
+  `not null` dont tout le code se méfie n'est pas un invariant : c'est une convention à
+  laquelle personne ne croit. `verifier_coherence.py` les signale désormais.
+
+  Côté React, `estEnVigueur()` et `sansFin()` de `src/lib/format.ts` — leurs signatures
+  **exigent** les deux bornes, pour que le compilateur impose l'invariant à l'appelant.
+  Côté Streamlit, `sans_fin()` de `luxrh/design.py`.
+
+  Restent légitimement nullables, et doivent le rester : `contrats.date_fin`,
+  `statuts_salarie.date_fin`, `sanctions_salarie.effet_au`. Un contrat à durée indéterminée
+  n'a pas de fin ; lui en inventer une reviendrait à dire que tout CDI s'arrête en 2037.
 - **Les horodatages de migration ne se choisissent pas.** La plateforme attribue le sien à
   l'application ; c'est le **nom** qui identifie une migration. `dump_migrations.py` renomme
   les fichiers sur la version appliquée — il ne les réécrit jamais.

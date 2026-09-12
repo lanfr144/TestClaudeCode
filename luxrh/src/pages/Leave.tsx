@@ -24,7 +24,7 @@ function PendingRequest({ a }: { a: AbsenceRow }) {
   const counts = a.types_absence?.impute_sur_conge ?? false
   // Le droit applicable est celui en vigueur a la date de la demande, pas le droit actuel.
   const entitlement = (a.types_absence?.droits_absence ?? []).find(
-    (e) => e.debut_validite <= a.date_debut && (!e.fin_validite || e.fin_validite > a.date_debut),
+    (e) => e.debut_validite <= a.date_debut && e.fin_validite > a.date_debut,
   )
   const after = (balance.data?.balance ?? 0) - Number(a.nombre_jours)
   const insufficient = counts && after < 0
