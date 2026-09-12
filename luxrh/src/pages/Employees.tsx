@@ -24,18 +24,18 @@ export default function Employees() {
   const alertsByEmployee = useMemo(() => {
     const m = new Map<string, { label: string; tone: 'blocking' | 'warning' | 'info' }>()
     for (const i of scan.data?.items ?? []) {
-      if (!i.employee_id) continue
+      if (!i.salarie_id) continue
       const label =
-        i.rule_code === 'probation_deadline'
+        i.code_regle === 'probation_deadline'
           ? `Essai · J-${i.days_left}`
-          : i.rule_code === 'cdd_term'
+          : i.code_regle === 'cdd_term'
             ? `CDD J-${i.days_left}`
-            : i.rule_code === 'missing_certificate'
+            : i.code_regle === 'missing_certificate'
               ? 'Certificat ✕'
-              : i.title
-      const tone = i.severity
-      const prev = m.get(i.employee_id)
-      if (!prev || (prev.tone !== 'blocking' && tone === 'blocking')) m.set(i.employee_id, { label, tone })
+              : i.titre
+      const tone = i.severite
+      const prev = m.get(i.salarie_id)
+      if (!prev || (prev.tone !== 'blocking' && tone === 'blocking')) m.set(i.salarie_id, { label, tone })
     }
     return m
   }, [scan.data])
@@ -44,12 +44,12 @@ export default function Employees() {
   if (isLoading) return <Card><Loading /></Card>
   if (error) return <ErrorNote error={error} />
 
-  const employees = (data ?? []).filter((e) => {
-    const active = e.contracts?.find((c) => c.status === 'active')
+  const salaries = (data ?? []).filter((e) => {
+    const active = e.contrats?.find((c) => c.statut === 'active')
     if (status === 'active' && !active) return false
     if (status === 'ended' && active) return false
-    if (status === 'probation' && !(active?.probation_length && active.status === 'active')) return false
-    const hay = `${e.first_name} ${e.last_name} ${active?.job_title ?? ''}`.toLowerCase()
+    if (status === 'probation' && !(active?.duree_essai && active.statut === 'active')) return false
+    const hay = `${e.prenom} ${e.nom} ${active?.intitule_poste ?? ''}`.toLowerCase()
     return hay.includes(q.toLowerCase())
   })
 
@@ -57,7 +57,7 @@ export default function Employees() {
     <div className="space-y-4">
       <header className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-xl font-bold tracking-tight text-ink">{employees.length} salariés</h1>
+          <h1 className="text-xl font-bold tracking-tight text-ink">{salaries.length} salariés</h1>
           <p className="text-xs text-ink-muted">Cliquez sur une ligne pour ouvrir la fiche.</p>
         </div>
         <Link to="/contrats/nouveau">
@@ -91,33 +91,33 @@ export default function Employees() {
           </Select>
         </div>
 
-        {employees.length === 0 ? (
+        {salaries.length === 0 ? (
           <EmptyState title="Aucun salarié ne correspond" detail="Ajustez la recherche ou le filtre." />
         ) : (
           <Table head={['Salarié', 'Poste', 'Contrat', 'Temps', 'Résidence', 'Conformité']}>
-            {employees.slice(0, shown).map((e) => {
-              const c = e.contracts?.find((x) => x.status === 'active') ?? e.contracts?.[0]
+            {salaries.slice(0, shown).map((e) => {
+              const c = e.contrats?.find((x) => x.statut === 'active') ?? e.contrats?.[0]
               const alert = alertsByEmployee.get(e.id)
               return (
                 <tr key={e.id} className="hover:bg-rule-rail/50">
                   <td className="lux-td">
                     <Link to={`/employes/${e.id}`} className="flex items-center gap-2.5">
-                      <Avatar text={initials(e.first_name, e.last_name)} />
+                      <Avatar text={initials(e.prenom, e.nom)} />
                       <span className="font-medium text-ink hover:text-action">
-                        {e.first_name} {e.last_name}
+                        {e.prenom} {e.nom}
                       </span>
                     </Link>
                   </td>
-                  <td className="lux-td">{c?.job_title ?? '—'}</td>
+                  <td className="lux-td">{c?.intitule_poste ?? '—'}</td>
                   <td className="lux-td">
                     {c ? (
-                      <Badge tone={c.kind === 'cdd' ? 'warning' : 'neutral'}>{c.kind.toUpperCase()}</Badge>
+                      <Badge tone={c.genre === 'cdd' ? 'warning' : 'neutral'}>{c.genre.toUpperCase()}</Badge>
                     ) : (
                       '—'
                     )}
                   </td>
-                  <td className="lux-td">{c ? `${c.weekly_hours} h` : '—'}</td>
-                  <td className="lux-td">{RESIDENCY_LABEL[e.residency]}</td>
+                  <td className="lux-td">{c ? `${c.heures_hebdomadaires} h` : '—'}</td>
+                  <td className="lux-td">{RESIDENCY_LABEL[e.residence]}</td>
                   <td className="lux-td">
                     {alert ? (
                       <Badge tone={alert.tone}>{alert.label}</Badge>
@@ -131,13 +131,13 @@ export default function Employees() {
           </Table>
         )}
 
-        {employees.length > shown && (
+        {salaries.length > shown && (
           <div className="flex items-center justify-between gap-3 border-t border-rule px-3 py-2.5">
             <span className="text-xs text-ink-muted">
-              {shown} sur {employees.length} salariés affichés
+              {shown} sur {salaries.length} salariés affichés
             </span>
             <Button size="sm" onClick={() => setShown((n) => n + PAGE)}>
-              Afficher {Math.min(PAGE, employees.length - shown)} de plus
+              Afficher {Math.min(PAGE, salaries.length - shown)} de plus
             </Button>
           </div>
         )}

@@ -1,45 +1,42 @@
-"""Applique le renommage anglais → français : SQL d'un côté, code de l'autre.
+"""Applique le renommage anglais → français au code des deux interfaces.
 
-    luxrh-py/.venv/Scripts/python tools/renommer.py tables            # montre
-    luxrh-py/.venv/Scripts/python tools/renommer.py tables --ecrire   # applique au code
-    luxrh-py/.venv/Scripts/python tools/renommer.py tables --sql      # écrit la migration
+    luxrh-py/.venv/Scripts/python tools/renommer.py tables              # montre
+    luxrh-py/.venv/Scripts/python tools/renommer.py tables --ecrire     # applique
+    luxrh-py/.venv/Scripts/python tools/renommer.py colonnes-sures --ecrire
+    luxrh-py/.venv/Scripts/python tools/renommer.py colonnes-simples --ecrire
 
-    ... idem avec `colonnes-sures` puis `colonnes-ambigues`.
+Le dictionnaire est dans `tools/renommage.py`. Ce fichier ne fait que l'appliquer :
+décider des noms et les substituer sont deux travaux distincts, et seul le premier
+se relit.
 
-Pourquoi trois blocs et non un seul
-------------------------------------
+Trois blocs, et pourquoi
+------------------------
 La consigne était de renommer « d'un bloc, sinon l'application ne démarre plus en
-cours de route ». C'est juste, et c'est justement pour cela qu'on découpe : chaque
-bloc est **complet en lui-même** — base et code renommés ensemble, construction et
-190 vérifications au vert avant de passer au suivant. L'application n'est donc
-jamais laissée à moitié renommée ; elle l'est seulement à moitié *traduite*, ce
-qui est un état parfaitement cohérent. Elle l'était déjà : 18 tables étaient en
-français avant de commencer.
+cours de route ». C'est juste, et c'est pour cela qu'on découpe : chaque bloc est
+complet en lui-même — base et code renommés ensemble, construction et
+190 vérifications au vert avant de passer au suivant. L'application n'est jamais
+laissée à moitié renommée ; elle est à moitié *traduite*, ce qu'elle était déjà
+avant de commencer, dix-huit tables portant des noms français.
 
-Le vrai danger, et pourquoi il ne se traite pas d'un seul geste
----------------------------------------------------------------
-Sur 306 colonnes renommées, 263 portent un souligné : `monthly_gross`,
-`valid_from`, `certificate_received_at`. Ces noms-là ne peuvent venir que de la
-base, et un remplacement mot-à-mot est sûr.
+| Bloc | Portée | Méthode |
+|---|---|---|
+| `tables` | 55 tables | Mot à mot, partout |
+| `colonnes-sures` | noms composés et types énumérés | Mot à mot, partout |
+| `colonnes-simples` | noms simples | **Littéraux de chaîne uniquement** |
 
-Les 43 autres sont des mots courts — `name`, `code`, `status`, `label`, `year`,
-`key`, `unit`, `title`. En TypeScript, `name` est aussi bien une colonne qu'une
-propriété de `Error`, un attribut HTML, un champ de `File`. Les remplacer
-aveuglément casserait le code sans que rien ne le signale avant l'exécution. Ils
-sont donc traités à part, **uniquement dans les contextes où la base est en jeu** :
-littéraux de chaîne, clés d'objet, et accès de propriété vérifiés ensuite par le
-compilateur.
+Un nom composé — `monthly_gross`, `certificate_received_at` — ne peut venir que de
+la base. Un nom simple — `name`, `status`, `key`, `title`, `unit` — désigne en
+TypeScript aussi bien une colonne qu'une propriété de `Error`, un attribut JSX ou
+un champ de `File`. D'où le traitement séparé.
 
 Ce que l'outil ne touche jamais
 --------------------------------
-`luxrh/src/lib/database.types.ts` — régénéré depuis la base, jamais réécrit à la
-main. Et les migrations déjà appliquées : elles décrivent ce qui a eu lieu, pas
-ce qui est. Le renommage est une migration de plus, pas une réécriture du passé.
+`luxrh/src/lib/database.types.ts`, régénéré depuis la base. Et les migrations déjà
+appliquées : elles décrivent ce qui a eu lieu, pas ce qui est.
 """
 
 from __future__ import annotations
 
-import json
 import re
 import sys
 from pathlib import Path
@@ -49,6 +46,18 @@ import renommage                                                     # noqa: E40
 
 RACINE = Path(__file__).resolve().parent.parent
 TYPES_GENERES = RACINE / "luxrh" / "src" / "lib" / "database.types.ts"
+
+GUILLEMETS = ("'", '"')
+
+# Une chaîne qui suit immédiatement l'un de ces attributs n'est pas une colonne :
+# c'est une valeur du DOM. `type="email"`, `role="status"`, `autoComplete="name"`,
+# `type="color"` — tous auraient été traduits, et cinq l'ont été avant que cette
+# garde n'existe. `role="statut"` n'est pas une coquille : c'est un lecteur
+# d'écran qui cesse d'annoncer les messages d'état.
+ATTRIBUT_DOM = re.compile(
+    r"(?:type|role|autoComplete|autocomplete|inputMode|inputmode|rel|method|target"
+    r"|htmlFor|charSet|encType|httpEquiv|lang|dir|aria-[a-z]+|data-[a-z-]+)"
+    r"\s*=\s*$")
 
 
 def fichiers_code() -> list[Path]:
@@ -84,26 +93,81 @@ def remplacer_partout(texte: str, table: dict[str, str]) -> tuple[str, int]:
     return texte, n
 
 
-_CHAINE = re.compile(r"""('(?:[^'\\]|\\.)*'|"(?:[^"\\]|\\.)*"|`(?:[^`\\]|\\.)*`)""")
+def _est_commentaire(ligne: str) -> bool:
+    nu = ligne.lstrip()
+    return nu.startswith(("//", "#", "*", "/*"))
 
 
 def remplacer_dans_chaines(texte: str, table: dict[str, str]) -> tuple[str, int]:
-    """Remplacement limité à l'intérieur des littéraux de chaîne.
+    """Remplacement limité au contenu des littéraux de chaîne d'une même ligne.
 
-    C'est là que vivent les requêtes : `.from('employees')`,
-    `.select('id,first_name')`, `employees?select=...`. Un mot court y désigne
-    forcément une colonne — ailleurs dans le fichier, il peut désigner n'importe
-    quoi, et on n'y touche pas.
+    Pourquoi ligne par ligne
+    ------------------------
+    La première version employait une expression rationnelle sur le fichier
+    entier. Elle a échoué exactement là où il fallait s'y attendre : un accent
+    grave isolé dans un commentaire lui faisait prendre tout le code suivant pour
+    le contenu d'une chaîne. `key={i}` devenait `cle={i}`, `title=` devenait
+    `titre=` sur des composants React — 399 erreurs de compilation, dont la
+    plupart causées par l'outil lui-même.
+
+    Ce balayage suit l'état des guillemets caractère par caractère et ne franchit
+    jamais une fin de ligne : un littéral mal fermé ne peut contaminer que sa
+    propre ligne. Les accents graves sont ignorés — un gabarit multiligne n'est
+    pas traité ici, et le compilateur signalera ce qui subsiste.
+
+    C'est dans ces littéraux que vivent les requêtes : `.from('salaries')`,
+    `.select('id,prenom')`, `salaries?select=...`, et côté Python `row["statut"]`.
     """
     total = 0
+    sorties: list[str] = []
 
-    def sur_chaine(m: re.Match[str]) -> str:
-        nonlocal total
-        contenu, k = remplacer_partout(m.group(0), table)
-        total += k
-        return contenu
+    for ligne in texte.split("\n"):
+        if _est_commentaire(ligne) or not any(g in ligne for g in GUILLEMETS):
+            sorties.append(ligne)
+            continue
 
-    return _CHAINE.sub(sur_chaine, texte), total
+        morceaux: list[str] = []
+        tampon: list[str] = []
+        guillemet: str | None = None
+        protege = False
+        i = 0
+        while i < len(ligne):
+            c = ligne[i]
+            if guillemet is None:
+                if c in GUILLEMETS:
+                    morceaux.append("".join(tampon))
+                    morceaux.append(c)
+                    protege = bool(ATTRIBUT_DOM.search(ligne[:i]))
+                    tampon = []
+                    guillemet = c
+                else:
+                    tampon.append(c)
+                i += 1
+                continue
+
+            if c == "\\" and i + 1 < len(ligne):
+                tampon.append(ligne[i:i + 2])
+                i += 2
+                continue
+            if c == guillemet:
+                if protege:
+                    contenu, k = "".join(tampon), 0
+                else:
+                    contenu, k = remplacer_partout("".join(tampon), table)
+                total += k
+                morceaux.append(contenu)
+                morceaux.append(c)
+                tampon = []
+                guillemet = None
+            else:
+                tampon.append(c)
+            i += 1
+
+        # Littéral non fermé en fin de ligne : on ne devine pas, on laisse tel quel.
+        morceaux.append("".join(tampon))
+        sorties.append("".join(morceaux))
+
+    return "\n".join(sorties), total
 
 
 def appliquer(table: dict[str, str], chaines_seulement: bool, ecrire: bool) -> None:
@@ -119,77 +183,40 @@ def appliquer(table: dict[str, str], chaines_seulement: bool, ecrire: bool) -> N
             if ecrire:
                 fichier.write_text(nouveau, encoding="utf-8", newline="\n")
 
-    for nom, n in sorted(touches, key=lambda x: -x[1]):
+    for nom, n in sorted(touches, key=lambda x: -x[1])[:12]:
         print(f"  {n:>5}  {nom}")
+    if len(touches) > 12:
+        print(f"  … et {len(touches) - 12} autre(s) fichier(s)")
     print(f"\n{total} occurrence(s) sur {len(touches)} fichier(s)"
           f"{' — écrites' if ecrire else ' — essai à blanc, rien écrit'}.")
 
 
-# =========================================================== migration SQL
-
-
-def sql_tables() -> str:
-    """Renomme les tables, puis ce qui porte leur nom : index, contraintes, politiques.
-
-    PostgreSQL ne renomme pas les objets dépendants avec la table. Sans ce second
-    passage, une violation de clé primaire sur `salaries` annoncerait
-    « employees_pkey » — le message d'erreur resterait en anglais alors que la
-    table ne l'est plus, et c'est exactement ce qu'un utilisateur voit.
-    """
-    lignes = ["set search_path = public;", ""]
-    for ancien, nouveau in renommage.TABLES.items():
-        lignes.append(f"alter table if exists {ancien} rename to {nouveau};")
-    lignes += ["", "-- Index, contraintes et politiques portant encore l'ancien nom.", "do $$", "declare r record;", "begin"]
-    lignes.append("""  for r in
-    select c.relname as ancien, t.relname as table_fr, x.ancien_prefixe, x.nouveau_prefixe
-    from (values""")
-    paires = ",\n".join(f"      ('{a}', '{b}')" for a, b in renommage.TABLES.items())
-    lignes.append(paires)
-    lignes.append("""    ) as x(ancien_prefixe, nouveau_prefixe)
-    join pg_class t on t.relname = x.nouveau_prefixe
-    join pg_namespace n on n.oid = t.relnamespace and n.nspname = 'public'
-    join pg_class c on c.relname like x.ancien_prefixe || '\\_%'
-                   and c.relkind in ('i', 'S')
-                   and c.relnamespace = n.oid
-  loop
-    execute format('alter %s %I rename to %I',
-                   case when r.ancien like '%_seq' then 'sequence' else 'index' end,
-                   r.ancien,
-                   r.nouveau_prefixe || substr(r.ancien, length(r.ancien_prefixe) + 1));
-  end loop;
-end $$;""")
-    return "\n".join(lignes) + "\n"
+BLOCS = ("tables", "colonnes-sures", "colonnes-simples")
 
 
 def main() -> int:
-    if len(sys.argv) < 2 or sys.argv[1] not in ("tables", "colonnes-sures", "colonnes-ambigues"):
+    if len(sys.argv) < 2 or sys.argv[1] not in BLOCS:
         print(__doc__)
         return 2
 
     bloc = sys.argv[1]
     ecrire = "--ecrire" in sys.argv
-
-    if "--sql" in sys.argv:
-        if bloc != "tables":
-            print("Le SQL des colonnes est produit par --sql sur chaque bloc de colonnes.",
-                  file=sys.stderr)
-        print(sql_tables())
-        return 0
+    # Colonnes de table, colonnes de sortie RPC, types énumérés : une seule et
+    # même surface publique, celle que lisent les deux interfaces.
+    tout = {**renommage.COLONNES, **renommage.SORTIES_RPC, **renommage.TYPES}
 
     if bloc == "tables":
-        print("Bloc A — les 57 tables. Remplacement mot à mot : un nom de table ne "
-              "peut désigner qu'une table.\n")
+        print("Bloc A — les tables. Un nom de table ne peut désigner qu'une table.\n")
         appliquer(renommage.TABLES, chaines_seulement=False, ecrire=ecrire)
     elif bloc == "colonnes-sures":
-        table = {a: b for a, b in renommage.COLONNES.items() if a != b and "_" in a}
-        print(f"Bloc B — les {len(table)} colonnes à nom composé. Le souligné garantit "
-              f"qu'elles viennent de la base.\n")
+        table = {a: b for a, b in tout.items() if a != b and "_" in a}
+        print(f"Bloc B — les {len(table)} noms composés. Le souligné garantit "
+              f"qu'ils viennent de la base.\n")
         appliquer(table, chaines_seulement=False, ecrire=ecrire)
     else:
-        table = {a: b for a, b in renommage.COLONNES.items() if a != b and "_" not in a}
-        print(f"Bloc C — les {len(table)} colonnes à nom simple. Remplacement limité aux "
-              f"littéraux de chaîne : ailleurs, `name` ou `status` peut désigner "
-              f"tout autre chose.\n")
+        table = {a: b for a, b in tout.items() if a != b and "_" not in a}
+        print(f"Bloc C — les {len(table)} noms simples. Littéraux de chaîne "
+              f"uniquement : ailleurs, « name » ou « status » désigne autre chose.\n")
         appliquer(table, chaines_seulement=True, ecrire=ecrire)
     return 0
 

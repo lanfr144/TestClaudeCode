@@ -127,7 +127,7 @@ depuis le cahier des charges.
 | Non couvert | Précision |
 |---|---|
 | **Calcul de paie brut → net** | Le socle est posé — cotisations, taux société datés, crédits d'impôt, avantages en nature — mais le moteur de calcul reste à écrire. C'est la V2 du cahier des charges |
-| **Retenue d'impôt** | La table `tax_brackets` existe et `fn_income_tax` sait la lire ; elle est **vide**. Le calcul se suspend en le disant plutôt que d'inventer un barème |
+| **Retenue d'impôt** | La table `tranches_impot` existe et `fn_income_tax` sait la lire ; elle est **vide**. Le calcul se suspend en le disant plutôt que d'inventer un barème |
 | **Recalcul rétroactif automatique** | Les deux dates nécessaires sont conservées (date d'application et date de chargement) ; la détection des périodes à reprendre n'est pas écrite |
 | **Reclassement professionnel** | Aucune table ne sait le représenter. C'est le manque fonctionnel le plus lourd |
 | **Six congés légaux** | Formation, linguistique, sportif, culturel, mandat social, accueil |

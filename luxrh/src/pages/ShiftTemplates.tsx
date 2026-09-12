@@ -8,7 +8,7 @@ import {
 } from '@/components/ui'
 import { time } from '@/lib/format'
 
-const EMPTY = { name: '', start_time: '09:00', end_time: '17:00', break_minutes: '30', color: '#017E84', department_id: '' }
+const EMPTY = { nom: '', heure_debut: '09:00', heure_fin: '17:00', pause_minutes: '30', couleur: '#017E84', service_id: '' }
 
 export default function ShiftTemplates() {
   const { activeCompanyId } = useApp()
@@ -23,14 +23,14 @@ export default function ShiftTemplates() {
     setBusy(true)
     setErr(null)
     try {
-      const { error } = await supabase.from('shift_templates').insert({
-        company_id: activeCompanyId!,
-        name: form.name,
-        start_time: form.start_time,
-        end_time: form.end_time,
-        break_minutes: Number(form.break_minutes || 0),
-        color: form.color,
-        department_id: form.department_id || null,
+      const { error } = await supabase.from('modeles_creneau').insert({
+        societe_id: activeCompanyId!,
+        nom: form.nom,
+        heure_debut: form.heure_debut,
+        heure_fin: form.heure_fin,
+        pause_minutes: Number(form.pause_minutes || 0),
+        couleur: form.couleur,
+        service_id: form.service_id || null,
       })
       if (error) throw new Error(error.message)
       await qc.invalidateQueries({ queryKey: ['shift-templates'] })
@@ -43,7 +43,7 @@ export default function ShiftTemplates() {
   }
 
   async function remove(id: string) {
-    const { error } = await supabase.from('shift_templates').delete().eq('id', id)
+    const { error } = await supabase.from('modeles_creneau').delete().eq('id', id)
     if (error) setErr(new Error(error.message))
     else await qc.invalidateQueries({ queryKey: ['shift-templates'] })
   }
@@ -55,7 +55,7 @@ export default function ShiftTemplates() {
   return (
     <div className="space-y-4">
       <header>
-        <h1 className="text-xl font-bold tracking-tight text-ink">Modèles de shifts</h1>
+        <h1 className="text-xl font-bold tracking-tight text-ink">Modèles de creneaux</h1>
         <p className="text-xs text-ink-muted">
           Bibliothèque réutilisable : glissez un modèle sur une case du planning pour créer un shift.
         </p>
@@ -64,32 +64,32 @@ export default function ShiftTemplates() {
       <Card title="Nouveau modèle">
         <div className="grid gap-3 sm:grid-cols-6">
           <Field label="Nom" required>
-            <Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Service soir" />
+            <Input value={form.nom} onChange={(e) => setForm({ ...form, nom: e.target.value })} placeholder="Service soir" />
           </Field>
           <Field label="Début" required>
-            <Input type="time" value={form.start_time} onChange={(e) => setForm({ ...form, start_time: e.target.value })} />
+            <Input type="time" value={form.heure_debut} onChange={(e) => setForm({ ...form, heure_debut: e.target.value })} />
           </Field>
           <Field label="Fin" required hint="Une fin antérieure au début franchit minuit.">
-            <Input type="time" value={form.end_time} onChange={(e) => setForm({ ...form, end_time: e.target.value })} />
+            <Input type="time" value={form.heure_fin} onChange={(e) => setForm({ ...form, heure_fin: e.target.value })} />
           </Field>
           <Field label="Pause (min)">
-            <Input type="number" value={form.break_minutes} onChange={(e) => setForm({ ...form, break_minutes: e.target.value })} />
+            <Input type="number" value={form.pause_minutes} onChange={(e) => setForm({ ...form, pause_minutes: e.target.value })} />
           </Field>
           <Field label="Service">
-            <Select value={form.department_id} onChange={(e) => setForm({ ...form, department_id: e.target.value })}>
+            <Select value={form.service_id} onChange={(e) => setForm({ ...form, service_id: e.target.value })}>
               <option value="">Tous</option>
-              {(company.data?.departments ?? []).map((d) => (
-                <option key={d.id} value={d.id}>{d.name}</option>
+              {(company.data?.services ?? []).map((d) => (
+                <option key={d.id} value={d.id}>{d.nom}</option>
               ))}
             </Select>
           </Field>
           <Field label="Couleur">
-            <Input type="color" value={form.color} onChange={(e) => setForm({ ...form, color: e.target.value })} className="h-[38px] p-1" />
+            <Input type="color" value={form.couleur} onChange={(e) => setForm({ ...form, couleur: e.target.value })} className="h-[38px] p-1" />
           </Field>
         </div>
         <ErrorNote error={err} />
         <div className="mt-4 flex justify-end">
-          <Button variant="primary" onClick={create} disabled={busy || !form.name}>
+          <Button variant="primary" onClick={create} disabled={busy || !form.nom}>
             {busy ? 'Enregistrement…' : 'Ajouter le modèle'}
           </Button>
         </div>
@@ -97,21 +97,21 @@ export default function ShiftTemplates() {
 
       <Card dense>
         {(data ?? []).length === 0 ? (
-          <EmptyState title="Aucun modèle" detail="Créez vos shifts types pour construire les plannings plus vite." />
+          <EmptyState title="Aucun modèle" detail="Créez vos creneaux types pour construire les plannings plus vite." />
         ) : (
           <Table head={['Modèle', 'Horaire', 'Pause', 'Service', '']}>
             {(data ?? []).map((t) => (
               <tr key={t.id}>
                 <td className="lux-td">
                   <span className="inline-flex items-center gap-2">
-                    <span className="h-3 w-3 rounded-sm" style={{ background: t.color }} aria-hidden />
-                    <span className="font-medium text-ink">{t.name}</span>
+                    <span className="h-3 w-3 rounded-sm" style={{ background: t.couleur }} aria-hidden />
+                    <span className="font-medium text-ink">{t.nom}</span>
                   </span>
                 </td>
-                <td className="lux-td font-mono">{time(t.start_time)} – {time(t.end_time)}</td>
-                <td className="lux-td">{t.break_minutes} min</td>
+                <td className="lux-td font-mono">{time(t.heure_debut)} – {time(t.heure_fin)}</td>
+                <td className="lux-td">{t.pause_minutes} min</td>
                 <td className="lux-td">
-                  {(company.data?.departments ?? []).find((d) => d.id === t.department_id)?.name ?? 'Tous'}
+                  {(company.data?.services ?? []).find((d) => d.id === t.service_id)?.nom ?? 'Tous'}
                 </td>
                 <td className="lux-td">
                   <button onClick={() => remove(t.id)} className="text-xs font-semibold text-danger hover:underline">

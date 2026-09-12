@@ -14,184 +14,95 @@ export type Database = {
   }
   public: {
     Tables: {
-      absence_entitlements: {
-        Row: {
-          absence_type_id: string
-          block_days: number | null
-          career_cap_days: number | null
-          days: number | null
-          frequency_note: string | null
-          id: string
-          legal_ref: string | null
-          note: string | null
-          period_months: number | null
-          relationship_degree: number | null
-          requires_evidence: boolean
-          valid_from: string
-          valid_to: string
-        }
-        Insert: {
-          absence_type_id: string
-          block_days?: number | null
-          career_cap_days?: number | null
-          days?: number | null
-          frequency_note?: string | null
-          id?: string
-          legal_ref?: string | null
-          note?: string | null
-          period_months?: number | null
-          relationship_degree?: number | null
-          requires_evidence?: boolean
-          valid_from?: string
-          valid_to?: string
-        }
-        Update: {
-          absence_type_id?: string
-          block_days?: number | null
-          career_cap_days?: number | null
-          days?: number | null
-          frequency_note?: string | null
-          id?: string
-          legal_ref?: string | null
-          note?: string | null
-          period_months?: number | null
-          relationship_degree?: number | null
-          requires_evidence?: boolean
-          valid_from?: string
-          valid_to?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "absence_entitlements_absence_type_id_fkey"
-            columns: ["absence_type_id"]
-            isOneToOne: false
-            referencedRelation: "absence_types"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      absence_types: {
-        Row: {
-          category: Database["public"]["Enums"]["absence_category"]
-          code: string
-          counts_against_leave: boolean
-          id: string
-          is_paid: boolean
-          label: string
-          legal_ref: string | null
-          requires_certificate: boolean
-        }
-        Insert: {
-          category: Database["public"]["Enums"]["absence_category"]
-          code: string
-          counts_against_leave?: boolean
-          id?: string
-          is_paid?: boolean
-          label: string
-          legal_ref?: string | null
-          requires_certificate?: boolean
-        }
-        Update: {
-          category?: Database["public"]["Enums"]["absence_category"]
-          code?: string
-          counts_against_leave?: boolean
-          id?: string
-          is_paid?: boolean
-          label?: string
-          legal_ref?: string | null
-          requires_certificate?: boolean
-        }
-        Relationships: []
-      }
       absences: {
         Row: {
           absence_parente_id: string | null
-          absence_type_id: string
-          certificate_document_id: string | null
-          certificate_original_received: boolean
-          certificate_original_received_at: string | null
-          certificate_received: boolean
-          certificate_received_at: string | null
-          certificate_uploaded_at: string | null
-          child_id: string | null
-          comment: string | null
-          company_id: string
-          created_at: string
-          days_count: number
-          decided_at: string | null
-          decided_by: string | null
-          decision_note: string | null
-          declared_by_employee: boolean
-          employee_id: string
-          end_date: string
+          certificat_depose_le: string | null
+          certificat_document_id: string | null
+          certificat_original_recu: boolean
+          certificat_original_recu_le: string | null
+          certificat_recu: boolean
+          certificat_recu_le: string | null
+          commentaire: string | null
+          cree_le: string
+          date_debut: string
+          date_fin: string
+          decide_le: string | null
+          decide_par: string | null
+          declare_par_salarie: boolean
+          demande_par: string | null
+          enfant_id: string | null
           id: string
+          nombre_jours: number
+          note_decision: string | null
           proposee_par: string | null
           rang_proposition: number
-          requested_by: string | null
-          start_date: string
-          status: Database["public"]["Enums"]["absence_status"]
+          salarie_id: string
+          societe_id: string
+          statut: Database["public"]["Enums"]["statut_absence"]
+          type_absence_id: string
         }
         Insert: {
           absence_parente_id?: string | null
-          absence_type_id: string
-          certificate_document_id?: string | null
-          certificate_original_received?: boolean
-          certificate_original_received_at?: string | null
-          certificate_received?: boolean
-          certificate_received_at?: string | null
-          certificate_uploaded_at?: string | null
-          child_id?: string | null
-          comment?: string | null
-          company_id: string
-          created_at?: string
-          days_count?: number
-          decided_at?: string | null
-          decided_by?: string | null
-          decision_note?: string | null
-          declared_by_employee?: boolean
-          employee_id: string
-          end_date: string
+          certificat_depose_le?: string | null
+          certificat_document_id?: string | null
+          certificat_original_recu?: boolean
+          certificat_original_recu_le?: string | null
+          certificat_recu?: boolean
+          certificat_recu_le?: string | null
+          commentaire?: string | null
+          cree_le?: string
+          date_debut: string
+          date_fin: string
+          decide_le?: string | null
+          decide_par?: string | null
+          declare_par_salarie?: boolean
+          demande_par?: string | null
+          enfant_id?: string | null
           id?: string
+          nombre_jours?: number
+          note_decision?: string | null
           proposee_par?: string | null
           rang_proposition?: number
-          requested_by?: string | null
-          start_date: string
-          status?: Database["public"]["Enums"]["absence_status"]
+          salarie_id: string
+          societe_id: string
+          statut?: Database["public"]["Enums"]["statut_absence"]
+          type_absence_id: string
         }
         Update: {
           absence_parente_id?: string | null
-          absence_type_id?: string
-          certificate_document_id?: string | null
-          certificate_original_received?: boolean
-          certificate_original_received_at?: string | null
-          certificate_received?: boolean
-          certificate_received_at?: string | null
-          certificate_uploaded_at?: string | null
-          child_id?: string | null
-          comment?: string | null
-          company_id?: string
-          created_at?: string
-          days_count?: number
-          decided_at?: string | null
-          decided_by?: string | null
-          decision_note?: string | null
-          declared_by_employee?: boolean
-          employee_id?: string
-          end_date?: string
+          certificat_depose_le?: string | null
+          certificat_document_id?: string | null
+          certificat_original_recu?: boolean
+          certificat_original_recu_le?: string | null
+          certificat_recu?: boolean
+          certificat_recu_le?: string | null
+          commentaire?: string | null
+          cree_le?: string
+          date_debut?: string
+          date_fin?: string
+          decide_le?: string | null
+          decide_par?: string | null
+          declare_par_salarie?: boolean
+          demande_par?: string | null
+          enfant_id?: string | null
           id?: string
+          nombre_jours?: number
+          note_decision?: string | null
           proposee_par?: string | null
           rang_proposition?: number
-          requested_by?: string | null
-          start_date?: string
-          status?: Database["public"]["Enums"]["absence_status"]
+          salarie_id?: string
+          societe_id?: string
+          statut?: Database["public"]["Enums"]["statut_absence"]
+          type_absence_id?: string
         }
         Relationships: [
           {
             foreignKeyName: "absence_belongs_to_employees_company"
-            columns: ["employee_id", "company_id"]
+            columns: ["salarie_id", "societe_id"]
             isOneToOne: false
-            referencedRelation: "employees"
-            referencedColumns: ["id", "company_id"]
+            referencedRelation: "salaries"
+            referencedColumns: ["id", "societe_id"]
           },
           {
             foreignKeyName: "absences_absence_parente_id_fkey"
@@ -202,123 +113,33 @@ export type Database = {
           },
           {
             foreignKeyName: "absences_absence_type_id_fkey"
-            columns: ["absence_type_id"]
+            columns: ["type_absence_id"]
             isOneToOne: false
-            referencedRelation: "absence_types"
+            referencedRelation: "types_absence"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "absences_child_id_fkey"
-            columns: ["child_id"]
+            columns: ["enfant_id"]
             isOneToOne: false
-            referencedRelation: "employee_children"
+            referencedRelation: "enfants_salarie"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "absences_company_id_fkey"
-            columns: ["company_id"]
+            columns: ["societe_id"]
             isOneToOne: false
-            referencedRelation: "companies"
+            referencedRelation: "societes"
             referencedColumns: ["id"]
           },
         ]
       }
-      address_checks: {
-        Row: {
-          checked_at: string
-          company_id: string | null
-          country: string | null
-          entity_id: string
-          entity_table: string
-          id: string
-          message: string | null
-          postal_code: string | null
-          status: string
-          zone_code: string | null
-        }
-        Insert: {
-          checked_at?: string
-          company_id?: string | null
-          country?: string | null
-          entity_id: string
-          entity_table: string
-          id?: string
-          message?: string | null
-          postal_code?: string | null
-          status: string
-          zone_code?: string | null
-        }
-        Update: {
-          checked_at?: string
-          company_id?: string | null
-          country?: string | null
-          entity_id?: string
-          entity_table?: string
-          id?: string
-          message?: string | null
-          postal_code?: string | null
-          status?: string
-          zone_code?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "address_checks_statut_ref"
-            columns: ["status"]
-            isOneToOne: false
-            referencedRelation: "ref_statut_verification_adresse"
-            referencedColumns: ["code"]
-          },
-        ]
-      }
-      address_zones: {
-        Row: {
-          code: string
-          country: string
-          id: string
-          is_verified: boolean
-          kind: string
-          label: string
-          note: string | null
-          postal_from: number | null
-          postal_to: number | null
-          source: string
-        }
-        Insert: {
-          code: string
-          country: string
-          id?: string
-          is_verified?: boolean
-          kind: string
-          label: string
-          note?: string | null
-          postal_from?: number | null
-          postal_to?: number | null
-          source: string
-        }
-        Update: {
-          code?: string
-          country?: string
-          id?: string
-          is_verified?: boolean
-          kind?: string
-          label?: string
-          note?: string | null
-          postal_from?: number | null
-          postal_to?: number | null
-          source?: string
-        }
-        Relationships: []
-      }
       adresses_salarie: {
         Row: {
           code_postal: string | null
-          company_id: string
-          created_at: string
-          created_by: string | null
+          cree_le: string
+          cree_par: string | null
           debut_validite: string
-          deleted_at: string | null
-          deleted_by: string | null
-          employee_id: string
           fin_validite: string
           id: string
           latitude: number | null
@@ -328,17 +149,17 @@ export type Database = {
           note: string | null
           origine: string
           pays: string
+          salarie_id: string
+          societe_id: string
+          supprime_le: string | null
+          supprime_par: string | null
           type_adresse: string
         }
         Insert: {
           code_postal?: string | null
-          company_id: string
-          created_at?: string
-          created_by?: string | null
+          cree_le?: string
+          cree_par?: string | null
           debut_validite?: string
-          deleted_at?: string | null
-          deleted_by?: string | null
-          employee_id: string
           fin_validite?: string
           id?: string
           latitude?: number | null
@@ -348,17 +169,17 @@ export type Database = {
           note?: string | null
           origine?: string
           pays?: string
+          salarie_id: string
+          societe_id: string
+          supprime_le?: string | null
+          supprime_par?: string | null
           type_adresse: string
         }
         Update: {
           code_postal?: string | null
-          company_id?: string
-          created_at?: string
-          created_by?: string | null
+          cree_le?: string
+          cree_par?: string | null
           debut_validite?: string
-          deleted_at?: string | null
-          deleted_by?: string | null
-          employee_id?: string
           fin_validite?: string
           id?: string
           latitude?: number | null
@@ -368,15 +189,19 @@ export type Database = {
           note?: string | null
           origine?: string
           pays?: string
+          salarie_id?: string
+          societe_id?: string
+          supprime_le?: string | null
+          supprime_par?: string | null
           type_adresse?: string
         }
         Relationships: [
           {
             foreignKeyName: "adr_appartient_au_salarie"
-            columns: ["employee_id", "company_id"]
+            columns: ["salarie_id", "societe_id"]
             isOneToOne: false
-            referencedRelation: "employees"
-            referencedColumns: ["id", "company_id"]
+            referencedRelation: "salaries"
+            referencedColumns: ["id", "societe_id"]
           },
           {
             foreignKeyName: "adresses_salarie_type_adresse_fkey"
@@ -387,233 +212,258 @@ export type Database = {
           },
         ]
       }
-      app_secrets: {
+      agences_interim: {
         Row: {
-          key: string
-          secret: string
-        }
-        Insert: {
-          key: string
-          secret: string
-        }
-        Update: {
-          key?: string
-          secret?: string
-        }
-        Relationships: []
-      }
-      app_users: {
-        Row: {
-          auth_user_id: string | null
-          created_at: string
-          created_by: string | null
-          deleted_at: string | null
-          deleted_by: string | null
-          email: string
-          full_name: string | null
+          code_postal: string | null
+          cree_le: string
           id: string
-          is_admin: boolean
-          password_hash: string | null
-          updated_at: string
-          updated_by: string | null
-          userid: string
+          ligne: string | null
+          localite: string | null
+          matricule_ccss: string | null
+          nom: string
+          numero_rcs: string | null
+          organisation_id: string
         }
         Insert: {
-          auth_user_id?: string | null
-          created_at?: string
-          created_by?: string | null
-          deleted_at?: string | null
-          deleted_by?: string | null
-          email: string
-          full_name?: string | null
+          code_postal?: string | null
+          cree_le?: string
           id?: string
-          is_admin?: boolean
-          password_hash?: string | null
-          updated_at?: string
-          updated_by?: string | null
-          userid: string
+          ligne?: string | null
+          localite?: string | null
+          matricule_ccss?: string | null
+          nom: string
+          numero_rcs?: string | null
+          organisation_id: string
         }
         Update: {
-          auth_user_id?: string | null
-          created_at?: string
-          created_by?: string | null
-          deleted_at?: string | null
-          deleted_by?: string | null
-          email?: string
-          full_name?: string | null
+          code_postal?: string | null
+          cree_le?: string
           id?: string
-          is_admin?: boolean
-          password_hash?: string | null
-          updated_at?: string
-          updated_by?: string | null
-          userid?: string
+          ligne?: string | null
+          localite?: string | null
+          matricule_ccss?: string | null
+          nom?: string
+          numero_rcs?: string | null
+          organisation_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "agences_interim_organization_id_fkey"
+            columns: ["organisation_id"]
+            isOneToOne: false
+            referencedRelation: "organisations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
-      audit_log: {
+      alertes_conformite: {
         Row: {
-          action: string
-          actor_id: string | null
-          actor_label: string | null
-          company_id: string | null
-          entity_id: string | null
-          entity_table: string
-          id: number
-          new_value: Json | null
-          occurred_at: string
-          old_value: Json | null
-          request_id: string | null
-          source_ip: string | null
-          user_agent: string | null
-        }
-        Insert: {
-          action: string
-          actor_id?: string | null
-          actor_label?: string | null
-          company_id?: string | null
-          entity_id?: string | null
-          entity_table: string
-          id?: number
-          new_value?: Json | null
-          occurred_at?: string
-          old_value?: Json | null
-          request_id?: string | null
-          source_ip?: string | null
-          user_agent?: string | null
-        }
-        Update: {
-          action?: string
-          actor_id?: string | null
-          actor_label?: string | null
-          company_id?: string | null
-          entity_id?: string | null
-          entity_table?: string
-          id?: number
-          new_value?: Json | null
-          occurred_at?: string
-          old_value?: Json | null
-          request_id?: string | null
-          source_ip?: string | null
-          user_agent?: string | null
-        }
-        Relationships: []
-      }
-      benefit_types: {
-        Row: {
-          code: string
+          code_regle: string
+          consequence: string | null
+          date_echeance: string | null
+          detail: string
+          etat: Database["public"]["Enums"]["etat_alerte"]
           id: string
-          is_contributory: boolean
-          is_taxable: boolean
-          label: string
-          legal_ref: string | null
+          note_traitement: string | null
+          reference_legale: string | null
+          salarie_id: string | null
+          severite: Database["public"]["Enums"]["genre_severite"]
+          societe_id: string
+          titre: string
+          traite_le: string | null
+          traite_par: string | null
+          vu_la_premiere_fois_le: string
+        }
+        Insert: {
+          code_regle: string
+          consequence?: string | null
+          date_echeance?: string | null
+          detail: string
+          etat?: Database["public"]["Enums"]["etat_alerte"]
+          id?: string
+          note_traitement?: string | null
+          reference_legale?: string | null
+          salarie_id?: string | null
+          severite: Database["public"]["Enums"]["genre_severite"]
+          societe_id: string
+          titre: string
+          traite_le?: string | null
+          traite_par?: string | null
+          vu_la_premiere_fois_le?: string
+        }
+        Update: {
+          code_regle?: string
+          consequence?: string | null
+          date_echeance?: string | null
+          detail?: string
+          etat?: Database["public"]["Enums"]["etat_alerte"]
+          id?: string
+          note_traitement?: string | null
+          reference_legale?: string | null
+          salarie_id?: string | null
+          severite?: Database["public"]["Enums"]["genre_severite"]
+          societe_id?: string
+          titre?: string
+          traite_le?: string | null
+          traite_par?: string | null
+          vu_la_premiere_fois_le?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "alertes_conformite_company_id_fkey"
+            columns: ["societe_id"]
+            isOneToOne: false
+            referencedRelation: "societes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "alertes_conformite_employee_id_fkey"
+            columns: ["salarie_id"]
+            isOneToOne: false
+            referencedRelation: "salaries"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      attributions_titres_repas: {
+        Row: {
+          attribue_le: string | null
+          cree_le: string
+          debut_periode: string
+          fin_periode: string
+          id: string
+          nombre_titres: number
           note: string | null
-          valuation_method: string
-          valuation_params: Json
+          part_salariale: number
+          salarie_id: string
+          societe_id: string
+          valeur_faciale: number
+        }
+        Insert: {
+          attribue_le?: string | null
+          cree_le?: string
+          debut_periode: string
+          fin_periode: string
+          id?: string
+          nombre_titres: number
+          note?: string | null
+          part_salariale?: number
+          salarie_id: string
+          societe_id: string
+          valeur_faciale: number
+        }
+        Update: {
+          attribue_le?: string | null
+          cree_le?: string
+          debut_periode?: string
+          fin_periode?: string
+          id?: string
+          nombre_titres?: number
+          note?: string | null
+          part_salariale?: number
+          salarie_id?: string
+          societe_id?: string
+          valeur_faciale?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "attributions_titres_repas_company_id_fkey"
+            columns: ["societe_id"]
+            isOneToOne: false
+            referencedRelation: "societes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "voucher_belongs_to_employees_company"
+            columns: ["salarie_id", "societe_id"]
+            isOneToOne: false
+            referencedRelation: "salaries"
+            referencedColumns: ["id", "societe_id"]
+          },
+        ]
+      }
+      avenants_contrat: {
+        Row: {
+          contrat_id: string
+          cree_le: string
+          cree_par: string | null
+          date_effet: string
+          id: string
+          modifications: Json
+          motif: string
+          societe_id: string
+        }
+        Insert: {
+          contrat_id: string
+          cree_le?: string
+          cree_par?: string | null
+          date_effet: string
+          id?: string
+          modifications: Json
+          motif: string
+          societe_id: string
+        }
+        Update: {
+          contrat_id?: string
+          cree_le?: string
+          cree_par?: string | null
+          date_effet?: string
+          id?: string
+          modifications?: Json
+          motif?: string
+          societe_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "avenants_contrat_company_id_fkey"
+            columns: ["societe_id"]
+            isOneToOne: false
+            referencedRelation: "societes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "avenants_contrat_contract_id_fkey"
+            columns: ["contrat_id"]
+            isOneToOne: false
+            referencedRelation: "contrats"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      categories_sanction: {
+        Row: {
+          code: string
+          debut_validite: string
+          description: string
+          fin_validite: string
+          libelle: string
+          rang: number
         }
         Insert: {
           code: string
-          id?: string
-          is_contributory?: boolean
-          is_taxable?: boolean
-          label: string
-          legal_ref?: string | null
-          note?: string | null
-          valuation_method: string
-          valuation_params?: Json
+          debut_validite?: string
+          description: string
+          fin_validite?: string
+          libelle: string
+          rang: number
         }
         Update: {
           code?: string
-          id?: string
-          is_contributory?: boolean
-          is_taxable?: boolean
-          label?: string
-          legal_ref?: string | null
-          note?: string | null
-          valuation_method?: string
-          valuation_params?: Json
+          debut_validite?: string
+          description?: string
+          fin_validite?: string
+          libelle?: string
+          rang?: number
         }
         Relationships: []
-      }
-      cba_rules: {
-        Row: {
-          block: Database["public"]["Enums"]["cba_block"]
-          collective_agreement_id: string
-          id: string
-          is_complete: boolean
-          rules: Json
-          updated_at: string
-        }
-        Insert: {
-          block: Database["public"]["Enums"]["cba_block"]
-          collective_agreement_id: string
-          id?: string
-          is_complete?: boolean
-          rules?: Json
-          updated_at?: string
-        }
-        Update: {
-          block?: Database["public"]["Enums"]["cba_block"]
-          collective_agreement_id?: string
-          id?: string
-          is_complete?: boolean
-          rules?: Json
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "cba_rules_collective_agreement_id_fkey"
-            columns: ["collective_agreement_id"]
-            isOneToOne: false
-            referencedRelation: "collective_agreements"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      cba_salary_grids: {
-        Row: {
-          category: string
-          collective_agreement_id: string
-          id: string
-          index_ref: number | null
-          monthly_amount: number
-          seniority_from_years: number
-          seniority_to_years: number | null
-        }
-        Insert: {
-          category: string
-          collective_agreement_id: string
-          id?: string
-          index_ref?: number | null
-          monthly_amount: number
-          seniority_from_years?: number
-          seniority_to_years?: number | null
-        }
-        Update: {
-          category?: string
-          collective_agreement_id?: string
-          id?: string
-          index_ref?: number | null
-          monthly_amount?: number
-          seniority_from_years?: number
-          seniority_to_years?: number | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "cba_salary_grids_collective_agreement_id_fkey"
-            columns: ["collective_agreement_id"]
-            isOneToOne: false
-            referencedRelation: "collective_agreements"
-            referencedColumns: ["id"]
-          },
-        ]
       }
       cct_regle_prime: {
         Row: {
           article: string | null
           assiette: string | null
           categorie_visee: string | null
-          collective_agreement_id: string
           condition_code: string
+          convention_id: string
           debut_validite: string
           fin_validite: string
           id: string
@@ -622,16 +472,16 @@ export type Database = {
           nature_prime: string
           note: string | null
           seuil_minutes: number
-          source_url: string
           taux_pct: number | null
           unite: string
+          url_source: string
         }
         Insert: {
           article?: string | null
           assiette?: string | null
           categorie_visee?: string | null
-          collective_agreement_id: string
           condition_code: string
+          convention_id: string
           debut_validite?: string
           fin_validite?: string
           id?: string
@@ -640,16 +490,16 @@ export type Database = {
           nature_prime: string
           note?: string | null
           seuil_minutes?: number
-          source_url: string
           taux_pct?: number | null
           unite: string
+          url_source: string
         }
         Update: {
           article?: string | null
           assiette?: string | null
           categorie_visee?: string | null
-          collective_agreement_id?: string
           condition_code?: string
+          convention_id?: string
           debut_validite?: string
           fin_validite?: string
           id?: string
@@ -658,16 +508,16 @@ export type Database = {
           nature_prime?: string
           note?: string | null
           seuil_minutes?: number
-          source_url?: string
           taux_pct?: number | null
           unite?: string
+          url_source?: string
         }
         Relationships: [
           {
             foreignKeyName: "cct_regle_prime_collective_agreement_id_fkey"
-            columns: ["collective_agreement_id"]
+            columns: ["convention_id"]
             isOneToOne: false
-            referencedRelation: "collective_agreements"
+            referencedRelation: "conventions_collectives"
             referencedColumns: ["id"]
           },
           {
@@ -693,912 +543,534 @@ export type Database = {
           },
         ]
       }
-      client_sites: {
+      comptes: {
         Row: {
-          address_line: string | null
-          city: string | null
-          client_name: string | null
-          company_id: string
-          country: string
-          created_at: string
+          compte_auth_id: string | null
+          courriel: string
+          cree_le: string
+          cree_par: string | null
+          empreinte_mot_de_passe: string | null
+          est_admin: boolean
           id: string
-          is_active: boolean
-          latitude: number | null
-          longitude: number | null
-          name: string
-          note: string | null
-          postal_code: string | null
+          identifiant: string
+          modifie_le: string
+          modifie_par: string | null
+          nom_complet: string | null
+          supprime_le: string | null
+          supprime_par: string | null
         }
         Insert: {
-          address_line?: string | null
-          city?: string | null
-          client_name?: string | null
-          company_id: string
-          country?: string
-          created_at?: string
+          compte_auth_id?: string | null
+          courriel: string
+          cree_le?: string
+          cree_par?: string | null
+          empreinte_mot_de_passe?: string | null
+          est_admin?: boolean
           id?: string
-          is_active?: boolean
-          latitude?: number | null
-          longitude?: number | null
-          name: string
-          note?: string | null
-          postal_code?: string | null
+          identifiant: string
+          modifie_le?: string
+          modifie_par?: string | null
+          nom_complet?: string | null
+          supprime_le?: string | null
+          supprime_par?: string | null
         }
         Update: {
-          address_line?: string | null
-          city?: string | null
-          client_name?: string | null
-          company_id?: string
-          country?: string
-          created_at?: string
+          compte_auth_id?: string | null
+          courriel?: string
+          cree_le?: string
+          cree_par?: string | null
+          empreinte_mot_de_passe?: string | null
+          est_admin?: boolean
           id?: string
-          is_active?: boolean
-          latitude?: number | null
-          longitude?: number | null
-          name?: string
-          note?: string | null
-          postal_code?: string | null
+          identifiant?: string
+          modifie_le?: string
+          modifie_par?: string | null
+          nom_complet?: string | null
+          supprime_le?: string | null
+          supprime_par?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "client_sites_company_id_fkey"
-            columns: ["company_id"]
-            isOneToOne: false
-            referencedRelation: "companies"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
-      collective_agreements: {
+      contrats: {
         Row: {
-          code: string
-          created_at: string
-          employee_category: string | null
+          agence_interim_id: string | null
+          annee_apprentissage: number | null
+          brut_mensuel: number
+          categorie: string | null
+          clause_exclusivite: boolean
+          clause_non_concurrence: boolean
+          contrat_precedent_id: string | null
+          cree_le: string
+          date_debut: string
+          date_fin: string | null
+          description_poste: string | null
+          duree_essai: number | null
+          est_temps_partiel: boolean
+          genre: Database["public"]["Enums"]["genre_contrat"]
+          heures_hebdomadaires: number
           id: string
-          is_active: boolean
-          name: string
-          organization_id: string | null
-          scope: Database["public"]["Enums"]["cba_scope"]
-          sector: string
-          supersedes_id: string | null
-          valid_from: string
-          valid_to: string
-        }
-        Insert: {
-          code: string
-          created_at?: string
-          employee_category?: string | null
-          id?: string
-          is_active?: boolean
-          name: string
-          organization_id?: string | null
-          scope?: Database["public"]["Enums"]["cba_scope"]
-          sector: string
-          supersedes_id?: string | null
-          valid_from?: string
-          valid_to?: string
-        }
-        Update: {
-          code?: string
-          created_at?: string
-          employee_category?: string | null
-          id?: string
-          is_active?: boolean
-          name?: string
-          organization_id?: string | null
-          scope?: Database["public"]["Enums"]["cba_scope"]
-          sector?: string
-          supersedes_id?: string | null
-          valid_from?: string
-          valid_to?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "collective_agreements_organization_id_fkey"
-            columns: ["organization_id"]
-            isOneToOne: false
-            referencedRelation: "organizations"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "collective_agreements_supersedes_id_fkey"
-            columns: ["supersedes_id"]
-            isOneToOne: false
-            referencedRelation: "collective_agreements"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      companies: {
-        Row: {
-          address_line: string | null
-          ccss_matricule: string | null
-          city: string | null
-          country: string
-          created_at: string
-          id: string
-          internal_rules_adopted_on: string | null
-          internal_rules_reference: string | null
-          legal_form: string | null
-          legal_name: string
-          nace_code: string | null
-          organization_id: string
-          postal_code: string | null
-          rcs_number: string | null
-          reference_period_months: number
-          sector: string | null
-        }
-        Insert: {
-          address_line?: string | null
-          ccss_matricule?: string | null
-          city?: string | null
-          country?: string
-          created_at?: string
-          id?: string
-          internal_rules_adopted_on?: string | null
-          internal_rules_reference?: string | null
-          legal_form?: string | null
-          legal_name: string
-          nace_code?: string | null
-          organization_id: string
-          postal_code?: string | null
-          rcs_number?: string | null
-          reference_period_months?: number
-          sector?: string | null
-        }
-        Update: {
-          address_line?: string | null
-          ccss_matricule?: string | null
-          city?: string | null
-          country?: string
-          created_at?: string
-          id?: string
-          internal_rules_adopted_on?: string | null
-          internal_rules_reference?: string | null
-          legal_form?: string | null
-          legal_name?: string
-          nace_code?: string | null
-          organization_id?: string
-          postal_code?: string | null
-          rcs_number?: string | null
-          reference_period_months?: number
-          sector?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "companies_organization_id_fkey"
-            columns: ["organization_id"]
-            isOneToOne: false
-            referencedRelation: "organizations"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      company_accident_claims: {
-        Row: {
-          claim_count: number
-          company_id: string
-          cost: number | null
-          days_lost: number
-          id: string
-          note: string | null
-          year: number
-        }
-        Insert: {
-          claim_count?: number
-          company_id: string
-          cost?: number | null
-          days_lost?: number
-          id?: string
-          note?: string | null
-          year: number
-        }
-        Update: {
-          claim_count?: number
-          company_id?: string
-          cost?: number | null
-          days_lost?: number
-          id?: string
-          note?: string | null
-          year?: number
-        }
-        Relationships: [
-          {
-            foreignKeyName: "company_accident_claims_company_id_fkey"
-            columns: ["company_id"]
-            isOneToOne: false
-            referencedRelation: "companies"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      company_collective_agreements: {
-        Row: {
-          collective_agreement_id: string
-          company_id: string
-          created_at: string
-          department_id: string | null
-          id: string
-          note: string | null
-          valid_from: string
-          valid_to: string
-        }
-        Insert: {
-          collective_agreement_id: string
-          company_id: string
-          created_at?: string
-          department_id?: string | null
-          id?: string
-          note?: string | null
-          valid_from?: string
-          valid_to?: string
-        }
-        Update: {
-          collective_agreement_id?: string
-          company_id?: string
-          created_at?: string
-          department_id?: string | null
-          id?: string
-          note?: string | null
-          valid_from?: string
-          valid_to?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "company_collective_agreements_collective_agreement_id_fkey"
-            columns: ["collective_agreement_id"]
-            isOneToOne: false
-            referencedRelation: "collective_agreements"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "company_collective_agreements_company_id_fkey"
-            columns: ["company_id"]
-            isOneToOne: false
-            referencedRelation: "companies"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "company_collective_agreements_department_id_fkey"
-            columns: ["department_id"]
-            isOneToOne: false
-            referencedRelation: "departments"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      company_financials: {
-        Row: {
-          company_id: string
-          created_at: string
-          fiscal_year: number
-          id: string
-          note: string | null
-          profit: number | null
-          revenue: number | null
-          source: string | null
-        }
-        Insert: {
-          company_id: string
-          created_at?: string
-          fiscal_year: number
-          id?: string
-          note?: string | null
-          profit?: number | null
-          revenue?: number | null
-          source?: string | null
-        }
-        Update: {
-          company_id?: string
-          created_at?: string
-          fiscal_year?: number
-          id?: string
-          note?: string | null
-          profit?: number | null
-          revenue?: number | null
-          source?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "company_financials_company_id_fkey"
-            columns: ["company_id"]
-            isOneToOne: false
-            referencedRelation: "companies"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      company_rate_periods: {
-        Row: {
-          accident_factor: number
-          accident_risk_class: string | null
-          activity_class: string | null
-          company_id: string
-          created_at: string
-          id: string
-          mutuality_class: number | null
-          note: string | null
-          source: string
-          valid_from: string
-          valid_to: string
-        }
-        Insert: {
-          accident_factor?: number
-          accident_risk_class?: string | null
-          activity_class?: string | null
-          company_id: string
-          created_at?: string
-          id?: string
-          mutuality_class?: number | null
-          note?: string | null
-          source?: string
-          valid_from?: string
-          valid_to?: string
-        }
-        Update: {
-          accident_factor?: number
-          accident_risk_class?: string | null
-          activity_class?: string | null
-          company_id?: string
-          created_at?: string
-          id?: string
-          mutuality_class?: number | null
-          note?: string | null
-          source?: string
-          valid_from?: string
-          valid_to?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "company_rate_periods_company_id_fkey"
-            columns: ["company_id"]
-            isOneToOne: false
-            referencedRelation: "companies"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      compliance_alerts: {
-        Row: {
-          company_id: string
-          consequence: string | null
-          detail: string
-          due_date: string | null
-          employee_id: string | null
-          first_seen_at: string
-          handled_at: string | null
-          handled_by: string | null
-          handled_note: string | null
-          id: string
-          legal_ref: string | null
-          rule_code: string
-          severity: Database["public"]["Enums"]["severity_kind"]
-          state: Database["public"]["Enums"]["alert_state"]
-          title: string
-        }
-        Insert: {
-          company_id: string
-          consequence?: string | null
-          detail: string
-          due_date?: string | null
-          employee_id?: string | null
-          first_seen_at?: string
-          handled_at?: string | null
-          handled_by?: string | null
-          handled_note?: string | null
-          id?: string
-          legal_ref?: string | null
-          rule_code: string
-          severity: Database["public"]["Enums"]["severity_kind"]
-          state?: Database["public"]["Enums"]["alert_state"]
-          title: string
-        }
-        Update: {
-          company_id?: string
-          consequence?: string | null
-          detail?: string
-          due_date?: string | null
-          employee_id?: string | null
-          first_seen_at?: string
-          handled_at?: string | null
-          handled_by?: string | null
-          handled_note?: string | null
-          id?: string
-          legal_ref?: string | null
-          rule_code?: string
-          severity?: Database["public"]["Enums"]["severity_kind"]
-          state?: Database["public"]["Enums"]["alert_state"]
-          title?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "compliance_alerts_company_id_fkey"
-            columns: ["company_id"]
-            isOneToOne: false
-            referencedRelation: "companies"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "compliance_alerts_employee_id_fkey"
-            columns: ["employee_id"]
-            isOneToOne: false
-            referencedRelation: "employees"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      contract_amendments: {
-        Row: {
-          changes: Json
-          company_id: string
-          contract_id: string
-          created_at: string
-          created_by: string | null
-          effective_date: string
-          id: string
-          reason: string
-        }
-        Insert: {
-          changes: Json
-          company_id: string
-          contract_id: string
-          created_at?: string
-          created_by?: string | null
-          effective_date: string
-          id?: string
-          reason: string
-        }
-        Update: {
-          changes?: Json
-          company_id?: string
-          contract_id?: string
-          created_at?: string
-          created_by?: string | null
-          effective_date?: string
-          id?: string
-          reason?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "contract_amendments_company_id_fkey"
-            columns: ["company_id"]
-            isOneToOne: false
-            referencedRelation: "companies"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "contract_amendments_contract_id_fkey"
-            columns: ["contract_id"]
-            isOneToOne: false
-            referencedRelation: "contracts"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      contract_collective_agreements: {
-        Row: {
-          collective_agreement_id: string
-          contract_id: string
-          created_at: string
-          id: string
-          note: string | null
-          valid_from: string
-          valid_to: string
-        }
-        Insert: {
-          collective_agreement_id: string
-          contract_id: string
-          created_at?: string
-          id?: string
-          note?: string | null
-          valid_from?: string
-          valid_to?: string
-        }
-        Update: {
-          collective_agreement_id?: string
-          contract_id?: string
-          created_at?: string
-          id?: string
-          note?: string | null
-          valid_from?: string
-          valid_to?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "contract_collective_agreements_collective_agreement_id_fkey"
-            columns: ["collective_agreement_id"]
-            isOneToOne: false
-            referencedRelation: "collective_agreements"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "contract_collective_agreements_contract_id_fkey"
-            columns: ["contract_id"]
-            isOneToOne: false
-            referencedRelation: "contracts"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      contract_pay_components: {
-        Row: {
-          amount: number | null
-          basis: string | null
-          benefit_type_id: string | null
-          code: string
-          company_id: string
-          contract_id: string
-          created_at: string
-          id: string
-          in_salary_reference: boolean
-          is_contributory: boolean
-          is_taxable: boolean
-          kind: Database["public"]["Enums"]["pay_component_kind"]
-          label: string
-          note: string | null
-          periodicity: string
-          rate_pct: number | null
-          valid_from: string
-          valid_to: string
-        }
-        Insert: {
-          amount?: number | null
-          basis?: string | null
-          benefit_type_id?: string | null
-          code: string
-          company_id: string
-          contract_id: string
-          created_at?: string
-          id?: string
-          in_salary_reference?: boolean
-          is_contributory?: boolean
-          is_taxable?: boolean
-          kind: Database["public"]["Enums"]["pay_component_kind"]
-          label: string
-          note?: string | null
-          periodicity?: string
-          rate_pct?: number | null
-          valid_from?: string
-          valid_to?: string
-        }
-        Update: {
-          amount?: number | null
-          basis?: string | null
-          benefit_type_id?: string | null
-          code?: string
-          company_id?: string
-          contract_id?: string
-          created_at?: string
-          id?: string
-          in_salary_reference?: boolean
-          is_contributory?: boolean
-          is_taxable?: boolean
-          kind?: Database["public"]["Enums"]["pay_component_kind"]
-          label?: string
-          note?: string | null
-          periodicity?: string
-          rate_pct?: number | null
-          valid_from?: string
-          valid_to?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "contract_pay_components_benefit_type_id_fkey"
-            columns: ["benefit_type_id"]
-            isOneToOne: false
-            referencedRelation: "benefit_types"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "contract_pay_components_company_id_fkey"
-            columns: ["company_id"]
-            isOneToOne: false
-            referencedRelation: "companies"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "contract_pay_components_contract_id_fkey"
-            columns: ["contract_id"]
-            isOneToOne: false
-            referencedRelation: "contracts"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      contract_terminations: {
-        Row: {
-          company_id: string
-          contract_id: string
-          created_at: string
-          id: string
-          is_gross_misconduct: boolean
-          is_personal_ground: boolean
-          notice_end: string | null
-          notice_start: string | null
-          notice_waived: boolean
-          notified_on: string
-          reason: string
-          severance_months: number | null
-          waiver_agreed_on: string | null
-          waiver_compensation: number | null
-          waiver_note: string | null
-        }
-        Insert: {
-          company_id: string
-          contract_id: string
-          created_at?: string
-          id?: string
-          is_gross_misconduct?: boolean
-          is_personal_ground?: boolean
-          notice_end?: string | null
-          notice_start?: string | null
-          notice_waived?: boolean
-          notified_on: string
-          reason: string
-          severance_months?: number | null
-          waiver_agreed_on?: string | null
-          waiver_compensation?: number | null
-          waiver_note?: string | null
-        }
-        Update: {
-          company_id?: string
-          contract_id?: string
-          created_at?: string
-          id?: string
-          is_gross_misconduct?: boolean
-          is_personal_ground?: boolean
-          notice_end?: string | null
-          notice_start?: string | null
-          notice_waived?: boolean
-          notified_on?: string
-          reason?: string
-          severance_months?: number | null
-          waiver_agreed_on?: string | null
-          waiver_compensation?: number | null
-          waiver_note?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "contract_terminations_company_id_fkey"
-            columns: ["company_id"]
-            isOneToOne: false
-            referencedRelation: "companies"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "contract_terminations_contract_id_fkey"
-            columns: ["contract_id"]
-            isOneToOne: false
-            referencedRelation: "contracts"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      contracts: {
-        Row: {
-          annual_leave_days: number | null
-          apprenticeship_level: string | null
-          apprenticeship_year: number | null
-          break_minutes: number | null
-          category: string | null
-          cdd_reason: string | null
-          company_id: string
-          created_at: string
-          days_per_week: number
-          employee_id: string
-          end_date: string | null
-          exclusivity_clause: boolean
-          id: string
-          index_ref: number | null
-          interim_agency_id: string | null
-          is_part_time: boolean
-          job_description: string | null
-          job_title: string
-          kind: Database["public"]["Enums"]["contract_kind"]
-          mission_reason: string | null
-          monthly_gross: number
-          night_work: boolean
-          non_compete_clause: boolean
-          previous_contract_id: string | null
-          probation_length: number | null
-          probation_unit: string | null
-          reference_period_months: number
-          renewal_count: number
-          season_label: string | null
-          signed_at: string | null
-          start_date: string
-          status: Database["public"]["Enums"]["contract_status"]
-          user_company_name: string | null
+          indice_reference: number | null
+          intitule_poste: string
+          jours_conge_annuel: number | null
+          jours_par_semaine: number
+          libelle_saison: string | null
+          lieu_travail: string | null
+          motif_cdd: string | null
+          motif_mission: string | null
+          niveau_apprentissage: string | null
+          nom_societe_utilisateur: string | null
+          nombre_renouvellements: number
+          pause_minutes: number | null
+          periode_reference_mois: number
+          repartition_travail: string | null
+          salarie_id: string
+          signe_le: string | null
+          societe_id: string
+          statut: Database["public"]["Enums"]["statut_contrat"]
+          travail_nuit: boolean
+          unite_essai: string | null
           version: number
-          weekly_hours: number
-          work_distribution: string | null
-          work_place: string | null
         }
         Insert: {
-          annual_leave_days?: number | null
-          apprenticeship_level?: string | null
-          apprenticeship_year?: number | null
-          break_minutes?: number | null
-          category?: string | null
-          cdd_reason?: string | null
-          company_id: string
-          created_at?: string
-          days_per_week?: number
-          employee_id: string
-          end_date?: string | null
-          exclusivity_clause?: boolean
+          agence_interim_id?: string | null
+          annee_apprentissage?: number | null
+          brut_mensuel: number
+          categorie?: string | null
+          clause_exclusivite?: boolean
+          clause_non_concurrence?: boolean
+          contrat_precedent_id?: string | null
+          cree_le?: string
+          date_debut: string
+          date_fin?: string | null
+          description_poste?: string | null
+          duree_essai?: number | null
+          est_temps_partiel?: boolean
+          genre: Database["public"]["Enums"]["genre_contrat"]
+          heures_hebdomadaires?: number
           id?: string
-          index_ref?: number | null
-          interim_agency_id?: string | null
-          is_part_time?: boolean
-          job_description?: string | null
-          job_title: string
-          kind: Database["public"]["Enums"]["contract_kind"]
-          mission_reason?: string | null
-          monthly_gross: number
-          night_work?: boolean
-          non_compete_clause?: boolean
-          previous_contract_id?: string | null
-          probation_length?: number | null
-          probation_unit?: string | null
-          reference_period_months?: number
-          renewal_count?: number
-          season_label?: string | null
-          signed_at?: string | null
-          start_date: string
-          status?: Database["public"]["Enums"]["contract_status"]
-          user_company_name?: string | null
+          indice_reference?: number | null
+          intitule_poste: string
+          jours_conge_annuel?: number | null
+          jours_par_semaine?: number
+          libelle_saison?: string | null
+          lieu_travail?: string | null
+          motif_cdd?: string | null
+          motif_mission?: string | null
+          niveau_apprentissage?: string | null
+          nom_societe_utilisateur?: string | null
+          nombre_renouvellements?: number
+          pause_minutes?: number | null
+          periode_reference_mois?: number
+          repartition_travail?: string | null
+          salarie_id: string
+          signe_le?: string | null
+          societe_id: string
+          statut?: Database["public"]["Enums"]["statut_contrat"]
+          travail_nuit?: boolean
+          unite_essai?: string | null
           version?: number
-          weekly_hours?: number
-          work_distribution?: string | null
-          work_place?: string | null
         }
         Update: {
-          annual_leave_days?: number | null
-          apprenticeship_level?: string | null
-          apprenticeship_year?: number | null
-          break_minutes?: number | null
-          category?: string | null
-          cdd_reason?: string | null
-          company_id?: string
-          created_at?: string
-          days_per_week?: number
-          employee_id?: string
-          end_date?: string | null
-          exclusivity_clause?: boolean
+          agence_interim_id?: string | null
+          annee_apprentissage?: number | null
+          brut_mensuel?: number
+          categorie?: string | null
+          clause_exclusivite?: boolean
+          clause_non_concurrence?: boolean
+          contrat_precedent_id?: string | null
+          cree_le?: string
+          date_debut?: string
+          date_fin?: string | null
+          description_poste?: string | null
+          duree_essai?: number | null
+          est_temps_partiel?: boolean
+          genre?: Database["public"]["Enums"]["genre_contrat"]
+          heures_hebdomadaires?: number
           id?: string
-          index_ref?: number | null
-          interim_agency_id?: string | null
-          is_part_time?: boolean
-          job_description?: string | null
-          job_title?: string
-          kind?: Database["public"]["Enums"]["contract_kind"]
-          mission_reason?: string | null
-          monthly_gross?: number
-          night_work?: boolean
-          non_compete_clause?: boolean
-          previous_contract_id?: string | null
-          probation_length?: number | null
-          probation_unit?: string | null
-          reference_period_months?: number
-          renewal_count?: number
-          season_label?: string | null
-          signed_at?: string | null
-          start_date?: string
-          status?: Database["public"]["Enums"]["contract_status"]
-          user_company_name?: string | null
+          indice_reference?: number | null
+          intitule_poste?: string
+          jours_conge_annuel?: number | null
+          jours_par_semaine?: number
+          libelle_saison?: string | null
+          lieu_travail?: string | null
+          motif_cdd?: string | null
+          motif_mission?: string | null
+          niveau_apprentissage?: string | null
+          nom_societe_utilisateur?: string | null
+          nombre_renouvellements?: number
+          pause_minutes?: number | null
+          periode_reference_mois?: number
+          repartition_travail?: string | null
+          salarie_id?: string
+          signe_le?: string | null
+          societe_id?: string
+          statut?: Database["public"]["Enums"]["statut_contrat"]
+          travail_nuit?: boolean
+          unite_essai?: string | null
           version?: number
-          weekly_hours?: number
-          work_distribution?: string | null
-          work_place?: string | null
         }
         Relationships: [
           {
             foreignKeyName: "contract_belongs_to_employees_company"
-            columns: ["employee_id", "company_id"]
+            columns: ["salarie_id", "societe_id"]
             isOneToOne: false
-            referencedRelation: "employees"
-            referencedColumns: ["id", "company_id"]
+            referencedRelation: "salaries"
+            referencedColumns: ["id", "societe_id"]
           },
           {
-            foreignKeyName: "contracts_company_id_fkey"
-            columns: ["company_id"]
+            foreignKeyName: "contrats_company_id_fkey"
+            columns: ["societe_id"]
             isOneToOne: false
-            referencedRelation: "companies"
+            referencedRelation: "societes"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "contracts_interim_agency_fk"
-            columns: ["interim_agency_id"]
+            foreignKeyName: "contrats_interim_agency_fk"
+            columns: ["agence_interim_id"]
             isOneToOne: false
-            referencedRelation: "interim_agencies"
+            referencedRelation: "agences_interim"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "contracts_previous_contract_id_fkey"
-            columns: ["previous_contract_id"]
+            foreignKeyName: "contrats_previous_contract_id_fkey"
+            columns: ["contrat_precedent_id"]
             isOneToOne: false
-            referencedRelation: "contracts"
+            referencedRelation: "contrats"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "contracts_unite_essai_ref"
-            columns: ["probation_unit"]
+            foreignKeyName: "contrats_unite_essai_ref"
+            columns: ["unite_essai"]
             isOneToOne: false
             referencedRelation: "ref_unite_essai"
             referencedColumns: ["code"]
           },
         ]
       }
+      controles_adresse: {
+        Row: {
+          code_postal: string | null
+          code_zone: string | null
+          controle_le: string
+          entite_id: string
+          entite_table: string
+          id: string
+          message: string | null
+          pays: string | null
+          societe_id: string | null
+          statut: string
+        }
+        Insert: {
+          code_postal?: string | null
+          code_zone?: string | null
+          controle_le?: string
+          entite_id: string
+          entite_table: string
+          id?: string
+          message?: string | null
+          pays?: string | null
+          societe_id?: string | null
+          statut: string
+        }
+        Update: {
+          code_postal?: string | null
+          code_zone?: string | null
+          controle_le?: string
+          entite_id?: string
+          entite_table?: string
+          id?: string
+          message?: string | null
+          pays?: string | null
+          societe_id?: string | null
+          statut?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "controles_adresse_statut_ref"
+            columns: ["statut"]
+            isOneToOne: false
+            referencedRelation: "ref_statut_verification_adresse"
+            referencedColumns: ["code"]
+          },
+        ]
+      }
+      conventions_collectives: {
+        Row: {
+          actif: boolean
+          categorie_professionnelle: string | null
+          code: string
+          cree_le: string
+          debut_validite: string
+          fin_validite: string
+          id: string
+          nom: string
+          organisation_id: string | null
+          portee: Database["public"]["Enums"]["portee_convention"]
+          remplace_id: string | null
+          secteur: string
+        }
+        Insert: {
+          actif?: boolean
+          categorie_professionnelle?: string | null
+          code: string
+          cree_le?: string
+          debut_validite?: string
+          fin_validite?: string
+          id?: string
+          nom: string
+          organisation_id?: string | null
+          portee?: Database["public"]["Enums"]["portee_convention"]
+          remplace_id?: string | null
+          secteur: string
+        }
+        Update: {
+          actif?: boolean
+          categorie_professionnelle?: string | null
+          code?: string
+          cree_le?: string
+          debut_validite?: string
+          fin_validite?: string
+          id?: string
+          nom?: string
+          organisation_id?: string | null
+          portee?: Database["public"]["Enums"]["portee_convention"]
+          remplace_id?: string | null
+          secteur?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "conventions_collectives_organization_id_fkey"
+            columns: ["organisation_id"]
+            isOneToOne: false
+            referencedRelation: "organisations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "conventions_collectives_supersedes_id_fkey"
+            columns: ["remplace_id"]
+            isOneToOne: false
+            referencedRelation: "conventions_collectives"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      conventions_de_la_societe: {
+        Row: {
+          convention_id: string
+          cree_le: string
+          debut_validite: string
+          fin_validite: string
+          id: string
+          note: string | null
+          service_id: string | null
+          societe_id: string
+        }
+        Insert: {
+          convention_id: string
+          cree_le?: string
+          debut_validite?: string
+          fin_validite?: string
+          id?: string
+          note?: string | null
+          service_id?: string | null
+          societe_id: string
+        }
+        Update: {
+          convention_id?: string
+          cree_le?: string
+          debut_validite?: string
+          fin_validite?: string
+          id?: string
+          note?: string | null
+          service_id?: string | null
+          societe_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "conventions_de_la_societe_collective_agreement_id_fkey"
+            columns: ["convention_id"]
+            isOneToOne: false
+            referencedRelation: "conventions_collectives"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "conventions_de_la_societe_company_id_fkey"
+            columns: ["societe_id"]
+            isOneToOne: false
+            referencedRelation: "societes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "conventions_de_la_societe_department_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      conventions_du_contrat: {
+        Row: {
+          contrat_id: string
+          convention_id: string
+          cree_le: string
+          debut_validite: string
+          fin_validite: string
+          id: string
+          note: string | null
+        }
+        Insert: {
+          contrat_id: string
+          convention_id: string
+          cree_le?: string
+          debut_validite?: string
+          fin_validite?: string
+          id?: string
+          note?: string | null
+        }
+        Update: {
+          contrat_id?: string
+          convention_id?: string
+          cree_le?: string
+          debut_validite?: string
+          fin_validite?: string
+          id?: string
+          note?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "conventions_du_contrat_collective_agreement_id_fkey"
+            columns: ["convention_id"]
+            isOneToOne: false
+            referencedRelation: "conventions_collectives"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "conventions_du_contrat_contract_id_fkey"
+            columns: ["contrat_id"]
+            isOneToOne: false
+            referencedRelation: "contrats"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      credits_impot: {
+        Row: {
+          classes_visees: Database["public"]["Enums"]["classe_impot"][] | null
+          code: string
+          debut_validite: string
+          fin_validite: string
+          id: string
+          libelle: string
+          montant_mensuel: number | null
+          note: string | null
+          proratise_sur_heures: boolean
+          reference_legale: string | null
+          revenu_max: number | null
+          revenu_min: number | null
+          source: string
+        }
+        Insert: {
+          classes_visees?: Database["public"]["Enums"]["classe_impot"][] | null
+          code: string
+          debut_validite?: string
+          fin_validite?: string
+          id?: string
+          libelle: string
+          montant_mensuel?: number | null
+          note?: string | null
+          proratise_sur_heures?: boolean
+          reference_legale?: string | null
+          revenu_max?: number | null
+          revenu_min?: number | null
+          source?: string
+        }
+        Update: {
+          classes_visees?: Database["public"]["Enums"]["classe_impot"][] | null
+          code?: string
+          debut_validite?: string
+          fin_validite?: string
+          id?: string
+          libelle?: string
+          montant_mensuel?: number | null
+          note?: string | null
+          proratise_sur_heures?: boolean
+          reference_legale?: string | null
+          revenu_max?: number | null
+          revenu_min?: number | null
+          source?: string
+        }
+        Relationships: []
+      }
       creneau_condition: {
         Row: {
-          client_site_id: string | null
-          company_id: string
           condition_code: string
           constate_par: string | null
-          created_at: string
+          cree_le: string
+          creneau_id: string | null
           date_prestation: string
-          deleted_at: string | null
-          deleted_by: string | null
-          employee_id: string
           heure_debut: string
           heure_fin: string
           id: string
           minutes: number | null
           note: string | null
-          shift_id: string | null
-          time_entry_id: string | null
+          releve_temps_id: string | null
+          salarie_id: string
+          site_client_id: string | null
+          societe_id: string
+          supprime_le: string | null
+          supprime_par: string | null
         }
         Insert: {
-          client_site_id?: string | null
-          company_id: string
           condition_code: string
           constate_par?: string | null
-          created_at?: string
+          cree_le?: string
+          creneau_id?: string | null
           date_prestation: string
-          deleted_at?: string | null
-          deleted_by?: string | null
-          employee_id: string
           heure_debut: string
           heure_fin: string
           id?: string
           minutes?: number | null
           note?: string | null
-          shift_id?: string | null
-          time_entry_id?: string | null
+          releve_temps_id?: string | null
+          salarie_id: string
+          site_client_id?: string | null
+          societe_id: string
+          supprime_le?: string | null
+          supprime_par?: string | null
         }
         Update: {
-          client_site_id?: string | null
-          company_id?: string
           condition_code?: string
           constate_par?: string | null
-          created_at?: string
+          cree_le?: string
+          creneau_id?: string | null
           date_prestation?: string
-          deleted_at?: string | null
-          deleted_by?: string | null
-          employee_id?: string
           heure_debut?: string
           heure_fin?: string
           id?: string
           minutes?: number | null
           note?: string | null
-          shift_id?: string | null
-          time_entry_id?: string | null
+          releve_temps_id?: string | null
+          salarie_id?: string
+          site_client_id?: string | null
+          societe_id?: string
+          supprime_le?: string | null
+          supprime_par?: string | null
         }
         Relationships: [
           {
             foreignKeyName: "cc_appartient_au_salarie"
-            columns: ["employee_id", "company_id"]
+            columns: ["salarie_id", "societe_id"]
             isOneToOne: false
-            referencedRelation: "employees"
-            referencedColumns: ["id", "company_id"]
+            referencedRelation: "salaries"
+            referencedColumns: ["id", "societe_id"]
           },
           {
             foreignKeyName: "cc_site_appartient_a_la_societe"
-            columns: ["client_site_id", "company_id"]
+            columns: ["site_client_id", "societe_id"]
             isOneToOne: false
-            referencedRelation: "client_sites"
-            referencedColumns: ["id", "company_id"]
+            referencedRelation: "sites_client"
+            referencedColumns: ["id", "societe_id"]
           },
           {
             foreignKeyName: "creneau_condition_condition_code_fkey"
@@ -1609,826 +1081,575 @@ export type Database = {
           },
           {
             foreignKeyName: "creneau_condition_shift_id_fkey"
-            columns: ["shift_id"]
+            columns: ["creneau_id"]
             isOneToOne: false
-            referencedRelation: "shifts"
+            referencedRelation: "creneaux"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "creneau_condition_time_entry_id_fkey"
-            columns: ["time_entry_id"]
+            columns: ["releve_temps_id"]
             isOneToOne: false
-            referencedRelation: "time_entries"
+            referencedRelation: "releves_temps"
             referencedColumns: ["id"]
           },
         ]
       }
-      data_access_log: {
+      creneaux: {
         Row: {
-          action: string
-          actor_id: string | null
-          actor_label: string | null
-          company_id: string | null
-          entity_id: string | null
-          entity_table: string
-          id: number
-          is_autonomous: boolean
-          occurred_at: string
-          request_id: string | null
-          row_count: number | null
-          scope: string | null
-          source_ip: string | null
-          subject_employee_id: string | null
-          user_agent: string | null
+          cree_le: string
+          date_creneau: string
+          heure_debut: string
+          heure_fin: string
+          id: string
+          libelle: string | null
+          modele_id: string | null
+          pause_minutes: number
+          planning_id: string
+          salarie_id: string
+          site_client_id: string | null
+          societe_id: string
         }
         Insert: {
-          action: string
-          actor_id?: string | null
-          actor_label?: string | null
-          company_id?: string | null
-          entity_id?: string | null
-          entity_table: string
-          id?: never
-          is_autonomous?: boolean
-          occurred_at?: string
-          request_id?: string | null
-          row_count?: number | null
-          scope?: string | null
-          source_ip?: string | null
-          subject_employee_id?: string | null
-          user_agent?: string | null
+          cree_le?: string
+          date_creneau: string
+          heure_debut: string
+          heure_fin: string
+          id?: string
+          libelle?: string | null
+          modele_id?: string | null
+          pause_minutes?: number
+          planning_id: string
+          salarie_id: string
+          site_client_id?: string | null
+          societe_id: string
         }
         Update: {
-          action?: string
-          actor_id?: string | null
-          actor_label?: string | null
-          company_id?: string | null
-          entity_id?: string | null
-          entity_table?: string
-          id?: never
-          is_autonomous?: boolean
-          occurred_at?: string
-          request_id?: string | null
-          row_count?: number | null
-          scope?: string | null
-          source_ip?: string | null
-          subject_employee_id?: string | null
-          user_agent?: string | null
+          cree_le?: string
+          date_creneau?: string
+          heure_debut?: string
+          heure_fin?: string
+          id?: string
+          libelle?: string | null
+          modele_id?: string | null
+          pause_minutes?: number
+          planning_id?: string
+          salarie_id?: string
+          site_client_id?: string | null
+          societe_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "data_access_log_action_ref"
-            columns: ["action"]
+            foreignKeyName: "creneaux_company_id_fkey"
+            columns: ["societe_id"]
             isOneToOne: false
-            referencedRelation: "ref_action_acces"
+            referencedRelation: "societes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "creneaux_template_id_fkey"
+            columns: ["modele_id"]
+            isOneToOne: false
+            referencedRelation: "modeles_creneau"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "shift_belongs_to_employees_company"
+            columns: ["salarie_id", "societe_id"]
+            isOneToOne: false
+            referencedRelation: "salaries"
+            referencedColumns: ["id", "societe_id"]
+          },
+          {
+            foreignKeyName: "shift_belongs_to_schedules_company"
+            columns: ["planning_id", "societe_id"]
+            isOneToOne: false
+            referencedRelation: "plannings"
+            referencedColumns: ["id", "societe_id"]
+          },
+          {
+            foreignKeyName: "shift_site_belongs_to_company"
+            columns: ["site_client_id", "societe_id"]
+            isOneToOne: false
+            referencedRelation: "sites_client"
+            referencedColumns: ["id", "societe_id"]
+          },
+        ]
+      }
+      demandes_heures_sup: {
+        Row: {
+          accepte_par_salarie_le: string | null
+          compensation: string
+          debut_periode: string
+          demande_le: string
+          demande_par: string | null
+          fin_periode: string
+          heures: number
+          id: string
+          motif: string
+          motif_refus: string | null
+          note: string | null
+          planning_id: string | null
+          salarie_id: string
+          societe_id: string
+          statut: string
+          valide_rh_le: string | null
+          valide_rh_par: string | null
+        }
+        Insert: {
+          accepte_par_salarie_le?: string | null
+          compensation?: string
+          debut_periode: string
+          demande_le?: string
+          demande_par?: string | null
+          fin_periode: string
+          heures: number
+          id?: string
+          motif: string
+          motif_refus?: string | null
+          note?: string | null
+          planning_id?: string | null
+          salarie_id: string
+          societe_id: string
+          statut?: string
+          valide_rh_le?: string | null
+          valide_rh_par?: string | null
+        }
+        Update: {
+          accepte_par_salarie_le?: string | null
+          compensation?: string
+          debut_periode?: string
+          demande_le?: string
+          demande_par?: string | null
+          fin_periode?: string
+          heures?: number
+          id?: string
+          motif?: string
+          motif_refus?: string | null
+          note?: string | null
+          planning_id?: string | null
+          salarie_id?: string
+          societe_id?: string
+          statut?: string
+          valide_rh_le?: string | null
+          valide_rh_par?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "demandes_heures_sup_company_id_fkey"
+            columns: ["societe_id"]
+            isOneToOne: false
+            referencedRelation: "societes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "demandes_heures_sup_compensation_ref"
+            columns: ["compensation"]
+            isOneToOne: false
+            referencedRelation: "ref_compensation_heures_sup"
             referencedColumns: ["code"]
           },
-        ]
-      }
-      departments: {
-        Row: {
-          company_id: string
-          id: string
-          min_evening_coverage: number | null
-          name: string
-        }
-        Insert: {
-          company_id: string
-          id?: string
-          min_evening_coverage?: number | null
-          name: string
-        }
-        Update: {
-          company_id?: string
-          id?: string
-          min_evening_coverage?: number | null
-          name?: string
-        }
-        Relationships: [
           {
-            foreignKeyName: "departments_company_id_fkey"
-            columns: ["company_id"]
+            foreignKeyName: "demandes_heures_sup_schedule_id_fkey"
+            columns: ["planning_id"]
             isOneToOne: false
-            referencedRelation: "companies"
+            referencedRelation: "plannings"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "demandes_heures_sup_statut_ref"
+            columns: ["statut"]
+            isOneToOne: false
+            referencedRelation: "ref_statut_heures_sup"
+            referencedColumns: ["code"]
+          },
+          {
+            foreignKeyName: "overtime_belongs_to_employees_company"
+            columns: ["salarie_id", "societe_id"]
+            isOneToOne: false
+            referencedRelation: "salaries"
+            referencedColumns: ["id", "societe_id"]
           },
         ]
       }
-      document_types: {
+      distances_trajet: {
         Row: {
-          alert_days_before: number
-          applies_to_residency:
-            | Database["public"]["Enums"]["residency_kind"][]
-            | null
-          code: string
+          calcule_le: string
+          calcule_par: string | null
+          distance_km: number
+          duree_minutes: number | null
           id: string
-          is_mandatory: boolean
-          label: string
-          legal_ref: string | null
           note: string | null
-          stage: Database["public"]["Enums"]["document_stage"]
-          validity_months: number | null
+          reference_destination: string
+          reference_origine: string
+          source: string
         }
         Insert: {
-          alert_days_before?: number
-          applies_to_residency?:
-            | Database["public"]["Enums"]["residency_kind"][]
-            | null
-          code: string
+          calcule_le?: string
+          calcule_par?: string | null
+          distance_km: number
+          duree_minutes?: number | null
           id?: string
-          is_mandatory?: boolean
-          label: string
-          legal_ref?: string | null
           note?: string | null
-          stage?: Database["public"]["Enums"]["document_stage"]
-          validity_months?: number | null
+          reference_destination: string
+          reference_origine: string
+          source: string
         }
         Update: {
-          alert_days_before?: number
-          applies_to_residency?:
-            | Database["public"]["Enums"]["residency_kind"][]
-            | null
-          code?: string
+          calcule_le?: string
+          calcule_par?: string | null
+          distance_km?: number
+          duree_minutes?: number | null
           id?: string
-          is_mandatory?: boolean
-          label?: string
-          legal_ref?: string | null
           note?: string | null
-          stage?: Database["public"]["Enums"]["document_stage"]
-          validity_months?: number | null
+          reference_destination?: string
+          reference_origine?: string
+          source?: string
         }
         Relationships: []
       }
       documents: {
         Row: {
-          company_id: string
-          created_at: string
-          delivered_at: string | null
-          document_type_id: string | null
-          employee_id: string | null
-          entity_id: string | null
-          entity_table: string | null
-          expires_on: string | null
+          chemin_stockage: string
+          conservation_jusquau: string | null
+          cree_le: string
+          depose_par: string | null
+          emis_le: string | null
+          entite_id: string | null
+          entite_table: string | null
+          expire_le: string | null
           id: string
-          is_sensitive: boolean
-          issued_on: string | null
-          mime_type: string | null
-          name: string
-          retention_until: string | null
-          size_bytes: number | null
-          storage_path: string
-          uploaded_by: string | null
+          nom: string
+          remis_le: string | null
+          salarie_id: string | null
+          sensible: boolean
+          societe_id: string
+          taille_octets: number | null
+          type_document_id: string | null
+          type_mime: string | null
         }
         Insert: {
-          company_id: string
-          created_at?: string
-          delivered_at?: string | null
-          document_type_id?: string | null
-          employee_id?: string | null
-          entity_id?: string | null
-          entity_table?: string | null
-          expires_on?: string | null
+          chemin_stockage: string
+          conservation_jusquau?: string | null
+          cree_le?: string
+          depose_par?: string | null
+          emis_le?: string | null
+          entite_id?: string | null
+          entite_table?: string | null
+          expire_le?: string | null
           id?: string
-          is_sensitive?: boolean
-          issued_on?: string | null
-          mime_type?: string | null
-          name: string
-          retention_until?: string | null
-          size_bytes?: number | null
-          storage_path: string
-          uploaded_by?: string | null
+          nom: string
+          remis_le?: string | null
+          salarie_id?: string | null
+          sensible?: boolean
+          societe_id: string
+          taille_octets?: number | null
+          type_document_id?: string | null
+          type_mime?: string | null
         }
         Update: {
-          company_id?: string
-          created_at?: string
-          delivered_at?: string | null
-          document_type_id?: string | null
-          employee_id?: string | null
-          entity_id?: string | null
-          entity_table?: string | null
-          expires_on?: string | null
+          chemin_stockage?: string
+          conservation_jusquau?: string | null
+          cree_le?: string
+          depose_par?: string | null
+          emis_le?: string | null
+          entite_id?: string | null
+          entite_table?: string | null
+          expire_le?: string | null
           id?: string
-          is_sensitive?: boolean
-          issued_on?: string | null
-          mime_type?: string | null
-          name?: string
-          retention_until?: string | null
-          size_bytes?: number | null
-          storage_path?: string
-          uploaded_by?: string | null
+          nom?: string
+          remis_le?: string | null
+          salarie_id?: string | null
+          sensible?: boolean
+          societe_id?: string
+          taille_octets?: number | null
+          type_document_id?: string | null
+          type_mime?: string | null
         }
         Relationships: [
           {
             foreignKeyName: "documents_company_id_fkey"
-            columns: ["company_id"]
+            columns: ["societe_id"]
             isOneToOne: false
-            referencedRelation: "companies"
+            referencedRelation: "societes"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "documents_document_type_id_fkey"
-            columns: ["document_type_id"]
+            columns: ["type_document_id"]
             isOneToOne: false
-            referencedRelation: "document_types"
+            referencedRelation: "types_document"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "documents_employee_id_fkey"
-            columns: ["employee_id"]
+            columns: ["salarie_id"]
             isOneToOne: false
-            referencedRelation: "employees"
+            referencedRelation: "salaries"
             referencedColumns: ["id"]
           },
         ]
       }
-      employee_children: {
+      donnees_financieres_societe: {
         Row: {
-          adoption_date: string | null
-          birth_date: string
-          company_id: string
-          created_at: string
-          employee_id: string
+          chiffre_affaires: number | null
+          cree_le: string
+          exercice: number
+          id: string
+          note: string | null
+          resultat: number | null
+          societe_id: string
+          source: string | null
+        }
+        Insert: {
+          chiffre_affaires?: number | null
+          cree_le?: string
+          exercice: number
+          id?: string
+          note?: string | null
+          resultat?: number | null
+          societe_id: string
+          source?: string | null
+        }
+        Update: {
+          chiffre_affaires?: number | null
+          cree_le?: string
+          exercice?: number
+          id?: string
+          note?: string | null
+          resultat?: number | null
+          societe_id?: string
+          source?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "donnees_financieres_societe_company_id_fkey"
+            columns: ["societe_id"]
+            isOneToOne: false
+            referencedRelation: "societes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      droits_absence: {
+        Row: {
+          debut_validite: string
+          degre_parente: number | null
+          duree_mois: number | null
+          fin_validite: string
+          id: string
+          jours: number | null
+          jours_bloc: number | null
+          note: string | null
+          note_frequence: string | null
+          piece_exigee: boolean
+          plafond_carriere_jours: number | null
+          reference_legale: string | null
+          type_absence_id: string
+        }
+        Insert: {
+          debut_validite?: string
+          degre_parente?: number | null
+          duree_mois?: number | null
+          fin_validite?: string
+          id?: string
+          jours?: number | null
+          jours_bloc?: number | null
+          note?: string | null
+          note_frequence?: string | null
+          piece_exigee?: boolean
+          plafond_carriere_jours?: number | null
+          reference_legale?: string | null
+          type_absence_id: string
+        }
+        Update: {
+          debut_validite?: string
+          degre_parente?: number | null
+          duree_mois?: number | null
+          fin_validite?: string
+          id?: string
+          jours?: number | null
+          jours_bloc?: number | null
+          note?: string | null
+          note_frequence?: string | null
+          piece_exigee?: boolean
+          plafond_carriere_jours?: number | null
+          reference_legale?: string | null
+          type_absence_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "droits_absence_absence_type_id_fkey"
+            columns: ["type_absence_id"]
+            isOneToOne: false
+            referencedRelation: "types_absence"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      elements_remuneration: {
+        Row: {
+          assiette: string | null
+          code: string
+          contrat_id: string
+          cotisable: boolean
+          cree_le: string
+          dans_assiette_salaire: boolean
+          debut_validite: string
+          fin_validite: string
+          genre: Database["public"]["Enums"]["genre_element_remuneration"]
+          id: string
+          imposable: boolean
+          libelle: string
+          montant: number | null
+          note: string | null
+          periodicite: string
+          societe_id: string
+          taux_pct: number | null
+          type_avantage_id: string | null
+        }
+        Insert: {
+          assiette?: string | null
+          code: string
+          contrat_id: string
+          cotisable?: boolean
+          cree_le?: string
+          dans_assiette_salaire?: boolean
+          debut_validite?: string
+          fin_validite?: string
+          genre: Database["public"]["Enums"]["genre_element_remuneration"]
+          id?: string
+          imposable?: boolean
+          libelle: string
+          montant?: number | null
+          note?: string | null
+          periodicite?: string
+          societe_id: string
+          taux_pct?: number | null
+          type_avantage_id?: string | null
+        }
+        Update: {
+          assiette?: string | null
+          code?: string
+          contrat_id?: string
+          cotisable?: boolean
+          cree_le?: string
+          dans_assiette_salaire?: boolean
+          debut_validite?: string
+          fin_validite?: string
+          genre?: Database["public"]["Enums"]["genre_element_remuneration"]
+          id?: string
+          imposable?: boolean
+          libelle?: string
+          montant?: number | null
+          note?: string | null
+          periodicite?: string
+          societe_id?: string
+          taux_pct?: number | null
+          type_avantage_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "elements_remuneration_benefit_type_id_fkey"
+            columns: ["type_avantage_id"]
+            isOneToOne: false
+            referencedRelation: "types_avantage"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "elements_remuneration_company_id_fkey"
+            columns: ["societe_id"]
+            isOneToOne: false
+            referencedRelation: "societes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "elements_remuneration_contract_id_fkey"
+            columns: ["contrat_id"]
+            isOneToOne: false
+            referencedRelation: "contrats"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      enfants_salarie: {
+        Row: {
+          a_charge: boolean
+          cree_le: string
+          date_adoption: string | null
+          date_naissance: string
           en_situation_handicap: boolean
-          first_name: string | null
           id: string
           invitation_evenements: boolean
-          is_dependent: boolean
-          last_name: string | null
+          lien_parente: string
+          nom: string | null
           note: string | null
-          privacy_opt_out: boolean
+          prenom: string | null
+          refus_partage: boolean
           refus_photos_evenements: boolean
-          relationship: string
-          sex: Database["public"]["Enums"]["sex_kind"] | null
+          salarie_id: string
+          sexe: Database["public"]["Enums"]["genre_sexe"] | null
+          societe_id: string
           taux_handicap_pct: number | null
         }
         Insert: {
-          adoption_date?: string | null
-          birth_date: string
-          company_id: string
-          created_at?: string
-          employee_id: string
+          a_charge?: boolean
+          cree_le?: string
+          date_adoption?: string | null
+          date_naissance: string
           en_situation_handicap?: boolean
-          first_name?: string | null
           id?: string
           invitation_evenements?: boolean
-          is_dependent?: boolean
-          last_name?: string | null
+          lien_parente?: string
+          nom?: string | null
           note?: string | null
-          privacy_opt_out?: boolean
+          prenom?: string | null
+          refus_partage?: boolean
           refus_photos_evenements?: boolean
-          relationship?: string
-          sex?: Database["public"]["Enums"]["sex_kind"] | null
+          salarie_id: string
+          sexe?: Database["public"]["Enums"]["genre_sexe"] | null
+          societe_id: string
           taux_handicap_pct?: number | null
         }
         Update: {
-          adoption_date?: string | null
-          birth_date?: string
-          company_id?: string
-          created_at?: string
-          employee_id?: string
+          a_charge?: boolean
+          cree_le?: string
+          date_adoption?: string | null
+          date_naissance?: string
           en_situation_handicap?: boolean
-          first_name?: string | null
           id?: string
           invitation_evenements?: boolean
-          is_dependent?: boolean
-          last_name?: string | null
+          lien_parente?: string
+          nom?: string | null
           note?: string | null
-          privacy_opt_out?: boolean
+          prenom?: string | null
+          refus_partage?: boolean
           refus_photos_evenements?: boolean
-          relationship?: string
-          sex?: Database["public"]["Enums"]["sex_kind"] | null
+          salarie_id?: string
+          sexe?: Database["public"]["Enums"]["genre_sexe"] | null
+          societe_id?: string
           taux_handicap_pct?: number | null
         }
         Relationships: [
           {
             foreignKeyName: "child_belongs_to_employees_company"
-            columns: ["employee_id", "company_id"]
+            columns: ["salarie_id", "societe_id"]
             isOneToOne: false
-            referencedRelation: "employees"
-            referencedColumns: ["id", "company_id"]
+            referencedRelation: "salaries"
+            referencedColumns: ["id", "societe_id"]
           },
           {
-            foreignKeyName: "employee_children_company_id_fkey"
-            columns: ["company_id"]
+            foreignKeyName: "enfants_salarie_company_id_fkey"
+            columns: ["societe_id"]
             isOneToOne: false
-            referencedRelation: "companies"
+            referencedRelation: "societes"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "employee_children_lien_ref"
-            columns: ["relationship"]
+            foreignKeyName: "enfants_salarie_lien_ref"
+            columns: ["lien_parente"]
             isOneToOne: false
             referencedRelation: "ref_lien_enfant"
-            referencedColumns: ["code"]
-          },
-        ]
-      }
-      employee_disabilities: {
-        Row: {
-          authority: string | null
-          company_id: string
-          created_at: string
-          employee_id: string
-          evidence_document_id: string | null
-          extra_leave_days_override: number | null
-          id: string
-          note: string | null
-          rate_pct: number
-          recognized_on: string | null
-          valid_from: string
-          valid_to: string
-        }
-        Insert: {
-          authority?: string | null
-          company_id: string
-          created_at?: string
-          employee_id: string
-          evidence_document_id?: string | null
-          extra_leave_days_override?: number | null
-          id?: string
-          note?: string | null
-          rate_pct: number
-          recognized_on?: string | null
-          valid_from?: string
-          valid_to?: string
-        }
-        Update: {
-          authority?: string | null
-          company_id?: string
-          created_at?: string
-          employee_id?: string
-          evidence_document_id?: string | null
-          extra_leave_days_override?: number | null
-          id?: string
-          note?: string | null
-          rate_pct?: number
-          recognized_on?: string | null
-          valid_from?: string
-          valid_to?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "disability_belongs_to_employees_company"
-            columns: ["employee_id", "company_id"]
-            isOneToOne: false
-            referencedRelation: "employees"
-            referencedColumns: ["id", "company_id"]
-          },
-          {
-            foreignKeyName: "employee_disabilities_company_id_fkey"
-            columns: ["company_id"]
-            isOneToOne: false
-            referencedRelation: "companies"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "employee_disabilities_evidence_document_id_fkey"
-            columns: ["evidence_document_id"]
-            isOneToOne: false
-            referencedRelation: "documents"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      employee_sanctions: {
-        Row: {
-          amendment_contract_id: string | null
-          company_id: string
-          contest_outcome: string | null
-          contested_on: string | null
-          contract_id: string | null
-          created_at: string
-          created_by: string | null
-          deleted_at: string | null
-          deleted_by: string | null
-          effective_from: string | null
-          effective_to: string | null
-          employee_heard_on: string | null
-          employee_id: string
-          employee_response: string | null
-          evidence_document_id: string | null
-          facts_known_on: string
-          facts_on: string
-          id: string
-          note: string | null
-          notified_on: string | null
-          reason: string
-          retention_until: string | null
-          sanction_type: string
-          termination_id: string | null
-          updated_at: string
-          updated_by: string | null
-        }
-        Insert: {
-          amendment_contract_id?: string | null
-          company_id: string
-          contest_outcome?: string | null
-          contested_on?: string | null
-          contract_id?: string | null
-          created_at?: string
-          created_by?: string | null
-          deleted_at?: string | null
-          deleted_by?: string | null
-          effective_from?: string | null
-          effective_to?: string | null
-          employee_heard_on?: string | null
-          employee_id: string
-          employee_response?: string | null
-          evidence_document_id?: string | null
-          facts_known_on: string
-          facts_on: string
-          id?: string
-          note?: string | null
-          notified_on?: string | null
-          reason: string
-          retention_until?: string | null
-          sanction_type: string
-          termination_id?: string | null
-          updated_at?: string
-          updated_by?: string | null
-        }
-        Update: {
-          amendment_contract_id?: string | null
-          company_id?: string
-          contest_outcome?: string | null
-          contested_on?: string | null
-          contract_id?: string | null
-          created_at?: string
-          created_by?: string | null
-          deleted_at?: string | null
-          deleted_by?: string | null
-          effective_from?: string | null
-          effective_to?: string | null
-          employee_heard_on?: string | null
-          employee_id?: string
-          employee_response?: string | null
-          evidence_document_id?: string | null
-          facts_known_on?: string
-          facts_on?: string
-          id?: string
-          note?: string | null
-          notified_on?: string | null
-          reason?: string
-          retention_until?: string | null
-          sanction_type?: string
-          termination_id?: string | null
-          updated_at?: string
-          updated_by?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "employee_sanctions_amendment_contract_id_fkey"
-            columns: ["amendment_contract_id"]
-            isOneToOne: false
-            referencedRelation: "contracts"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "employee_sanctions_contract_id_fkey"
-            columns: ["contract_id"]
-            isOneToOne: false
-            referencedRelation: "contracts"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "employee_sanctions_evidence_document_id_fkey"
-            columns: ["evidence_document_id"]
-            isOneToOne: false
-            referencedRelation: "documents"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "employee_sanctions_sanction_type_fkey"
-            columns: ["sanction_type"]
-            isOneToOne: false
-            referencedRelation: "sanction_types"
-            referencedColumns: ["code"]
-          },
-          {
-            foreignKeyName: "employee_sanctions_termination_id_fkey"
-            columns: ["termination_id"]
-            isOneToOne: false
-            referencedRelation: "contract_terminations"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "sanction_belongs_to_employees_company"
-            columns: ["employee_id", "company_id"]
-            isOneToOne: false
-            referencedRelation: "employees"
-            referencedColumns: ["id", "company_id"]
-          },
-        ]
-      }
-      employee_statuses: {
-        Row: {
-          actual_birth_date: string | null
-          company_id: string
-          created_at: string
-          declared_on: string
-          employee_id: string
-          end_date: string | null
-          evidence_document_id: string | null
-          expected_birth_date: string | null
-          hours_credit_monthly: number | null
-          id: string
-          kind: Database["public"]["Enums"]["employee_status_kind"]
-          note: string | null
-          start_date: string
-        }
-        Insert: {
-          actual_birth_date?: string | null
-          company_id: string
-          created_at?: string
-          declared_on?: string
-          employee_id: string
-          end_date?: string | null
-          evidence_document_id?: string | null
-          expected_birth_date?: string | null
-          hours_credit_monthly?: number | null
-          id?: string
-          kind: Database["public"]["Enums"]["employee_status_kind"]
-          note?: string | null
-          start_date: string
-        }
-        Update: {
-          actual_birth_date?: string | null
-          company_id?: string
-          created_at?: string
-          declared_on?: string
-          employee_id?: string
-          end_date?: string | null
-          evidence_document_id?: string | null
-          expected_birth_date?: string | null
-          hours_credit_monthly?: number | null
-          id?: string
-          kind?: Database["public"]["Enums"]["employee_status_kind"]
-          note?: string | null
-          start_date?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "employee_statuses_company_id_fkey"
-            columns: ["company_id"]
-            isOneToOne: false
-            referencedRelation: "companies"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "employee_statuses_evidence_document_id_fkey"
-            columns: ["evidence_document_id"]
-            isOneToOne: false
-            referencedRelation: "documents"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "status_belongs_to_employees_company"
-            columns: ["employee_id", "company_id"]
-            isOneToOne: false
-            referencedRelation: "employees"
-            referencedColumns: ["id", "company_id"]
-          },
-        ]
-      }
-      employee_tax_cards: {
-        Row: {
-          card_reference: string | null
-          commute_distance_km: number | null
-          company_id: string
-          credits: Json
-          employee_id: string
-          id: string
-          issued_on: string | null
-          monthly_allowance: number
-          other_deductions_monthly: number
-          professional_expenses_monthly: number | null
-          rate: number | null
-          tax_class: Database["public"]["Enums"]["tax_class"]
-          valid_from: string
-          valid_to: string
-        }
-        Insert: {
-          card_reference?: string | null
-          commute_distance_km?: number | null
-          company_id: string
-          credits?: Json
-          employee_id: string
-          id?: string
-          issued_on?: string | null
-          monthly_allowance?: number
-          other_deductions_monthly?: number
-          professional_expenses_monthly?: number | null
-          rate?: number | null
-          tax_class: Database["public"]["Enums"]["tax_class"]
-          valid_from?: string
-          valid_to?: string
-        }
-        Update: {
-          card_reference?: string | null
-          commute_distance_km?: number | null
-          company_id?: string
-          credits?: Json
-          employee_id?: string
-          id?: string
-          issued_on?: string | null
-          monthly_allowance?: number
-          other_deductions_monthly?: number
-          professional_expenses_monthly?: number | null
-          rate?: number | null
-          tax_class?: Database["public"]["Enums"]["tax_class"]
-          valid_from?: string
-          valid_to?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "employee_tax_cards_company_id_fkey"
-            columns: ["company_id"]
-            isOneToOne: false
-            referencedRelation: "companies"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "employee_tax_cards_employee_id_fkey"
-            columns: ["employee_id"]
-            isOneToOne: false
-            referencedRelation: "employees"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      employees: {
-        Row: {
-          address_line: string | null
-          birth_date: string | null
-          career_start_date: string | null
-          city: string | null
-          company_id: string
-          country: string
-          created_at: string
-          department_id: string | null
-          email: string | null
-          first_name: string
-          iban_enc: string | null
-          id: string
-          is_management: boolean
-          last_name: string
-          national_id_enc: string | null
-          national_id_hint: string | null
-          phone: string | null
-          postal_code: string | null
-          profession: string | null
-          qualification: Database["public"]["Enums"]["qualification_kind"]
-          refus_photos_societe: boolean
-          residency: Database["public"]["Enums"]["residency_kind"]
-          sex: Database["public"]["Enums"]["sex_kind"]
-          sexe_legal: Database["public"]["Enums"]["sex_kind"] | null
-          souhaite_confidentialite: boolean
-          user_id: string | null
-        }
-        Insert: {
-          address_line?: string | null
-          birth_date?: string | null
-          career_start_date?: string | null
-          city?: string | null
-          company_id: string
-          country?: string
-          created_at?: string
-          department_id?: string | null
-          email?: string | null
-          first_name: string
-          iban_enc?: string | null
-          id?: string
-          is_management?: boolean
-          last_name: string
-          national_id_enc?: string | null
-          national_id_hint?: string | null
-          phone?: string | null
-          postal_code?: string | null
-          profession?: string | null
-          qualification?: Database["public"]["Enums"]["qualification_kind"]
-          refus_photos_societe?: boolean
-          residency: Database["public"]["Enums"]["residency_kind"]
-          sex?: Database["public"]["Enums"]["sex_kind"]
-          sexe_legal?: Database["public"]["Enums"]["sex_kind"] | null
-          souhaite_confidentialite?: boolean
-          user_id?: string | null
-        }
-        Update: {
-          address_line?: string | null
-          birth_date?: string | null
-          career_start_date?: string | null
-          city?: string | null
-          company_id?: string
-          country?: string
-          created_at?: string
-          department_id?: string | null
-          email?: string | null
-          first_name?: string
-          iban_enc?: string | null
-          id?: string
-          is_management?: boolean
-          last_name?: string
-          national_id_enc?: string | null
-          national_id_hint?: string | null
-          phone?: string | null
-          postal_code?: string | null
-          profession?: string | null
-          qualification?: Database["public"]["Enums"]["qualification_kind"]
-          refus_photos_societe?: boolean
-          residency?: Database["public"]["Enums"]["residency_kind"]
-          sex?: Database["public"]["Enums"]["sex_kind"]
-          sexe_legal?: Database["public"]["Enums"]["sex_kind"] | null
-          souhaite_confidentialite?: boolean
-          user_id?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "employees_company_id_fkey"
-            columns: ["company_id"]
-            isOneToOne: false
-            referencedRelation: "companies"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "employees_department_id_fkey"
-            columns: ["department_id"]
-            isOneToOne: false
-            referencedRelation: "departments"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      expected_parameters: {
-        Row: {
-          note: string | null
-          param_key: string
-          read_by: string
-        }
-        Insert: {
-          note?: string | null
-          param_key: string
-          read_by: string
-        }
-        Update: {
-          note?: string | null
-          param_key?: string
-          read_by?: string
-        }
-        Relationships: []
-      }
-      export_log: {
-        Row: {
-          byte_size: number
-          created_at: string
-          id: string
-          organization_id: string
-          request_id: string | null
-          requested_by: string | null
-          row_count: number
-          source_ip: string | null
-          subject_id: string | null
-          subject_kind: string
-          user_agent: string | null
-        }
-        Insert: {
-          byte_size?: number
-          created_at?: string
-          id?: string
-          organization_id: string
-          request_id?: string | null
-          requested_by?: string | null
-          row_count?: number
-          source_ip?: string | null
-          subject_id?: string | null
-          subject_kind: string
-          user_agent?: string | null
-        }
-        Update: {
-          byte_size?: number
-          created_at?: string
-          id?: string
-          organization_id?: string
-          request_id?: string | null
-          requested_by?: string | null
-          row_count?: number
-          source_ip?: string | null
-          subject_id?: string | null
-          subject_kind?: string
-          user_agent?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "export_log_organization_id_fkey"
-            columns: ["organization_id"]
-            isOneToOne: false
-            referencedRelation: "organizations"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "export_log_sujet_ref"
-            columns: ["subject_kind"]
-            isOneToOne: false
-            referencedRelation: "ref_sujet_export"
             referencedColumns: ["code"]
           },
         ]
@@ -2436,10 +1657,6 @@ export type Database = {
       fiche_sante: {
         Row: {
           allergies: string | null
-          company_id: string
-          deleted_at: string | null
-          deleted_by: string | null
-          employee_id: string | null
           enfant_id: string | null
           groupe_sanguin: string | null
           id: string
@@ -2449,13 +1666,13 @@ export type Database = {
           medecin_traitant: string | null
           note: string | null
           pathologies: string | null
+          salarie_id: string | null
+          societe_id: string
+          supprime_le: string | null
+          supprime_par: string | null
         }
         Insert: {
           allergies?: string | null
-          company_id: string
-          deleted_at?: string | null
-          deleted_by?: string | null
-          employee_id?: string | null
           enfant_id?: string | null
           groupe_sanguin?: string | null
           id?: string
@@ -2465,13 +1682,13 @@ export type Database = {
           medecin_traitant?: string | null
           note?: string | null
           pathologies?: string | null
+          salarie_id?: string | null
+          societe_id: string
+          supprime_le?: string | null
+          supprime_par?: string | null
         }
         Update: {
           allergies?: string | null
-          company_id?: string
-          deleted_at?: string | null
-          deleted_by?: string | null
-          employee_id?: string | null
           enfant_id?: string | null
           groupe_sanguin?: string | null
           id?: string
@@ -2481,379 +1698,689 @@ export type Database = {
           medecin_traitant?: string | null
           note?: string | null
           pathologies?: string | null
+          salarie_id?: string | null
+          societe_id?: string
+          supprime_le?: string | null
+          supprime_par?: string | null
         }
         Relationships: [
           {
             foreignKeyName: "fiche_sante_enfant_id_fkey"
             columns: ["enfant_id"]
             isOneToOne: false
-            referencedRelation: "employee_children"
+            referencedRelation: "enfants_salarie"
             referencedColumns: ["id"]
           },
         ]
       }
-      headcount_snapshots: {
+      fiches_retenue_impot: {
         Row: {
-          company_id: string
-          headcount: number
+          autres_deductions_mensuelles: number
+          classe_impot: Database["public"]["Enums"]["classe_impot"]
+          credits: Json
+          debut_validite: string
+          distance_domicile_km: number | null
+          emis_le: string | null
+          fin_validite: string
+          frais_professionnels_mensuels: number | null
           id: string
-          month: string
+          indemnite_mensuelle: number
+          reference_carte: string | null
+          salarie_id: string
+          societe_id: string
+          taux: number | null
         }
         Insert: {
-          company_id: string
-          headcount: number
+          autres_deductions_mensuelles?: number
+          classe_impot: Database["public"]["Enums"]["classe_impot"]
+          credits?: Json
+          debut_validite?: string
+          distance_domicile_km?: number | null
+          emis_le?: string | null
+          fin_validite?: string
+          frais_professionnels_mensuels?: number | null
           id?: string
-          month: string
+          indemnite_mensuelle?: number
+          reference_carte?: string | null
+          salarie_id: string
+          societe_id: string
+          taux?: number | null
         }
         Update: {
-          company_id?: string
-          headcount?: number
+          autres_deductions_mensuelles?: number
+          classe_impot?: Database["public"]["Enums"]["classe_impot"]
+          credits?: Json
+          debut_validite?: string
+          distance_domicile_km?: number | null
+          emis_le?: string | null
+          fin_validite?: string
+          frais_professionnels_mensuels?: number | null
           id?: string
-          month?: string
+          indemnite_mensuelle?: number
+          reference_carte?: string | null
+          salarie_id?: string
+          societe_id?: string
+          taux?: number | null
         }
         Relationships: [
           {
-            foreignKeyName: "headcount_snapshots_company_id_fkey"
-            columns: ["company_id"]
+            foreignKeyName: "fiches_retenue_impot_company_id_fkey"
+            columns: ["societe_id"]
             isOneToOne: false
-            referencedRelation: "companies"
+            referencedRelation: "societes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fiches_retenue_impot_employee_id_fkey"
+            columns: ["salarie_id"]
+            isOneToOne: false
+            referencedRelation: "salaries"
             referencedColumns: ["id"]
           },
         ]
       }
-      interim_agencies: {
+      grilles_salaires_convention: {
         Row: {
-          address_line: string | null
-          ccss_matricule: string | null
-          city: string | null
-          created_at: string
+          anciennete_a_annees: number | null
+          anciennete_de_annees: number
+          categorie: string
+          convention_id: string
           id: string
-          name: string
-          organization_id: string
-          postal_code: string | null
-          rcs_number: string | null
+          indice_reference: number | null
+          montant_mensuel: number
         }
         Insert: {
-          address_line?: string | null
-          ccss_matricule?: string | null
-          city?: string | null
-          created_at?: string
+          anciennete_a_annees?: number | null
+          anciennete_de_annees?: number
+          categorie: string
+          convention_id: string
           id?: string
-          name: string
-          organization_id: string
-          postal_code?: string | null
-          rcs_number?: string | null
+          indice_reference?: number | null
+          montant_mensuel: number
         }
         Update: {
-          address_line?: string | null
-          ccss_matricule?: string | null
-          city?: string | null
-          created_at?: string
+          anciennete_a_annees?: number | null
+          anciennete_de_annees?: number
+          categorie?: string
+          convention_id?: string
           id?: string
-          name?: string
-          organization_id?: string
-          postal_code?: string | null
-          rcs_number?: string | null
+          indice_reference?: number | null
+          montant_mensuel?: number
         }
         Relationships: [
           {
-            foreignKeyName: "interim_agencies_organization_id_fkey"
-            columns: ["organization_id"]
+            foreignKeyName: "grilles_salaires_convention_collective_agreement_id_fkey"
+            columns: ["convention_id"]
             isOneToOne: false
-            referencedRelation: "organizations"
+            referencedRelation: "conventions_collectives"
             referencedColumns: ["id"]
           },
         ]
       }
-      legal_parameters: {
+      handicaps_salarie: {
         Row: {
-          derivation_tolerance: number
-          derived_factor: number | null
-          derived_from_key: string | null
-          entered_at: string
-          entered_by: string | null
-          family: Database["public"]["Enums"]["param_family"]
+          autorite: string | null
+          cree_le: string
+          debut_validite: string
+          fin_validite: string
           id: string
-          index_ref: number | null
-          label: string
-          legal_ref: string | null
+          jours_conge_supplementaires_forces: number | null
           note: string | null
-          param_key: string
-          source: string
-          unit: string | null
-          valid_from: string
-          valid_to: string
-          validated_at: string | null
-          validated_by: string | null
-          value_json: Json | null
-          value_num: number | null
-          value_text: string | null
+          piece_justificative_id: string | null
+          reconnu_le: string | null
+          salarie_id: string
+          societe_id: string
+          taux_pct: number
         }
         Insert: {
-          derivation_tolerance?: number
-          derived_factor?: number | null
-          derived_from_key?: string | null
-          entered_at?: string
-          entered_by?: string | null
-          family: Database["public"]["Enums"]["param_family"]
+          autorite?: string | null
+          cree_le?: string
+          debut_validite?: string
+          fin_validite?: string
           id?: string
-          index_ref?: number | null
-          label: string
-          legal_ref?: string | null
+          jours_conge_supplementaires_forces?: number | null
           note?: string | null
-          param_key: string
-          source: string
-          unit?: string | null
-          valid_from?: string
-          valid_to?: string
-          validated_at?: string | null
-          validated_by?: string | null
-          value_json?: Json | null
-          value_num?: number | null
-          value_text?: string | null
+          piece_justificative_id?: string | null
+          reconnu_le?: string | null
+          salarie_id: string
+          societe_id: string
+          taux_pct: number
         }
         Update: {
-          derivation_tolerance?: number
-          derived_factor?: number | null
-          derived_from_key?: string | null
-          entered_at?: string
-          entered_by?: string | null
-          family?: Database["public"]["Enums"]["param_family"]
+          autorite?: string | null
+          cree_le?: string
+          debut_validite?: string
+          fin_validite?: string
           id?: string
-          index_ref?: number | null
-          label?: string
-          legal_ref?: string | null
+          jours_conge_supplementaires_forces?: number | null
           note?: string | null
-          param_key?: string
+          piece_justificative_id?: string | null
+          reconnu_le?: string | null
+          salarie_id?: string
+          societe_id?: string
+          taux_pct?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "disability_belongs_to_employees_company"
+            columns: ["salarie_id", "societe_id"]
+            isOneToOne: false
+            referencedRelation: "salaries"
+            referencedColumns: ["id", "societe_id"]
+          },
+          {
+            foreignKeyName: "handicaps_salarie_company_id_fkey"
+            columns: ["societe_id"]
+            isOneToOne: false
+            referencedRelation: "societes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "handicaps_salarie_evidence_document_id_fkey"
+            columns: ["piece_justificative_id"]
+            isOneToOne: false
+            referencedRelation: "documents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      journal_acces: {
+        Row: {
+          action: string
+          agent_client: string | null
+          auteur_id: string | null
+          auteur_libelle: string | null
+          entite_id: string | null
+          entite_table: string
+          est_autonome: boolean
+          id: number
+          identifiant_requete: string | null
+          ip_source: string | null
+          nombre_lignes: number | null
+          portee: string | null
+          salarie_concerne_id: string | null
+          societe_id: string | null
+          survenu_le: string
+        }
+        Insert: {
+          action: string
+          agent_client?: string | null
+          auteur_id?: string | null
+          auteur_libelle?: string | null
+          entite_id?: string | null
+          entite_table: string
+          est_autonome?: boolean
+          id?: never
+          identifiant_requete?: string | null
+          ip_source?: string | null
+          nombre_lignes?: number | null
+          portee?: string | null
+          salarie_concerne_id?: string | null
+          societe_id?: string | null
+          survenu_le?: string
+        }
+        Update: {
+          action?: string
+          agent_client?: string | null
+          auteur_id?: string | null
+          auteur_libelle?: string | null
+          entite_id?: string | null
+          entite_table?: string
+          est_autonome?: boolean
+          id?: never
+          identifiant_requete?: string | null
+          ip_source?: string | null
+          nombre_lignes?: number | null
+          portee?: string | null
+          salarie_concerne_id?: string | null
+          societe_id?: string | null
+          survenu_le?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "journal_acces_action_ref"
+            columns: ["action"]
+            isOneToOne: false
+            referencedRelation: "ref_action_acces"
+            referencedColumns: ["code"]
+          },
+        ]
+      }
+      journal_ecritures: {
+        Row: {
+          action: string
+          agent_client: string | null
+          ancienne_valeur: Json | null
+          auteur_id: string | null
+          auteur_libelle: string | null
+          entite_id: string | null
+          entite_table: string
+          id: number
+          identifiant_requete: string | null
+          ip_source: string | null
+          nouvelle_valeur: Json | null
+          societe_id: string | null
+          survenu_le: string
+        }
+        Insert: {
+          action: string
+          agent_client?: string | null
+          ancienne_valeur?: Json | null
+          auteur_id?: string | null
+          auteur_libelle?: string | null
+          entite_id?: string | null
+          entite_table: string
+          id?: number
+          identifiant_requete?: string | null
+          ip_source?: string | null
+          nouvelle_valeur?: Json | null
+          societe_id?: string | null
+          survenu_le?: string
+        }
+        Update: {
+          action?: string
+          agent_client?: string | null
+          ancienne_valeur?: Json | null
+          auteur_id?: string | null
+          auteur_libelle?: string | null
+          entite_id?: string | null
+          entite_table?: string
+          id?: number
+          identifiant_requete?: string | null
+          ip_source?: string | null
+          nouvelle_valeur?: Json | null
+          societe_id?: string | null
+          survenu_le?: string
+        }
+        Relationships: []
+      }
+      journal_exports: {
+        Row: {
+          agent_client: string | null
+          cree_le: string
+          demande_par: string | null
+          genre_objet: string
+          id: string
+          identifiant_requete: string | null
+          ip_source: string | null
+          nombre_lignes: number
+          objet_id: string | null
+          organisation_id: string
+          taille_octets: number
+        }
+        Insert: {
+          agent_client?: string | null
+          cree_le?: string
+          demande_par?: string | null
+          genre_objet: string
+          id?: string
+          identifiant_requete?: string | null
+          ip_source?: string | null
+          nombre_lignes?: number
+          objet_id?: string | null
+          organisation_id: string
+          taille_octets?: number
+        }
+        Update: {
+          agent_client?: string | null
+          cree_le?: string
+          demande_par?: string | null
+          genre_objet?: string
+          id?: string
+          identifiant_requete?: string | null
+          ip_source?: string | null
+          nombre_lignes?: number
+          objet_id?: string | null
+          organisation_id?: string
+          taille_octets?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "journal_exports_organization_id_fkey"
+            columns: ["organisation_id"]
+            isOneToOne: false
+            referencedRelation: "organisations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "journal_exports_sujet_ref"
+            columns: ["genre_objet"]
+            isOneToOne: false
+            referencedRelation: "ref_sujet_export"
+            referencedColumns: ["code"]
+          },
+        ]
+      }
+      jours_feries: {
+        Row: {
+          annee: number
+          convention_id: string | null
+          date_ferie: string
+          est_mobile: boolean
+          id: string
+          motif_recuperation: string | null
+          nom: string
+          recuperable: boolean
+        }
+        Insert: {
+          annee: number
+          convention_id?: string | null
+          date_ferie: string
+          est_mobile?: boolean
+          id?: string
+          motif_recuperation?: string | null
+          nom: string
+          recuperable?: boolean
+        }
+        Update: {
+          annee?: number
+          convention_id?: string | null
+          date_ferie?: string
+          est_mobile?: boolean
+          id?: string
+          motif_recuperation?: string | null
+          nom?: string
+          recuperable?: boolean
+        }
+        Relationships: []
+      }
+      modeles_creneau: {
+        Row: {
+          couleur: string
+          heure_debut: string
+          heure_fin: string
+          id: string
+          nom: string
+          pause_minutes: number
+          service_id: string | null
+          societe_id: string
+        }
+        Insert: {
+          couleur?: string
+          heure_debut: string
+          heure_fin: string
+          id?: string
+          nom: string
+          pause_minutes?: number
+          service_id?: string | null
+          societe_id: string
+        }
+        Update: {
+          couleur?: string
+          heure_debut?: string
+          heure_fin?: string
+          id?: string
+          nom?: string
+          pause_minutes?: number
+          service_id?: string | null
+          societe_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "modeles_creneau_company_id_fkey"
+            columns: ["societe_id"]
+            isOneToOne: false
+            referencedRelation: "societes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "modeles_creneau_department_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      organisations: {
+        Row: {
+          cree_le: string
+          genre: Database["public"]["Enums"]["genre_organisation"]
+          id: string
+          nom: string
+        }
+        Insert: {
+          cree_le?: string
+          genre?: Database["public"]["Enums"]["genre_organisation"]
+          id?: string
+          nom: string
+        }
+        Update: {
+          cree_le?: string
+          genre?: Database["public"]["Enums"]["genre_organisation"]
+          id?: string
+          nom?: string
+        }
+        Relationships: []
+      }
+      parametres_attendus: {
+        Row: {
+          cle_parametre: string
+          lu_par: string
+          note: string | null
+        }
+        Insert: {
+          cle_parametre: string
+          lu_par: string
+          note?: string | null
+        }
+        Update: {
+          cle_parametre?: string
+          lu_par?: string
+          note?: string | null
+        }
+        Relationships: []
+      }
+      parametres_legaux: {
+        Row: {
+          cle_parametre: string
+          debut_validite: string
+          derive_de_cle: string | null
+          facteur_derive: number | null
+          famille: Database["public"]["Enums"]["famille_parametre"]
+          fin_validite: string
+          id: string
+          indice_reference: number | null
+          libelle: string
+          note: string | null
+          reference_legale: string | null
+          saisi_le: string
+          saisi_par: string | null
+          source: string
+          tolerance_derivation: number
+          unite: string | null
+          valeur_json: Json | null
+          valeur_num: number | null
+          valeur_texte: string | null
+          valide_le: string | null
+          valide_par: string | null
+        }
+        Insert: {
+          cle_parametre: string
+          debut_validite?: string
+          derive_de_cle?: string | null
+          facteur_derive?: number | null
+          famille: Database["public"]["Enums"]["famille_parametre"]
+          fin_validite?: string
+          id?: string
+          indice_reference?: number | null
+          libelle: string
+          note?: string | null
+          reference_legale?: string | null
+          saisi_le?: string
+          saisi_par?: string | null
+          source: string
+          tolerance_derivation?: number
+          unite?: string | null
+          valeur_json?: Json | null
+          valeur_num?: number | null
+          valeur_texte?: string | null
+          valide_le?: string | null
+          valide_par?: string | null
+        }
+        Update: {
+          cle_parametre?: string
+          debut_validite?: string
+          derive_de_cle?: string | null
+          facteur_derive?: number | null
+          famille?: Database["public"]["Enums"]["famille_parametre"]
+          fin_validite?: string
+          id?: string
+          indice_reference?: number | null
+          libelle?: string
+          note?: string | null
+          reference_legale?: string | null
+          saisi_le?: string
+          saisi_par?: string | null
           source?: string
-          unit?: string | null
-          valid_from?: string
-          valid_to?: string
-          validated_at?: string | null
-          validated_by?: string | null
-          value_json?: Json | null
-          value_num?: number | null
-          value_text?: string | null
+          tolerance_derivation?: number
+          unite?: string | null
+          valeur_json?: Json | null
+          valeur_num?: number | null
+          valeur_texte?: string | null
+          valide_le?: string | null
+          valide_par?: string | null
         }
         Relationships: []
       }
-      meal_voucher_grants: {
+      periodes_reference: {
         Row: {
-          company_id: string
-          created_at: string
-          employee_id: string
-          employee_share: number
-          face_value: number
-          granted_on: string | null
+          date_debut: string
+          date_fin: string
           id: string
-          note: string | null
-          period_end: string
-          period_start: string
-          voucher_count: number
+          libelle: string
+          mois: number
+          service_id: string | null
+          societe_id: string
         }
         Insert: {
-          company_id: string
-          created_at?: string
-          employee_id: string
-          employee_share?: number
-          face_value: number
-          granted_on?: string | null
+          date_debut: string
+          date_fin: string
           id?: string
-          note?: string | null
-          period_end: string
-          period_start: string
-          voucher_count: number
+          libelle: string
+          mois: number
+          service_id?: string | null
+          societe_id: string
         }
         Update: {
-          company_id?: string
-          created_at?: string
-          employee_id?: string
-          employee_share?: number
-          face_value?: number
-          granted_on?: string | null
+          date_debut?: string
+          date_fin?: string
           id?: string
-          note?: string | null
-          period_end?: string
-          period_start?: string
-          voucher_count?: number
+          libelle?: string
+          mois?: number
+          service_id?: string | null
+          societe_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "meal_voucher_grants_company_id_fkey"
-            columns: ["company_id"]
+            foreignKeyName: "periodes_reference_company_id_fkey"
+            columns: ["societe_id"]
             isOneToOne: false
-            referencedRelation: "companies"
+            referencedRelation: "societes"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "voucher_belongs_to_employees_company"
-            columns: ["employee_id", "company_id"]
+            foreignKeyName: "periodes_reference_department_id_fkey"
+            columns: ["service_id"]
             isOneToOne: false
-            referencedRelation: "employees"
-            referencedColumns: ["id", "company_id"]
+            referencedRelation: "services"
+            referencedColumns: ["id"]
           },
         ]
       }
-      organizations: {
+      periodes_taux_societe: {
         Row: {
-          created_at: string
-          id: string
-          kind: Database["public"]["Enums"]["org_kind"]
-          name: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          kind?: Database["public"]["Enums"]["org_kind"]
-          name: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          kind?: Database["public"]["Enums"]["org_kind"]
-          name?: string
-        }
-        Relationships: []
-      }
-      overtime_requests: {
-        Row: {
-          company_id: string
-          compensation: string
-          employee_accepted_at: string | null
-          employee_id: string
-          hours: number
-          hr_validated_at: string | null
-          hr_validated_by: string | null
+          classe_activite: string | null
+          classe_mutualite: number | null
+          classe_risque_accident: string | null
+          cree_le: string
+          debut_validite: string
+          facteur_accident: number
+          fin_validite: string
           id: string
           note: string | null
-          period_end: string
-          period_start: string
-          reason: string
-          rejected_reason: string | null
-          requested_at: string
-          requested_by: string | null
-          schedule_id: string | null
-          status: string
+          societe_id: string
+          source: string
         }
         Insert: {
-          company_id: string
-          compensation?: string
-          employee_accepted_at?: string | null
-          employee_id: string
-          hours: number
-          hr_validated_at?: string | null
-          hr_validated_by?: string | null
+          classe_activite?: string | null
+          classe_mutualite?: number | null
+          classe_risque_accident?: string | null
+          cree_le?: string
+          debut_validite?: string
+          facteur_accident?: number
+          fin_validite?: string
           id?: string
           note?: string | null
-          period_end: string
-          period_start: string
-          reason: string
-          rejected_reason?: string | null
-          requested_at?: string
-          requested_by?: string | null
-          schedule_id?: string | null
-          status?: string
+          societe_id: string
+          source?: string
         }
         Update: {
-          company_id?: string
-          compensation?: string
-          employee_accepted_at?: string | null
-          employee_id?: string
-          hours?: number
-          hr_validated_at?: string | null
-          hr_validated_by?: string | null
+          classe_activite?: string | null
+          classe_mutualite?: number | null
+          classe_risque_accident?: string | null
+          cree_le?: string
+          debut_validite?: string
+          facteur_accident?: number
+          fin_validite?: string
           id?: string
           note?: string | null
-          period_end?: string
-          period_start?: string
-          reason?: string
-          rejected_reason?: string | null
-          requested_at?: string
-          requested_by?: string | null
-          schedule_id?: string | null
-          status?: string
+          societe_id?: string
+          source?: string
         }
         Relationships: [
           {
-            foreignKeyName: "overtime_belongs_to_employees_company"
-            columns: ["employee_id", "company_id"]
+            foreignKeyName: "periodes_taux_societe_company_id_fkey"
+            columns: ["societe_id"]
             isOneToOne: false
-            referencedRelation: "employees"
-            referencedColumns: ["id", "company_id"]
-          },
-          {
-            foreignKeyName: "overtime_requests_company_id_fkey"
-            columns: ["company_id"]
-            isOneToOne: false
-            referencedRelation: "companies"
+            referencedRelation: "societes"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "overtime_requests_compensation_ref"
-            columns: ["compensation"]
-            isOneToOne: false
-            referencedRelation: "ref_compensation_heures_sup"
-            referencedColumns: ["code"]
-          },
-          {
-            foreignKeyName: "overtime_requests_schedule_id_fkey"
-            columns: ["schedule_id"]
-            isOneToOne: false
-            referencedRelation: "schedules"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "overtime_requests_statut_ref"
-            columns: ["status"]
-            isOneToOne: false
-            referencedRelation: "ref_statut_heures_sup"
-            referencedColumns: ["code"]
           },
         ]
       }
       personne_indicateur_secours: {
         Row: {
-          company_id: string
-          created_at: string
+          cree_le: string
           debut_validite: string
-          employee_id: string | null
           enfant_id: string | null
           fin_validite: string
           id: string
           indicateur: string
           pose_par: string | null
           precision_lieu: string | null
+          salarie_id: string | null
+          societe_id: string
         }
         Insert: {
-          company_id: string
-          created_at?: string
+          cree_le?: string
           debut_validite?: string
-          employee_id?: string | null
           enfant_id?: string | null
           fin_validite?: string
           id?: string
           indicateur: string
           pose_par?: string | null
           precision_lieu?: string | null
+          salarie_id?: string | null
+          societe_id: string
         }
         Update: {
-          company_id?: string
-          created_at?: string
+          cree_le?: string
           debut_validite?: string
-          employee_id?: string | null
           enfant_id?: string | null
           fin_validite?: string
           id?: string
           indicateur?: string
           pose_par?: string | null
           precision_lieu?: string | null
+          salarie_id?: string | null
+          societe_id?: string
         }
         Relationships: [
           {
             foreignKeyName: "personne_indicateur_secours_enfant_id_fkey"
             columns: ["enfant_id"]
             isOneToOne: false
-            referencedRelation: "employee_children"
+            referencedRelation: "enfants_salarie"
             referencedColumns: ["id"]
           },
           {
@@ -2865,198 +2392,216 @@ export type Database = {
           },
         ]
       }
-      premiums: {
+      plannings: {
         Row: {
-          amount: number
-          company_id: string
-          contract_id: string | null
-          created_at: string
-          employee_id: string
-          exempt_pct: number
-          fiscal_year: number
-          granted_on: string
+          cree_le: string
+          debut_semaine: string
           id: string
-          is_contributory: boolean
-          is_taxable: boolean
-          kind: string
-          label: string
-          note: string | null
-          termination_id: string | null
+          libelle: string | null
+          publie_le: string | null
+          publie_par: string | null
+          service_id: string | null
+          societe_id: string
+          statut: Database["public"]["Enums"]["statut_planning"]
         }
         Insert: {
-          amount: number
-          company_id: string
-          contract_id?: string | null
-          created_at?: string
-          employee_id: string
-          exempt_pct?: number
-          fiscal_year: number
-          granted_on: string
+          cree_le?: string
+          debut_semaine: string
           id?: string
-          is_contributory?: boolean
-          is_taxable?: boolean
-          kind?: string
-          label: string
-          note?: string | null
-          termination_id?: string | null
+          libelle?: string | null
+          publie_le?: string | null
+          publie_par?: string | null
+          service_id?: string | null
+          societe_id: string
+          statut?: Database["public"]["Enums"]["statut_planning"]
         }
         Update: {
-          amount?: number
-          company_id?: string
-          contract_id?: string | null
-          created_at?: string
-          employee_id?: string
-          exempt_pct?: number
-          fiscal_year?: number
-          granted_on?: string
+          cree_le?: string
+          debut_semaine?: string
           id?: string
-          is_contributory?: boolean
-          is_taxable?: boolean
-          kind?: string
-          label?: string
+          libelle?: string | null
+          publie_le?: string | null
+          publie_par?: string | null
+          service_id?: string | null
+          societe_id?: string
+          statut?: Database["public"]["Enums"]["statut_planning"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "plannings_company_id_fkey"
+            columns: ["societe_id"]
+            isOneToOne: false
+            referencedRelation: "societes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "plannings_department_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      primes: {
+        Row: {
+          attribue_le: string
+          contrat_id: string | null
+          cotisable: boolean
+          cree_le: string
+          exercice: number
+          genre: string
+          id: string
+          imposable: boolean
+          libelle: string
+          montant: number
+          note: string | null
+          part_exoneree_pct: number
+          rupture_id: string | null
+          salarie_id: string
+          societe_id: string
+        }
+        Insert: {
+          attribue_le: string
+          contrat_id?: string | null
+          cotisable?: boolean
+          cree_le?: string
+          exercice: number
+          genre?: string
+          id?: string
+          imposable?: boolean
+          libelle: string
+          montant: number
           note?: string | null
-          termination_id?: string | null
+          part_exoneree_pct?: number
+          rupture_id?: string | null
+          salarie_id: string
+          societe_id: string
+        }
+        Update: {
+          attribue_le?: string
+          contrat_id?: string | null
+          cotisable?: boolean
+          cree_le?: string
+          exercice?: number
+          genre?: string
+          id?: string
+          imposable?: boolean
+          libelle?: string
+          montant?: number
+          note?: string | null
+          part_exoneree_pct?: number
+          rupture_id?: string | null
+          salarie_id?: string
+          societe_id?: string
         }
         Relationships: [
           {
             foreignKeyName: "premium_belongs_to_employees_company"
-            columns: ["employee_id", "company_id"]
+            columns: ["salarie_id", "societe_id"]
             isOneToOne: false
-            referencedRelation: "employees"
-            referencedColumns: ["id", "company_id"]
+            referencedRelation: "salaries"
+            referencedColumns: ["id", "societe_id"]
           },
           {
-            foreignKeyName: "premiums_company_id_fkey"
-            columns: ["company_id"]
+            foreignKeyName: "primes_company_id_fkey"
+            columns: ["societe_id"]
             isOneToOne: false
-            referencedRelation: "companies"
+            referencedRelation: "societes"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "premiums_contract_id_fkey"
-            columns: ["contract_id"]
+            foreignKeyName: "primes_contract_id_fkey"
+            columns: ["contrat_id"]
             isOneToOne: false
-            referencedRelation: "contracts"
+            referencedRelation: "contrats"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "premiums_nature_ref"
-            columns: ["kind"]
+            foreignKeyName: "primes_nature_ref"
+            columns: ["genre"]
             isOneToOne: false
             referencedRelation: "ref_nature_prime"
             referencedColumns: ["code"]
           },
           {
-            foreignKeyName: "premiums_termination_id_fkey"
-            columns: ["termination_id"]
+            foreignKeyName: "primes_termination_id_fkey"
+            columns: ["rupture_id"]
             isOneToOne: false
-            referencedRelation: "contract_terminations"
+            referencedRelation: "ruptures_contrat"
             referencedColumns: ["id"]
           },
         ]
       }
-      probation_extensions: {
+      profils: {
         Row: {
-          contract_id: string
-          days_added: number
-          from_date: string
+          courriel: string
+          cree_le: string
+          est_admin_organisation: boolean
           id: string
-          reason: string
-          to_date: string
+          nom_complet: string
+          organisation_id: string
         }
         Insert: {
-          contract_id: string
-          days_added: number
-          from_date: string
-          id?: string
-          reason?: string
-          to_date: string
+          courriel?: string
+          cree_le?: string
+          est_admin_organisation?: boolean
+          id: string
+          nom_complet?: string
+          organisation_id: string
         }
         Update: {
-          contract_id?: string
-          days_added?: number
-          from_date?: string
+          courriel?: string
+          cree_le?: string
+          est_admin_organisation?: boolean
           id?: string
-          reason?: string
-          to_date?: string
+          nom_complet?: string
+          organisation_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "probation_extensions_contract_id_fkey"
-            columns: ["contract_id"]
+            foreignKeyName: "profils_organization_id_fkey"
+            columns: ["organisation_id"]
             isOneToOne: false
-            referencedRelation: "contracts"
+            referencedRelation: "organisations"
             referencedColumns: ["id"]
           },
         ]
       }
-      profiles: {
+      prolongations_essai: {
         Row: {
-          created_at: string
-          email: string
-          full_name: string
+          contrat_id: string
+          date_debut: string
+          date_fin: string
           id: string
-          is_org_admin: boolean
-          organization_id: string
+          jours_ajoutes: number
+          motif: string
         }
         Insert: {
-          created_at?: string
-          email?: string
-          full_name?: string
-          id: string
-          is_org_admin?: boolean
-          organization_id: string
+          contrat_id: string
+          date_debut: string
+          date_fin: string
+          id?: string
+          jours_ajoutes: number
+          motif?: string
         }
         Update: {
-          created_at?: string
-          email?: string
-          full_name?: string
+          contrat_id?: string
+          date_debut?: string
+          date_fin?: string
           id?: string
-          is_org_admin?: boolean
-          organization_id?: string
+          jours_ajoutes?: number
+          motif?: string
         }
         Relationships: [
           {
-            foreignKeyName: "profiles_organization_id_fkey"
-            columns: ["organization_id"]
+            foreignKeyName: "prolongations_essai_contract_id_fkey"
+            columns: ["contrat_id"]
             isOneToOne: false
-            referencedRelation: "organizations"
+            referencedRelation: "contrats"
             referencedColumns: ["id"]
           },
         ]
-      }
-      public_holidays: {
-        Row: {
-          collective_agreement_id: string | null
-          holiday_date: string
-          id: string
-          is_mobile: boolean
-          is_recoverable: boolean
-          name: string
-          recovery_reason: string | null
-          year: number
-        }
-        Insert: {
-          collective_agreement_id?: string | null
-          holiday_date: string
-          id?: string
-          is_mobile?: boolean
-          is_recoverable?: boolean
-          name: string
-          recovery_reason?: string | null
-          year: number
-        }
-        Update: {
-          collective_agreement_id?: string | null
-          holiday_date?: string
-          id?: string
-          is_mobile?: boolean
-          is_recoverable?: boolean
-          name?: string
-          recovery_reason?: string | null
-          year?: number
-        }
-        Relationships: []
       }
       ref_action_acces: {
         Row: {
@@ -3218,7 +2763,7 @@ export type Database = {
           lie_aux_conditions: boolean
           note: string | null
           ordre: number
-          source_url: string | null
+          url_source: string | null
         }
         Insert: {
           categorie?: string
@@ -3229,7 +2774,7 @@ export type Database = {
           lie_aux_conditions?: boolean
           note?: string | null
           ordre?: number
-          source_url?: string | null
+          url_source?: string | null
         }
         Update: {
           categorie?: string
@@ -3240,7 +2785,7 @@ export type Database = {
           lie_aux_conditions?: boolean
           note?: string | null
           ordre?: number
-          source_url?: string | null
+          url_source?: string | null
         }
         Relationships: []
       }
@@ -3442,562 +2987,1017 @@ export type Database = {
         }
         Relationships: []
       }
-      reference_periods: {
+      regles_convention: {
         Row: {
-          company_id: string
-          department_id: string | null
-          end_date: string
+          bloc: Database["public"]["Enums"]["bloc_convention"]
+          complet: boolean
+          convention_id: string
           id: string
-          label: string
-          months: number
-          start_date: string
+          modifie_le: string
+          regles: Json
         }
         Insert: {
-          company_id: string
-          department_id?: string | null
-          end_date: string
+          bloc: Database["public"]["Enums"]["bloc_convention"]
+          complet?: boolean
+          convention_id: string
           id?: string
-          label: string
-          months: number
-          start_date: string
+          modifie_le?: string
+          regles?: Json
         }
         Update: {
-          company_id?: string
-          department_id?: string | null
-          end_date?: string
+          bloc?: Database["public"]["Enums"]["bloc_convention"]
+          complet?: boolean
+          convention_id?: string
           id?: string
-          label?: string
-          months?: number
-          start_date?: string
+          modifie_le?: string
+          regles?: Json
         }
         Relationships: [
           {
-            foreignKeyName: "reference_periods_company_id_fkey"
-            columns: ["company_id"]
+            foreignKeyName: "regles_convention_collective_agreement_id_fkey"
+            columns: ["convention_id"]
             isOneToOne: false
-            referencedRelation: "companies"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "reference_periods_department_id_fkey"
-            columns: ["department_id"]
-            isOneToOne: false
-            referencedRelation: "departments"
+            referencedRelation: "conventions_collectives"
             referencedColumns: ["id"]
           },
         ]
       }
-      sanction_categories: {
+      releves_effectif: {
         Row: {
-          code: string
-          description: string
-          label: string
-          rank: number
-          valid_from: string
-          valid_to: string
+          effectif: number
+          id: string
+          mois: string
+          societe_id: string
         }
         Insert: {
-          code: string
-          description: string
-          label: string
-          rank: number
-          valid_from?: string
-          valid_to?: string
+          effectif: number
+          id?: string
+          mois: string
+          societe_id: string
         }
         Update: {
-          code?: string
-          description?: string
-          label?: string
-          rank?: number
-          valid_from?: string
-          valid_to?: string
+          effectif?: number
+          id?: string
+          mois?: string
+          societe_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "releves_effectif_company_id_fkey"
+            columns: ["societe_id"]
+            isOneToOne: false
+            referencedRelation: "societes"
+            referencedColumns: ["id"]
+          },
+        ]
       }
-      sanction_types: {
+      releves_temps: {
         Row: {
-          affects_pay: boolean
-          affects_presence: boolean
-          category_code: string
-          code: string
-          description: string
-          ends_contract: boolean
-          is_contract_change: boolean
-          label: string
-          legal_ref: string | null
-          needs_notice: boolean | null
+          cree_le: string
+          date_releve: string
+          heure_debut: string | null
+          heure_fin: string | null
+          heures_dimanche: number
+          heures_ferie: number
+          heures_nuit: number
+          heures_prevues: number | null
+          heures_supplementaires: number
+          heures_travaillees: number | null
+          id: string
           note: string | null
-          requires_internal_rules: boolean
-          valid_from: string
-          valid_to: string
-        }
-        Insert: {
-          affects_pay?: boolean
-          affects_presence?: boolean
-          category_code: string
-          code: string
-          description: string
-          ends_contract?: boolean
-          is_contract_change?: boolean
-          label: string
-          legal_ref?: string | null
-          needs_notice?: boolean | null
-          note?: string | null
-          requires_internal_rules?: boolean
-          valid_from?: string
-          valid_to?: string
-        }
-        Update: {
-          affects_pay?: boolean
-          affects_presence?: boolean
-          category_code?: string
-          code?: string
-          description?: string
-          ends_contract?: boolean
-          is_contract_change?: boolean
-          label?: string
-          legal_ref?: string | null
-          needs_notice?: boolean | null
-          note?: string | null
-          requires_internal_rules?: boolean
-          valid_from?: string
-          valid_to?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "sanction_types_category_code_fkey"
-            columns: ["category_code"]
-            isOneToOne: false
-            referencedRelation: "sanction_categories"
-            referencedColumns: ["code"]
-          },
-        ]
-      }
-      schedules: {
-        Row: {
-          company_id: string
-          created_at: string
-          department_id: string | null
-          id: string
-          label: string | null
-          published_at: string | null
-          published_by: string | null
-          status: Database["public"]["Enums"]["schedule_status"]
-          week_start: string
-        }
-        Insert: {
-          company_id: string
-          created_at?: string
-          department_id?: string | null
-          id?: string
-          label?: string | null
-          published_at?: string | null
-          published_by?: string | null
-          status?: Database["public"]["Enums"]["schedule_status"]
-          week_start: string
-        }
-        Update: {
-          company_id?: string
-          created_at?: string
-          department_id?: string | null
-          id?: string
-          label?: string | null
-          published_at?: string | null
-          published_by?: string | null
-          status?: Database["public"]["Enums"]["schedule_status"]
-          week_start?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "schedules_company_id_fkey"
-            columns: ["company_id"]
-            isOneToOne: false
-            referencedRelation: "companies"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "schedules_department_id_fkey"
-            columns: ["department_id"]
-            isOneToOne: false
-            referencedRelation: "departments"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      shift_templates: {
-        Row: {
-          break_minutes: number
-          color: string
-          company_id: string
-          department_id: string | null
-          end_time: string
-          id: string
-          name: string
-          start_time: string
-        }
-        Insert: {
-          break_minutes?: number
-          color?: string
-          company_id: string
-          department_id?: string | null
-          end_time: string
-          id?: string
-          name: string
-          start_time: string
-        }
-        Update: {
-          break_minutes?: number
-          color?: string
-          company_id?: string
-          department_id?: string | null
-          end_time?: string
-          id?: string
-          name?: string
-          start_time?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "shift_templates_company_id_fkey"
-            columns: ["company_id"]
-            isOneToOne: false
-            referencedRelation: "companies"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "shift_templates_department_id_fkey"
-            columns: ["department_id"]
-            isOneToOne: false
-            referencedRelation: "departments"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      shifts: {
-        Row: {
-          break_minutes: number
-          client_site_id: string | null
-          company_id: string
-          created_at: string
-          employee_id: string
-          end_time: string
-          id: string
-          label: string | null
-          schedule_id: string
-          shift_date: string
-          start_time: string
-          template_id: string | null
-        }
-        Insert: {
-          break_minutes?: number
-          client_site_id?: string | null
-          company_id: string
-          created_at?: string
-          employee_id: string
-          end_time: string
-          id?: string
-          label?: string | null
-          schedule_id: string
-          shift_date: string
-          start_time: string
-          template_id?: string | null
-        }
-        Update: {
-          break_minutes?: number
-          client_site_id?: string | null
-          company_id?: string
-          created_at?: string
-          employee_id?: string
-          end_time?: string
-          id?: string
-          label?: string | null
-          schedule_id?: string
-          shift_date?: string
-          start_time?: string
-          template_id?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "shift_belongs_to_employees_company"
-            columns: ["employee_id", "company_id"]
-            isOneToOne: false
-            referencedRelation: "employees"
-            referencedColumns: ["id", "company_id"]
-          },
-          {
-            foreignKeyName: "shift_belongs_to_schedules_company"
-            columns: ["schedule_id", "company_id"]
-            isOneToOne: false
-            referencedRelation: "schedules"
-            referencedColumns: ["id", "company_id"]
-          },
-          {
-            foreignKeyName: "shift_site_belongs_to_company"
-            columns: ["client_site_id", "company_id"]
-            isOneToOne: false
-            referencedRelation: "client_sites"
-            referencedColumns: ["id", "company_id"]
-          },
-          {
-            foreignKeyName: "shifts_company_id_fkey"
-            columns: ["company_id"]
-            isOneToOne: false
-            referencedRelation: "companies"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "shifts_template_id_fkey"
-            columns: ["template_id"]
-            isOneToOne: false
-            referencedRelation: "shift_templates"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      tax_brackets: {
-        Row: {
-          base_tax: number
-          bracket_max: number | null
-          bracket_min: number
-          id: string
-          legal_ref: string | null
-          note: string | null
-          periodicity: Database["public"]["Enums"]["tax_periodicity"]
-          rate_over_min: number
+          pause_minutes: number
+          salarie_id: string
+          societe_id: string
           source: string
-          tax_class: Database["public"]["Enums"]["tax_class"]
-          valid_from: string
-          valid_to: string
+          valide: boolean
         }
         Insert: {
-          base_tax?: number
-          bracket_max?: number | null
-          bracket_min: number
+          cree_le?: string
+          date_releve: string
+          heure_debut?: string | null
+          heure_fin?: string | null
+          heures_dimanche?: number
+          heures_ferie?: number
+          heures_nuit?: number
+          heures_prevues?: number | null
+          heures_supplementaires?: number
+          heures_travaillees?: number | null
           id?: string
-          legal_ref?: string | null
           note?: string | null
-          periodicity?: Database["public"]["Enums"]["tax_periodicity"]
-          rate_over_min: number
+          pause_minutes?: number
+          salarie_id: string
+          societe_id: string
           source?: string
-          tax_class: Database["public"]["Enums"]["tax_class"]
-          valid_from?: string
-          valid_to?: string
+          valide?: boolean
         }
         Update: {
-          base_tax?: number
-          bracket_max?: number | null
-          bracket_min?: number
+          cree_le?: string
+          date_releve?: string
+          heure_debut?: string | null
+          heure_fin?: string | null
+          heures_dimanche?: number
+          heures_ferie?: number
+          heures_nuit?: number
+          heures_prevues?: number | null
+          heures_supplementaires?: number
+          heures_travaillees?: number | null
           id?: string
-          legal_ref?: string | null
           note?: string | null
-          periodicity?: Database["public"]["Enums"]["tax_periodicity"]
-          rate_over_min?: number
+          pause_minutes?: number
+          salarie_id?: string
+          societe_id?: string
           source?: string
-          tax_class?: Database["public"]["Enums"]["tax_class"]
-          valid_from?: string
-          valid_to?: string
-        }
-        Relationships: []
-      }
-      tax_credits: {
-        Row: {
-          applies_to_classes: Database["public"]["Enums"]["tax_class"][] | null
-          code: string
-          id: string
-          income_max: number | null
-          income_min: number | null
-          label: string
-          legal_ref: string | null
-          monthly_amount: number | null
-          note: string | null
-          prorated_on_hours: boolean
-          source: string
-          valid_from: string
-          valid_to: string
-        }
-        Insert: {
-          applies_to_classes?: Database["public"]["Enums"]["tax_class"][] | null
-          code: string
-          id?: string
-          income_max?: number | null
-          income_min?: number | null
-          label: string
-          legal_ref?: string | null
-          monthly_amount?: number | null
-          note?: string | null
-          prorated_on_hours?: boolean
-          source?: string
-          valid_from?: string
-          valid_to?: string
-        }
-        Update: {
-          applies_to_classes?: Database["public"]["Enums"]["tax_class"][] | null
-          code?: string
-          id?: string
-          income_max?: number | null
-          income_min?: number | null
-          label?: string
-          legal_ref?: string | null
-          monthly_amount?: number | null
-          note?: string | null
-          prorated_on_hours?: boolean
-          source?: string
-          valid_from?: string
-          valid_to?: string
-        }
-        Relationships: []
-      }
-      time_entries: {
-        Row: {
-          break_minutes: number
-          company_id: string
-          created_at: string
-          employee_id: string
-          end_time: string | null
-          entry_date: string
-          holiday_hours: number
-          id: string
-          is_validated: boolean
-          night_hours: number
-          note: string | null
-          overtime_hours: number
-          planned_hours: number | null
-          source: string
-          start_time: string | null
-          sunday_hours: number
-          worked_hours: number | null
-        }
-        Insert: {
-          break_minutes?: number
-          company_id: string
-          created_at?: string
-          employee_id: string
-          end_time?: string | null
-          entry_date: string
-          holiday_hours?: number
-          id?: string
-          is_validated?: boolean
-          night_hours?: number
-          note?: string | null
-          overtime_hours?: number
-          planned_hours?: number | null
-          source?: string
-          start_time?: string | null
-          sunday_hours?: number
-          worked_hours?: number | null
-        }
-        Update: {
-          break_minutes?: number
-          company_id?: string
-          created_at?: string
-          employee_id?: string
-          end_time?: string | null
-          entry_date?: string
-          holiday_hours?: number
-          id?: string
-          is_validated?: boolean
-          night_hours?: number
-          note?: string | null
-          overtime_hours?: number
-          planned_hours?: number | null
-          source?: string
-          start_time?: string | null
-          sunday_hours?: number
-          worked_hours?: number | null
+          valide?: boolean
         }
         Relationships: [
           {
-            foreignKeyName: "time_entries_company_id_fkey"
-            columns: ["company_id"]
+            foreignKeyName: "releves_temps_company_id_fkey"
+            columns: ["societe_id"]
             isOneToOne: false
-            referencedRelation: "companies"
+            referencedRelation: "societes"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "time_entry_belongs_to_employees_company"
-            columns: ["employee_id", "company_id"]
+            columns: ["salarie_id", "societe_id"]
             isOneToOne: false
-            referencedRelation: "employees"
-            referencedColumns: ["id", "company_id"]
+            referencedRelation: "salaries"
+            referencedColumns: ["id", "societe_id"]
           },
         ]
       }
-      travel_distances: {
+      roles_compte: {
         Row: {
-          computed_at: string
-          computed_by: string | null
-          destination_ref: string
-          distance_km: number
-          duration_minutes: number | null
+          compte_id: string
+          cree_le: string
           id: string
-          note: string | null
-          origin_ref: string
-          source: string
+          organisation_id: string
+          role: Database["public"]["Enums"]["role_application"]
+          societe_id: string | null
         }
         Insert: {
-          computed_at?: string
-          computed_by?: string | null
-          destination_ref: string
-          distance_km: number
-          duration_minutes?: number | null
+          compte_id: string
+          cree_le?: string
           id?: string
-          note?: string | null
-          origin_ref: string
-          source: string
+          organisation_id: string
+          role: Database["public"]["Enums"]["role_application"]
+          societe_id?: string | null
         }
         Update: {
-          computed_at?: string
-          computed_by?: string | null
-          destination_ref?: string
-          distance_km?: number
-          duration_minutes?: number | null
+          compte_id?: string
+          cree_le?: string
           id?: string
-          note?: string | null
-          origin_ref?: string
-          source?: string
-        }
-        Relationships: []
-      }
-      user_roles: {
-        Row: {
-          company_id: string | null
-          created_at: string
-          id: string
-          organization_id: string
-          role: Database["public"]["Enums"]["app_role"]
-          user_id: string
-        }
-        Insert: {
-          company_id?: string | null
-          created_at?: string
-          id?: string
-          organization_id: string
-          role: Database["public"]["Enums"]["app_role"]
-          user_id: string
-        }
-        Update: {
-          company_id?: string | null
-          created_at?: string
-          id?: string
-          organization_id?: string
-          role?: Database["public"]["Enums"]["app_role"]
-          user_id?: string
+          organisation_id?: string
+          role?: Database["public"]["Enums"]["role_application"]
+          societe_id?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "user_roles_company_id_fkey"
-            columns: ["company_id"]
+            foreignKeyName: "roles_compte_company_id_fkey"
+            columns: ["societe_id"]
             isOneToOne: false
-            referencedRelation: "companies"
+            referencedRelation: "societes"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "user_roles_organization_id_fkey"
-            columns: ["organization_id"]
+            foreignKeyName: "roles_compte_organization_id_fkey"
+            columns: ["organisation_id"]
             isOneToOne: false
-            referencedRelation: "organizations"
+            referencedRelation: "organisations"
             referencedColumns: ["id"]
           },
         ]
+      }
+      ruptures_contrat: {
+        Row: {
+          compensation_renonciation: number | null
+          contrat_id: string
+          cree_le: string
+          debut_preavis: string | null
+          faute_grave: boolean
+          fin_preavis: string | null
+          id: string
+          indemnite_mois: number | null
+          motif: string
+          motif_personnel: boolean
+          note_renonciation: string | null
+          notifie_le: string
+          preavis_renonce: boolean
+          renonciation_convenue_le: string | null
+          societe_id: string
+        }
+        Insert: {
+          compensation_renonciation?: number | null
+          contrat_id: string
+          cree_le?: string
+          debut_preavis?: string | null
+          faute_grave?: boolean
+          fin_preavis?: string | null
+          id?: string
+          indemnite_mois?: number | null
+          motif: string
+          motif_personnel?: boolean
+          note_renonciation?: string | null
+          notifie_le: string
+          preavis_renonce?: boolean
+          renonciation_convenue_le?: string | null
+          societe_id: string
+        }
+        Update: {
+          compensation_renonciation?: number | null
+          contrat_id?: string
+          cree_le?: string
+          debut_preavis?: string | null
+          faute_grave?: boolean
+          fin_preavis?: string | null
+          id?: string
+          indemnite_mois?: number | null
+          motif?: string
+          motif_personnel?: boolean
+          note_renonciation?: string | null
+          notifie_le?: string
+          preavis_renonce?: boolean
+          renonciation_convenue_le?: string | null
+          societe_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ruptures_contrat_company_id_fkey"
+            columns: ["societe_id"]
+            isOneToOne: false
+            referencedRelation: "societes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ruptures_contrat_contract_id_fkey"
+            columns: ["contrat_id"]
+            isOneToOne: false
+            referencedRelation: "contrats"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      salaries: {
+        Row: {
+          code_postal: string | null
+          compte_id: string | null
+          courriel: string | null
+          cree_le: string
+          date_debut_carriere: string | null
+          date_naissance: string | null
+          est_cadre: boolean
+          iban_chiffre: string | null
+          id: string
+          ligne: string | null
+          localite: string | null
+          matricule_national_chiffre: string | null
+          matricule_national_indice: string | null
+          nom: string
+          pays: string
+          prenom: string
+          profession: string | null
+          qualification: Database["public"]["Enums"]["genre_qualification"]
+          refus_photos_societe: boolean
+          residence: Database["public"]["Enums"]["genre_residence"]
+          service_id: string | null
+          sexe: Database["public"]["Enums"]["genre_sexe"]
+          sexe_legal: Database["public"]["Enums"]["genre_sexe"] | null
+          societe_id: string
+          souhaite_confidentialite: boolean
+          telephone: string | null
+        }
+        Insert: {
+          code_postal?: string | null
+          compte_id?: string | null
+          courriel?: string | null
+          cree_le?: string
+          date_debut_carriere?: string | null
+          date_naissance?: string | null
+          est_cadre?: boolean
+          iban_chiffre?: string | null
+          id?: string
+          ligne?: string | null
+          localite?: string | null
+          matricule_national_chiffre?: string | null
+          matricule_national_indice?: string | null
+          nom: string
+          pays?: string
+          prenom: string
+          profession?: string | null
+          qualification?: Database["public"]["Enums"]["genre_qualification"]
+          refus_photos_societe?: boolean
+          residence: Database["public"]["Enums"]["genre_residence"]
+          service_id?: string | null
+          sexe?: Database["public"]["Enums"]["genre_sexe"]
+          sexe_legal?: Database["public"]["Enums"]["genre_sexe"] | null
+          societe_id: string
+          souhaite_confidentialite?: boolean
+          telephone?: string | null
+        }
+        Update: {
+          code_postal?: string | null
+          compte_id?: string | null
+          courriel?: string | null
+          cree_le?: string
+          date_debut_carriere?: string | null
+          date_naissance?: string | null
+          est_cadre?: boolean
+          iban_chiffre?: string | null
+          id?: string
+          ligne?: string | null
+          localite?: string | null
+          matricule_national_chiffre?: string | null
+          matricule_national_indice?: string | null
+          nom?: string
+          pays?: string
+          prenom?: string
+          profession?: string | null
+          qualification?: Database["public"]["Enums"]["genre_qualification"]
+          refus_photos_societe?: boolean
+          residence?: Database["public"]["Enums"]["genre_residence"]
+          service_id?: string | null
+          sexe?: Database["public"]["Enums"]["genre_sexe"]
+          sexe_legal?: Database["public"]["Enums"]["genre_sexe"] | null
+          societe_id?: string
+          souhaite_confidentialite?: boolean
+          telephone?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "salaries_company_id_fkey"
+            columns: ["societe_id"]
+            isOneToOne: false
+            referencedRelation: "societes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "salaries_department_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sanctions_salarie: {
+        Row: {
+          conservation_jusquau: string | null
+          conteste_le: string | null
+          contrat_avenant_id: string | null
+          contrat_id: string | null
+          cree_le: string
+          cree_par: string | null
+          effet_au: string | null
+          effet_du: string | null
+          faits_connus_le: string
+          faits_le: string
+          id: string
+          issue_contestation: string | null
+          modifie_le: string
+          modifie_par: string | null
+          motif: string
+          note: string | null
+          notifie_le: string | null
+          piece_justificative_id: string | null
+          reponse_salarie: string | null
+          rupture_id: string | null
+          salarie_entendu_le: string | null
+          salarie_id: string
+          societe_id: string
+          supprime_le: string | null
+          supprime_par: string | null
+          type_sanction: string
+        }
+        Insert: {
+          conservation_jusquau?: string | null
+          conteste_le?: string | null
+          contrat_avenant_id?: string | null
+          contrat_id?: string | null
+          cree_le?: string
+          cree_par?: string | null
+          effet_au?: string | null
+          effet_du?: string | null
+          faits_connus_le: string
+          faits_le: string
+          id?: string
+          issue_contestation?: string | null
+          modifie_le?: string
+          modifie_par?: string | null
+          motif: string
+          note?: string | null
+          notifie_le?: string | null
+          piece_justificative_id?: string | null
+          reponse_salarie?: string | null
+          rupture_id?: string | null
+          salarie_entendu_le?: string | null
+          salarie_id: string
+          societe_id: string
+          supprime_le?: string | null
+          supprime_par?: string | null
+          type_sanction: string
+        }
+        Update: {
+          conservation_jusquau?: string | null
+          conteste_le?: string | null
+          contrat_avenant_id?: string | null
+          contrat_id?: string | null
+          cree_le?: string
+          cree_par?: string | null
+          effet_au?: string | null
+          effet_du?: string | null
+          faits_connus_le?: string
+          faits_le?: string
+          id?: string
+          issue_contestation?: string | null
+          modifie_le?: string
+          modifie_par?: string | null
+          motif?: string
+          note?: string | null
+          notifie_le?: string | null
+          piece_justificative_id?: string | null
+          reponse_salarie?: string | null
+          rupture_id?: string | null
+          salarie_entendu_le?: string | null
+          salarie_id?: string
+          societe_id?: string
+          supprime_le?: string | null
+          supprime_par?: string | null
+          type_sanction?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sanction_belongs_to_employees_company"
+            columns: ["salarie_id", "societe_id"]
+            isOneToOne: false
+            referencedRelation: "salaries"
+            referencedColumns: ["id", "societe_id"]
+          },
+          {
+            foreignKeyName: "sanctions_salarie_amendment_contract_id_fkey"
+            columns: ["contrat_avenant_id"]
+            isOneToOne: false
+            referencedRelation: "contrats"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sanctions_salarie_contract_id_fkey"
+            columns: ["contrat_id"]
+            isOneToOne: false
+            referencedRelation: "contrats"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sanctions_salarie_evidence_document_id_fkey"
+            columns: ["piece_justificative_id"]
+            isOneToOne: false
+            referencedRelation: "documents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sanctions_salarie_sanction_type_fkey"
+            columns: ["type_sanction"]
+            isOneToOne: false
+            referencedRelation: "types_sanction"
+            referencedColumns: ["code"]
+          },
+          {
+            foreignKeyName: "sanctions_salarie_termination_id_fkey"
+            columns: ["rupture_id"]
+            isOneToOne: false
+            referencedRelation: "ruptures_contrat"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      secrets_application: {
+        Row: {
+          cle: string
+          secret: string
+        }
+        Insert: {
+          cle: string
+          secret: string
+        }
+        Update: {
+          cle?: string
+          secret?: string
+        }
+        Relationships: []
+      }
+      services: {
+        Row: {
+          couverture_soir_min: number | null
+          id: string
+          nom: string
+          societe_id: string
+        }
+        Insert: {
+          couverture_soir_min?: number | null
+          id?: string
+          nom: string
+          societe_id: string
+        }
+        Update: {
+          couverture_soir_min?: number | null
+          id?: string
+          nom?: string
+          societe_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "services_company_id_fkey"
+            columns: ["societe_id"]
+            isOneToOne: false
+            referencedRelation: "societes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sinistres_accident_societe: {
+        Row: {
+          annee: number
+          cout: number | null
+          id: string
+          jours_perdus: number
+          nombre_sinistres: number
+          note: string | null
+          societe_id: string
+        }
+        Insert: {
+          annee: number
+          cout?: number | null
+          id?: string
+          jours_perdus?: number
+          nombre_sinistres?: number
+          note?: string | null
+          societe_id: string
+        }
+        Update: {
+          annee?: number
+          cout?: number | null
+          id?: string
+          jours_perdus?: number
+          nombre_sinistres?: number
+          note?: string | null
+          societe_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sinistres_accident_societe_company_id_fkey"
+            columns: ["societe_id"]
+            isOneToOne: false
+            referencedRelation: "societes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sites_client: {
+        Row: {
+          actif: boolean
+          code_postal: string | null
+          cree_le: string
+          id: string
+          latitude: number | null
+          ligne: string | null
+          localite: string | null
+          longitude: number | null
+          nom: string
+          nom_client: string | null
+          note: string | null
+          pays: string
+          societe_id: string
+        }
+        Insert: {
+          actif?: boolean
+          code_postal?: string | null
+          cree_le?: string
+          id?: string
+          latitude?: number | null
+          ligne?: string | null
+          localite?: string | null
+          longitude?: number | null
+          nom: string
+          nom_client?: string | null
+          note?: string | null
+          pays?: string
+          societe_id: string
+        }
+        Update: {
+          actif?: boolean
+          code_postal?: string | null
+          cree_le?: string
+          id?: string
+          latitude?: number | null
+          ligne?: string | null
+          localite?: string | null
+          longitude?: number | null
+          nom?: string
+          nom_client?: string | null
+          note?: string | null
+          pays?: string
+          societe_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sites_client_company_id_fkey"
+            columns: ["societe_id"]
+            isOneToOne: false
+            referencedRelation: "societes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      societes: {
+        Row: {
+          code_nace: string | null
+          code_postal: string | null
+          cree_le: string
+          forme_juridique: string | null
+          id: string
+          ligne: string | null
+          localite: string | null
+          matricule_ccss: string | null
+          numero_rcs: string | null
+          organisation_id: string
+          pays: string
+          periode_reference_mois: number
+          raison_sociale: string
+          reference_reglement_interieur: string | null
+          reglement_interieur_adopte_le: string | null
+          secteur: string | null
+        }
+        Insert: {
+          code_nace?: string | null
+          code_postal?: string | null
+          cree_le?: string
+          forme_juridique?: string | null
+          id?: string
+          ligne?: string | null
+          localite?: string | null
+          matricule_ccss?: string | null
+          numero_rcs?: string | null
+          organisation_id: string
+          pays?: string
+          periode_reference_mois?: number
+          raison_sociale: string
+          reference_reglement_interieur?: string | null
+          reglement_interieur_adopte_le?: string | null
+          secteur?: string | null
+        }
+        Update: {
+          code_nace?: string | null
+          code_postal?: string | null
+          cree_le?: string
+          forme_juridique?: string | null
+          id?: string
+          ligne?: string | null
+          localite?: string | null
+          matricule_ccss?: string | null
+          numero_rcs?: string | null
+          organisation_id?: string
+          pays?: string
+          periode_reference_mois?: number
+          raison_sociale?: string
+          reference_reglement_interieur?: string | null
+          reglement_interieur_adopte_le?: string | null
+          secteur?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "societes_organization_id_fkey"
+            columns: ["organisation_id"]
+            isOneToOne: false
+            referencedRelation: "organisations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      statuts_salarie: {
+        Row: {
+          credit_heures_mensuel: number | null
+          cree_le: string
+          date_debut: string
+          date_fin: string | null
+          date_naissance_prevue: string | null
+          date_naissance_reelle: string | null
+          declare_le: string
+          genre: Database["public"]["Enums"]["genre_statut_salarie"]
+          id: string
+          note: string | null
+          piece_justificative_id: string | null
+          salarie_id: string
+          societe_id: string
+        }
+        Insert: {
+          credit_heures_mensuel?: number | null
+          cree_le?: string
+          date_debut: string
+          date_fin?: string | null
+          date_naissance_prevue?: string | null
+          date_naissance_reelle?: string | null
+          declare_le?: string
+          genre: Database["public"]["Enums"]["genre_statut_salarie"]
+          id?: string
+          note?: string | null
+          piece_justificative_id?: string | null
+          salarie_id: string
+          societe_id: string
+        }
+        Update: {
+          credit_heures_mensuel?: number | null
+          cree_le?: string
+          date_debut?: string
+          date_fin?: string | null
+          date_naissance_prevue?: string | null
+          date_naissance_reelle?: string | null
+          declare_le?: string
+          genre?: Database["public"]["Enums"]["genre_statut_salarie"]
+          id?: string
+          note?: string | null
+          piece_justificative_id?: string | null
+          salarie_id?: string
+          societe_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "status_belongs_to_employees_company"
+            columns: ["salarie_id", "societe_id"]
+            isOneToOne: false
+            referencedRelation: "salaries"
+            referencedColumns: ["id", "societe_id"]
+          },
+          {
+            foreignKeyName: "statuts_salarie_company_id_fkey"
+            columns: ["societe_id"]
+            isOneToOne: false
+            referencedRelation: "societes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "statuts_salarie_evidence_document_id_fkey"
+            columns: ["piece_justificative_id"]
+            isOneToOne: false
+            referencedRelation: "documents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tranches_impot: {
+        Row: {
+          classe_impot: Database["public"]["Enums"]["classe_impot"]
+          debut_validite: string
+          fin_validite: string
+          id: string
+          impot_base: number
+          note: string | null
+          periodicite: Database["public"]["Enums"]["periodicite_impot"]
+          reference_legale: string | null
+          source: string
+          taux_au_dessus_minimum: number
+          tranche_max: number | null
+          tranche_min: number
+        }
+        Insert: {
+          classe_impot: Database["public"]["Enums"]["classe_impot"]
+          debut_validite?: string
+          fin_validite?: string
+          id?: string
+          impot_base?: number
+          note?: string | null
+          periodicite?: Database["public"]["Enums"]["periodicite_impot"]
+          reference_legale?: string | null
+          source?: string
+          taux_au_dessus_minimum: number
+          tranche_max?: number | null
+          tranche_min: number
+        }
+        Update: {
+          classe_impot?: Database["public"]["Enums"]["classe_impot"]
+          debut_validite?: string
+          fin_validite?: string
+          id?: string
+          impot_base?: number
+          note?: string | null
+          periodicite?: Database["public"]["Enums"]["periodicite_impot"]
+          reference_legale?: string | null
+          source?: string
+          taux_au_dessus_minimum?: number
+          tranche_max?: number | null
+          tranche_min?: number
+        }
+        Relationships: []
+      }
+      types_absence: {
+        Row: {
+          categorie: Database["public"]["Enums"]["categorie_absence"]
+          certificat_exige: boolean
+          code: string
+          id: string
+          impute_sur_conge: boolean
+          libelle: string
+          reference_legale: string | null
+          remunere: boolean
+        }
+        Insert: {
+          categorie: Database["public"]["Enums"]["categorie_absence"]
+          certificat_exige?: boolean
+          code: string
+          id?: string
+          impute_sur_conge?: boolean
+          libelle: string
+          reference_legale?: string | null
+          remunere?: boolean
+        }
+        Update: {
+          categorie?: Database["public"]["Enums"]["categorie_absence"]
+          certificat_exige?: boolean
+          code?: string
+          id?: string
+          impute_sur_conge?: boolean
+          libelle?: string
+          reference_legale?: string | null
+          remunere?: boolean
+        }
+        Relationships: []
+      }
+      types_avantage: {
+        Row: {
+          code: string
+          cotisable: boolean
+          id: string
+          imposable: boolean
+          libelle: string
+          methode_evaluation: string
+          note: string | null
+          parametres_evaluation: Json
+          reference_legale: string | null
+        }
+        Insert: {
+          code: string
+          cotisable?: boolean
+          id?: string
+          imposable?: boolean
+          libelle: string
+          methode_evaluation: string
+          note?: string | null
+          parametres_evaluation?: Json
+          reference_legale?: string | null
+        }
+        Update: {
+          code?: string
+          cotisable?: boolean
+          id?: string
+          imposable?: boolean
+          libelle?: string
+          methode_evaluation?: string
+          note?: string | null
+          parametres_evaluation?: Json
+          reference_legale?: string | null
+        }
+        Relationships: []
+      }
+      types_document: {
+        Row: {
+          alerte_jours_avant: number
+          code: string
+          echelon: Database["public"]["Enums"]["etape_document"]
+          id: string
+          libelle: string
+          note: string | null
+          obligatoire: boolean
+          reference_legale: string | null
+          residences_visees:
+            | Database["public"]["Enums"]["genre_residence"][]
+            | null
+          validite_mois: number | null
+        }
+        Insert: {
+          alerte_jours_avant?: number
+          code: string
+          echelon?: Database["public"]["Enums"]["etape_document"]
+          id?: string
+          libelle: string
+          note?: string | null
+          obligatoire?: boolean
+          reference_legale?: string | null
+          residences_visees?:
+            | Database["public"]["Enums"]["genre_residence"][]
+            | null
+          validite_mois?: number | null
+        }
+        Update: {
+          alerte_jours_avant?: number
+          code?: string
+          echelon?: Database["public"]["Enums"]["etape_document"]
+          id?: string
+          libelle?: string
+          note?: string | null
+          obligatoire?: boolean
+          reference_legale?: string | null
+          residences_visees?:
+            | Database["public"]["Enums"]["genre_residence"][]
+            | null
+          validite_mois?: number | null
+        }
+        Relationships: []
+      }
+      types_sanction: {
+        Row: {
+          affecte_paie: boolean
+          code: string
+          code_categorie: string
+          debut_validite: string
+          description: string
+          fin_validite: string
+          libelle: string
+          modifie_contrat: boolean
+          needs_notice: boolean | null
+          note: string | null
+          reference_legale: string | null
+          reglement_interieur_exige: boolean
+          rompt_contrat: boolean
+          suspend_presence: boolean
+        }
+        Insert: {
+          affecte_paie?: boolean
+          code: string
+          code_categorie: string
+          debut_validite?: string
+          description: string
+          fin_validite?: string
+          libelle: string
+          modifie_contrat?: boolean
+          needs_notice?: boolean | null
+          note?: string | null
+          reference_legale?: string | null
+          reglement_interieur_exige?: boolean
+          rompt_contrat?: boolean
+          suspend_presence?: boolean
+        }
+        Update: {
+          affecte_paie?: boolean
+          code?: string
+          code_categorie?: string
+          debut_validite?: string
+          description?: string
+          fin_validite?: string
+          libelle?: string
+          modifie_contrat?: boolean
+          needs_notice?: boolean | null
+          note?: string | null
+          reference_legale?: string | null
+          reglement_interieur_exige?: boolean
+          rompt_contrat?: boolean
+          suspend_presence?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "types_sanction_category_code_fkey"
+            columns: ["code_categorie"]
+            isOneToOne: false
+            referencedRelation: "categories_sanction"
+            referencedColumns: ["code"]
+          },
+        ]
+      }
+      zones_adresse: {
+        Row: {
+          code: string
+          code_postal_au: number | null
+          code_postal_du: number | null
+          genre: string
+          id: string
+          libelle: string
+          note: string | null
+          pays: string
+          source: string
+          verifie: boolean
+        }
+        Insert: {
+          code: string
+          code_postal_au?: number | null
+          code_postal_du?: number | null
+          genre: string
+          id?: string
+          libelle: string
+          note?: string | null
+          pays: string
+          source: string
+          verifie?: boolean
+        }
+        Update: {
+          code?: string
+          code_postal_au?: number | null
+          code_postal_du?: number | null
+          genre?: string
+          id?: string
+          libelle?: string
+          note?: string | null
+          pays?: string
+          source?: string
+          verifie?: boolean
+        }
+        Relationships: []
       }
     }
     Views: {
@@ -4006,26 +4006,27 @@ export type Database = {
     Functions: {
       auth_org_id: { Args: never; Returns: string }
       can_manage_company: { Args: { p_company: string }; Returns: boolean }
+      est_admin_organisation: { Args: never; Returns: boolean }
       fn_absence_entitlement: {
         Args: { p_on?: string; p_type: string }
         Returns: {
-          absence_type_id: string
-          block_days: number | null
-          career_cap_days: number | null
-          days: number | null
-          frequency_note: string | null
+          debut_validite: string
+          degre_parente: number | null
+          duree_mois: number | null
+          fin_validite: string
           id: string
-          legal_ref: string | null
+          jours: number | null
+          jours_bloc: number | null
           note: string | null
-          period_months: number | null
-          relationship_degree: number | null
-          requires_evidence: boolean
-          valid_from: string
-          valid_to: string
+          note_frequence: string | null
+          piece_exigee: boolean
+          plafond_carriere_jours: number | null
+          reference_legale: string | null
+          type_absence_id: string
         }
         SetofOptions: {
           from: "*"
-          to: "absence_entitlements"
+          to: "droits_absence"
           isOneToOne: true
           isSetofReturn: false
         }
@@ -4042,31 +4043,31 @@ export type Database = {
           p_value_text?: string
         }
         Returns: {
-          derivation_tolerance: number
-          derived_factor: number | null
-          derived_from_key: string | null
-          entered_at: string
-          entered_by: string | null
-          family: Database["public"]["Enums"]["param_family"]
+          cle_parametre: string
+          debut_validite: string
+          derive_de_cle: string | null
+          facteur_derive: number | null
+          famille: Database["public"]["Enums"]["famille_parametre"]
+          fin_validite: string
           id: string
-          index_ref: number | null
-          label: string
-          legal_ref: string | null
+          indice_reference: number | null
+          libelle: string
           note: string | null
-          param_key: string
+          reference_legale: string | null
+          saisi_le: string
+          saisi_par: string | null
           source: string
-          unit: string | null
-          valid_from: string
-          valid_to: string
-          validated_at: string | null
-          validated_by: string | null
-          value_json: Json | null
-          value_num: number | null
-          value_text: string | null
+          tolerance_derivation: number
+          unite: string | null
+          valeur_json: Json | null
+          valeur_num: number | null
+          valeur_texte: string | null
+          valide_le: string | null
+          valide_par: string | null
         }
         SetofOptions: {
           from: "*"
-          to: "legal_parameters"
+          to: "parametres_legaux"
           isOneToOne: true
           isSetofReturn: false
         }
@@ -4089,12 +4090,12 @@ export type Database = {
         Args: { p_contract: string; p_on?: string }
         Returns: {
           code: string
-          collective_agreement_id: string
-          name: string
-          origin: string
-          scope: Database["public"]["Enums"]["cba_scope"]
-          valid_from: string
-          valid_to: string
+          convention_id: string
+          debut_validite: string
+          fin_validite: string
+          nom: string
+          origine: string
+          portee: Database["public"]["Enums"]["portee_convention"]
         }[]
       }
       fn_arbitrate: {
@@ -4121,7 +4122,7 @@ export type Database = {
       }
       fn_cba_best_num: {
         Args: {
-          p_block: Database["public"]["Enums"]["cba_block"]
+          p_block: Database["public"]["Enums"]["bloc_convention"]
           p_contract: string
           p_higher_is_better?: boolean
           p_on?: string
@@ -4135,7 +4136,7 @@ export type Database = {
       }
       fn_cba_value: {
         Args: {
-          p_block: Database["public"]["Enums"]["cba_block"]
+          p_block: Database["public"]["Enums"]["bloc_convention"]
           p_cba: string
           p_path: string
         }
@@ -4162,10 +4163,11 @@ export type Database = {
         Args: {
           p_birth?: string
           p_id: string
-          p_sex?: Database["public"]["Enums"]["sex_kind"]
+          p_sex?: Database["public"]["Enums"]["genre_sexe"]
         }
         Returns: Json
       }
+      fn_coherence_report: { Args: never; Returns: Json }
       fn_collective_dismissal_counters: {
         Args: { p_company: string; p_on?: string }
         Returns: Json
@@ -4232,10 +4234,10 @@ export type Database = {
           p_limit?: number
           p_search?: string
         }
-        Returns: Database["public"]["CompositeTypes"]["employee_row"][]
+        Returns: Database["public"]["CompositeTypes"]["ligne_salarie"][]
         SetofOptions: {
           from: "*"
-          to: "employee_row"
+          to: "ligne_salarie"
           isOneToOne: false
           isSetofReturn: true
         }
@@ -4244,7 +4246,7 @@ export type Database = {
         Args: { p_employee: string }
         Returns: {
           iban: string
-          national_id: string
+          matricule_national: string
         }[]
       }
       fn_encrypt_field: { Args: { p_plain: string }; Returns: string }
@@ -4261,18 +4263,18 @@ export type Database = {
       fn_generate_public_holidays: {
         Args: { p_year: number }
         Returns: {
-          collective_agreement_id: string | null
-          holiday_date: string
+          annee: number
+          convention_id: string | null
+          date_ferie: string
+          est_mobile: boolean
           id: string
-          is_mobile: boolean
-          is_recoverable: boolean
-          name: string
-          recovery_reason: string | null
-          year: number
+          motif_recuperation: string | null
+          nom: string
+          recuperable: boolean
         }[]
         SetofOptions: {
           from: "*"
-          to: "public_holidays"
+          to: "jours_feries"
           isOneToOne: false
           isSetofReturn: true
         }
@@ -4295,9 +4297,9 @@ export type Database = {
       }
       fn_income_tax: {
         Args: {
-          p_class: Database["public"]["Enums"]["tax_class"]
+          p_class: Database["public"]["Enums"]["classe_impot"]
           p_on?: string
-          p_periodicity?: Database["public"]["Enums"]["tax_periodicity"]
+          p_periodicity?: Database["public"]["Enums"]["periodicite_impot"]
           p_taxable: number
         }
         Returns: Json
@@ -4357,7 +4359,7 @@ export type Database = {
             Args: {
               p_birth: string
               p_serial: number
-              p_sex?: Database["public"]["Enums"]["sex_kind"]
+              p_sex?: Database["public"]["Enums"]["genre_sexe"]
             }
             Returns: string
           }
@@ -4366,7 +4368,7 @@ export type Database = {
       fn_migrations_list: {
         Args: never
         Returns: {
-          name: string
+          nom: string
           taille: number
           version: string
         }[]
@@ -4378,7 +4380,7 @@ export type Database = {
       fn_national_id_birth_date: { Args: { p_id: string }; Returns: string }
       fn_national_id_sex: {
         Args: { p_id: string }
-        Returns: Database["public"]["Enums"]["sex_kind"]
+        Returns: Database["public"]["Enums"]["genre_sexe"]
       }
       fn_normaliser_pays: { Args: { p_pays: string }; Returns: string }
       fn_notice_period: {
@@ -4392,27 +4394,27 @@ export type Database = {
       fn_overtime_approve: {
         Args: { p_as_hr: boolean; p_request: string }
         Returns: {
-          company_id: string
+          accepte_par_salarie_le: string | null
           compensation: string
-          employee_accepted_at: string | null
-          employee_id: string
-          hours: number
-          hr_validated_at: string | null
-          hr_validated_by: string | null
+          debut_periode: string
+          demande_le: string
+          demande_par: string | null
+          fin_periode: string
+          heures: number
           id: string
+          motif: string
+          motif_refus: string | null
           note: string | null
-          period_end: string
-          period_start: string
-          reason: string
-          rejected_reason: string | null
-          requested_at: string
-          requested_by: string | null
-          schedule_id: string | null
-          status: string
+          planning_id: string | null
+          salarie_id: string
+          societe_id: string
+          statut: string
+          valide_rh_le: string | null
+          valide_rh_par: string | null
         }
         SetofOptions: {
           from: "*"
-          to: "overtime_requests"
+          to: "demandes_heures_sup"
           isOneToOne: true
           isSetofReturn: false
         }
@@ -4428,31 +4430,31 @@ export type Database = {
       fn_param: {
         Args: { p_key: string; p_on?: string }
         Returns: {
-          derivation_tolerance: number
-          derived_factor: number | null
-          derived_from_key: string | null
-          entered_at: string
-          entered_by: string | null
-          family: Database["public"]["Enums"]["param_family"]
+          cle_parametre: string
+          debut_validite: string
+          derive_de_cle: string | null
+          facteur_derive: number | null
+          famille: Database["public"]["Enums"]["famille_parametre"]
+          fin_validite: string
           id: string
-          index_ref: number | null
-          label: string
-          legal_ref: string | null
+          indice_reference: number | null
+          libelle: string
           note: string | null
-          param_key: string
+          reference_legale: string | null
+          saisi_le: string
+          saisi_par: string | null
           source: string
-          unit: string | null
-          valid_from: string
-          valid_to: string
-          validated_at: string | null
-          validated_by: string | null
-          value_json: Json | null
-          value_num: number | null
-          value_text: string | null
+          tolerance_derivation: number
+          unite: string | null
+          valeur_json: Json | null
+          valeur_num: number | null
+          valeur_texte: string | null
+          valide_le: string | null
+          valide_par: string | null
         }
         SetofOptions: {
           from: "*"
-          to: "legal_parameters"
+          to: "parametres_legaux"
           isOneToOne: true
           isSetofReturn: false
         }
@@ -4504,34 +4506,34 @@ export type Database = {
       fn_referential_gaps: {
         Args: { p_since?: string }
         Returns: {
-          covers_since: boolean
-          earliest_covered: string
-          family: Database["public"]["Enums"]["param_family"]
-          gap_days: number
-          label: string
+          cle_parametre: string
+          couvert_depuis: string
+          couvre_depuis: boolean
+          famille: Database["public"]["Enums"]["famille_parametre"]
+          jours_manquants: number
           latest_covered: string
-          param_key: string
-          read_by: string
+          libelle: string
+          lu_par: string
           versions: number
         }[]
       }
       fn_referential_holes: {
         Args: never
         Returns: {
-          gap_from: string
-          gap_to: string
-          param_key: string
+          cle_parametre: string
+          trou_au: string
+          trou_du: string
         }[]
       }
       fn_referential_inconsistencies: {
         Args: { p_on?: string }
         Returns: {
-          derived: number
-          difference: number
-          label: string
-          param_key: string
-          published: number
-          source_key: string
+          cle_parametre: string
+          cle_source: string
+          derive: number
+          ecart: number
+          libelle: string
+          publie: number
           tolerance: number
         }[]
       }
@@ -4574,21 +4576,21 @@ export type Database = {
           p_note?: string
         }
         Returns: {
-          accident_factor: number
-          accident_risk_class: string | null
-          activity_class: string | null
-          company_id: string
-          created_at: string
+          classe_activite: string | null
+          classe_mutualite: number | null
+          classe_risque_accident: string | null
+          cree_le: string
+          debut_validite: string
+          facteur_accident: number
+          fin_validite: string
           id: string
-          mutuality_class: number | null
           note: string | null
+          societe_id: string
           source: string
-          valid_from: string
-          valid_to: string
         }
         SetofOptions: {
           from: "*"
-          to: "company_rate_periods"
+          to: "periodes_taux_societe"
           isOneToOne: true
           isSetofReturn: false
         }
@@ -4646,10 +4648,10 @@ export type Database = {
           p_only_validated?: boolean
           p_to: string
         }
-        Returns: Database["public"]["CompositeTypes"]["time_entry_row"][]
+        Returns: Database["public"]["CompositeTypes"]["ligne_releve_temps"][]
         SetofOptions: {
           from: "*"
-          to: "time_entry_row"
+          to: "ligne_releve_temps"
           isOneToOne: false
           isSetofReturn: true
         }
@@ -4666,31 +4668,31 @@ export type Database = {
       fn_validate_parameter_version: {
         Args: { p_id: string }
         Returns: {
-          derivation_tolerance: number
-          derived_factor: number | null
-          derived_from_key: string | null
-          entered_at: string
-          entered_by: string | null
-          family: Database["public"]["Enums"]["param_family"]
+          cle_parametre: string
+          debut_validite: string
+          derive_de_cle: string | null
+          facteur_derive: number | null
+          famille: Database["public"]["Enums"]["famille_parametre"]
+          fin_validite: string
           id: string
-          index_ref: number | null
-          label: string
-          legal_ref: string | null
+          indice_reference: number | null
+          libelle: string
           note: string | null
-          param_key: string
+          reference_legale: string | null
+          saisi_le: string
+          saisi_par: string | null
           source: string
-          unit: string | null
-          valid_from: string
-          valid_to: string
-          validated_at: string | null
-          validated_by: string | null
-          value_json: Json | null
-          value_num: number | null
-          value_text: string | null
+          tolerance_derivation: number
+          unite: string | null
+          valeur_json: Json | null
+          valeur_num: number | null
+          valeur_texte: string | null
+          valide_le: string | null
+          valide_par: string | null
         }
         SetofOptions: {
           from: "*"
-          to: "legal_parameters"
+          to: "parametres_legaux"
           isOneToOne: true
           isSetofReturn: false
         }
@@ -4705,39 +4707,16 @@ export type Database = {
       has_role: {
         Args: {
           p_company?: string
-          p_role: Database["public"]["Enums"]["app_role"]
+          p_role: Database["public"]["Enums"]["role_application"]
         }
         Returns: boolean
       }
       has_shift_in_schedule: { Args: { p_schedule: string }; Returns: boolean }
-      is_org_admin: { Args: never; Returns: boolean }
       is_self_employee: { Args: { p_employee: string }; Returns: boolean }
       schedule_is_published: { Args: { p_schedule: string }; Returns: boolean }
     }
     Enums: {
-      absence_category:
-        | "annual_leave"
-        | "sick"
-        | "extraordinary"
-        | "public_holiday"
-        | "unpaid"
-        | "compensatory"
-      absence_status:
-        | "pending"
-        | "approved"
-        | "refused"
-        | "cancelled"
-        | "proposed"
-      alert_state: "open" | "handled" | "dismissed"
-      app_role:
-        | "fiduciary_admin"
-        | "manager"
-        | "service_manager"
-        | "employee"
-        | "medecine_travail"
-        | "rh_urgence"
-        | "dispatching"
-      cba_block:
+      bloc_convention:
         | "salary_grid"
         | "worktime"
         | "leave"
@@ -4745,16 +4724,44 @@ export type Database = {
         | "surcharges"
         | "notice_probation"
         | "custom_holidays"
-      cba_scope:
-        | "sector"
-        | "harassment"
-        | "employee_category"
-        | "department"
-        | "company"
-      contract_kind: "cdi" | "cdd" | "seasonal" | "apprenticeship" | "interim"
-      contract_status: "draft" | "active" | "ended" | "cancelled"
-      document_stage: "pre_hire" | "during_contract" | "end_of_contract"
-      employee_status_kind:
+      categorie_absence:
+        | "annual_leave"
+        | "sick"
+        | "extraordinary"
+        | "public_holiday"
+        | "unpaid"
+        | "compensatory"
+      classe_impot: "1" | "1a" | "2"
+      etape_document: "pre_hire" | "during_contract" | "end_of_contract"
+      etat_alerte: "open" | "handled" | "dismissed"
+      famille_parametre:
+        | "social"
+        | "fiscal"
+        | "worktime"
+        | "leave"
+        | "contract"
+        | "effectif"
+        | "ccss"
+      genre_contrat: "cdi" | "cdd" | "seasonal" | "apprenticeship" | "interim"
+      genre_element_remuneration:
+        | "fixed"
+        | "variable"
+        | "benefit_in_kind"
+        | "premium"
+        | "expense"
+      genre_organisation: "fiduciary" | "company"
+      genre_qualification: "qualified" | "unqualified"
+      genre_residence:
+        | "resident"
+        | "frontalier_fr"
+        | "frontalier_be"
+        | "frontalier_de"
+        | "frontalier_fra"
+        | "frontalier_bel"
+        | "frontalier_deu"
+      genre_severite: "blocking" | "warning" | "info" | "problem"
+      genre_sexe: "male" | "female" | "unspecified"
+      genre_statut_salarie:
         | "pregnancy"
         | "maternity_leave"
         | "breastfeeding"
@@ -4765,67 +4772,61 @@ export type Database = {
         | "reemployment_bonus"
         | "company_manager"
         | "protected_other"
-      org_kind: "fiduciary" | "company"
-      param_family:
-        | "social"
-        | "fiscal"
-        | "worktime"
-        | "leave"
-        | "contract"
-        | "headcount"
-        | "ccss"
-      pay_component_kind:
-        | "fixed"
-        | "variable"
-        | "benefit_in_kind"
-        | "premium"
-        | "expense"
-      qualification_kind: "qualified" | "unqualified"
-      residency_kind:
-        | "resident"
-        | "frontalier_fr"
-        | "frontalier_be"
-        | "frontalier_de"
-        | "frontalier_fra"
-        | "frontalier_bel"
-        | "frontalier_deu"
-      schedule_status: "draft" | "published"
-      severity_kind: "blocking" | "warning" | "info" | "problem"
-      sex_kind: "male" | "female" | "unspecified"
-      tax_class: "1" | "1a" | "2"
-      tax_periodicity: "monthly" | "daily" | "annual"
+      periodicite_impot: "monthly" | "daily" | "annual"
+      portee_convention:
+        | "secteur"
+        | "harassment"
+        | "employee_category"
+        | "department"
+        | "company"
+      role_application:
+        | "fiduciary_admin"
+        | "manager"
+        | "service_manager"
+        | "employee"
+        | "medecine_travail"
+        | "rh_urgence"
+        | "dispatching"
+      statut_absence:
+        | "pending"
+        | "approved"
+        | "refused"
+        | "cancelled"
+        | "proposed"
+      statut_contrat: "draft" | "active" | "ended" | "cancelled"
+      statut_planning: "draft" | "publie"
     }
     CompositeTypes: {
-      employee_row: {
-        employee_id: string | null
-        company_id: string | null
-        department_id: string | null
-        first_name: string | null
-        last_name: string | null
-        email: string | null
-        phone: string | null
-        birth_date: string | null
-        residency: Database["public"]["Enums"]["residency_kind"] | null
-        qualification: Database["public"]["Enums"]["qualification_kind"] | null
-        job_title: string | null
-        contract_kind: Database["public"]["Enums"]["contract_kind"] | null
-        start_date: string | null
-        end_date: string | null
-        monthly_gross: number | null
-        weekly_hours: number | null
-        national_id: string | null
-        iban: string | null
-      }
-      time_entry_row: {
+      ligne_releve_temps: {
         entry_id: string | null
-        employee_id: string | null
-        entry_date: string | null
-        worked_hours: number | null
-        overtime_hours: number | null
-        night_hours: number | null
-        sunday_hours: number | null
-        holiday_hours: number | null
-        is_validated: boolean | null
+        salarie_id: string | null
+        date_releve: string | null
+        heures_travaillees: number | null
+        heures_supplementaires: number | null
+        heures_nuit: number | null
+        heures_dimanche: number | null
+        heures_ferie: number | null
+        valide: boolean | null
+      }
+      ligne_salarie: {
+        salarie_id: string | null
+        societe_id: string | null
+        service_id: string | null
+        prenom: string | null
+        nom: string | null
+        courriel: string | null
+        telephone: string | null
+        date_naissance: string | null
+        residence: Database["public"]["Enums"]["genre_residence"] | null
+        qualification: Database["public"]["Enums"]["genre_qualification"] | null
+        intitule_poste: string | null
+        genre_contrat: Database["public"]["Enums"]["genre_contrat"] | null
+        date_debut: string | null
+        date_fin: string | null
+        brut_mensuel: number | null
+        heures_hebdomadaires: number | null
+        matricule_national: string | null
+        iban: string | null
       }
     }
   }
@@ -4951,32 +4952,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      absence_category: [
-        "annual_leave",
-        "sick",
-        "extraordinary",
-        "public_holiday",
-        "unpaid",
-        "compensatory",
-      ],
-      absence_status: [
-        "pending",
-        "approved",
-        "refused",
-        "cancelled",
-        "proposed",
-      ],
-      alert_state: ["open", "handled", "dismissed"],
-      app_role: [
-        "fiduciary_admin",
-        "manager",
-        "service_manager",
-        "employee",
-        "medecine_travail",
-        "rh_urgence",
-        "dispatching",
-      ],
-      cba_block: [
+      bloc_convention: [
         "salary_grid",
         "worktime",
         "leave",
@@ -4985,17 +4961,48 @@ export const Constants = {
         "notice_probation",
         "custom_holidays",
       ],
-      cba_scope: [
-        "sector",
-        "harassment",
-        "employee_category",
-        "department",
-        "company",
+      categorie_absence: [
+        "annual_leave",
+        "sick",
+        "extraordinary",
+        "public_holiday",
+        "unpaid",
+        "compensatory",
       ],
-      contract_kind: ["cdi", "cdd", "seasonal", "apprenticeship", "interim"],
-      contract_status: ["draft", "active", "ended", "cancelled"],
-      document_stage: ["pre_hire", "during_contract", "end_of_contract"],
-      employee_status_kind: [
+      classe_impot: ["1", "1a", "2"],
+      etape_document: ["pre_hire", "during_contract", "end_of_contract"],
+      etat_alerte: ["open", "handled", "dismissed"],
+      famille_parametre: [
+        "social",
+        "fiscal",
+        "worktime",
+        "leave",
+        "contract",
+        "effectif",
+        "ccss",
+      ],
+      genre_contrat: ["cdi", "cdd", "seasonal", "apprenticeship", "interim"],
+      genre_element_remuneration: [
+        "fixed",
+        "variable",
+        "benefit_in_kind",
+        "premium",
+        "expense",
+      ],
+      genre_organisation: ["fiduciary", "company"],
+      genre_qualification: ["qualified", "unqualified"],
+      genre_residence: [
+        "resident",
+        "frontalier_fr",
+        "frontalier_be",
+        "frontalier_de",
+        "frontalier_fra",
+        "frontalier_bel",
+        "frontalier_deu",
+      ],
+      genre_severite: ["blocking", "warning", "info", "problem"],
+      genre_sexe: ["male", "female", "unspecified"],
+      genre_statut_salarie: [
         "pregnancy",
         "maternity_leave",
         "breastfeeding",
@@ -5007,38 +5014,32 @@ export const Constants = {
         "company_manager",
         "protected_other",
       ],
-      org_kind: ["fiduciary", "company"],
-      param_family: [
-        "social",
-        "fiscal",
-        "worktime",
-        "leave",
-        "contract",
-        "headcount",
-        "ccss",
+      periodicite_impot: ["monthly", "daily", "annual"],
+      portee_convention: [
+        "secteur",
+        "harassment",
+        "employee_category",
+        "department",
+        "company",
       ],
-      pay_component_kind: [
-        "fixed",
-        "variable",
-        "benefit_in_kind",
-        "premium",
-        "expense",
+      role_application: [
+        "fiduciary_admin",
+        "manager",
+        "service_manager",
+        "employee",
+        "medecine_travail",
+        "rh_urgence",
+        "dispatching",
       ],
-      qualification_kind: ["qualified", "unqualified"],
-      residency_kind: [
-        "resident",
-        "frontalier_fr",
-        "frontalier_be",
-        "frontalier_de",
-        "frontalier_fra",
-        "frontalier_bel",
-        "frontalier_deu",
+      statut_absence: [
+        "pending",
+        "approved",
+        "refused",
+        "cancelled",
+        "proposed",
       ],
-      schedule_status: ["draft", "published"],
-      severity_kind: ["blocking", "warning", "info", "problem"],
-      sex_kind: ["male", "female", "unspecified"],
-      tax_class: ["1", "1a", "2"],
-      tax_periodicity: ["monthly", "daily", "annual"],
+      statut_contrat: ["draft", "active", "ended", "cancelled"],
+      statut_planning: ["draft", "publie"],
     },
   },
 } as const

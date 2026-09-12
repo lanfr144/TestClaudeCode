@@ -23,7 +23,7 @@ flowchart TB
     subgraph serveur["PostgreSQL 17 — calcule, valide et décide"]
         RLS["Row Level Security<br/>53 tables"]
         ENG["Moteur de règles<br/>111 fonctions PL/pgSQL"]
-        REF["legal_parameters<br/>référentiel daté"]
+        REF["parametres_legaux<br/>référentiel daté"]
         DATA[("Données<br/>sociétés · salariés · temps")]
     end
 
@@ -93,13 +93,13 @@ Trois couches, trois responsabilités, qui ne se substituent jamais l'une à l'a
 
 La migration 55 illustre bien la troisième ligne, sur un point qu'on pourrait croire réglé une fois
 l'index posé. `fn_employee_rows` cherche un salarié par `ilike '%' || p_search || '%'` — une
-recherche **infixe**. Un index fonctionnel sur `upper(last_name)` accélère l'égalité et le préfixe,
+recherche **infixe**. Un index fonctionnel sur `upper(nom)` accélère l'égalité et le préfixe,
 mais ne peut strictement rien pour une recherche infixe : aucun index B-tree ne le peut, quelle que
 soit l'expression indexée. Poser **seulement** l'index fonctionnel — celui qu'on demande le plus
 naturellement pour « une recherche insensible à la casse » — aurait donné l'illusion de la
 performance : la commande `create index` réussit, l'index existe, `explain` le montre dans le plan
 d'une requête d'égalité, et pourtant la requête réellement exécutée par l'écran continue de
-parcourir toute la table `employees`. C'est pour cela que la migration pose **les deux** : le
+parcourir toute la table `salaries`. C'est pour cela que la migration pose **les deux** : le
 fonctionnel pour l'égalité et le préfixe, un index trigramme GIN (`pg_trgm`) pour l'infixe — et
 vérifie chacun par `explain` sur la requête qu'il est censé servir, pas sur une requête voisine qui
 lui ressemble.
@@ -118,7 +118,7 @@ sequenceDiagram
     participant C as supabase.ts<br/>callEngine
     participant PG as PostgREST
     participant F as fn_validate_schedule
-    participant R as legal_parameters
+    participant R as parametres_legaux
 
     U->>E: modifie un service
     E->>Q: invalide la requête
@@ -215,7 +215,7 @@ rangent en cinq familles :
 
 | Famille | Exemples | Exposée en RPC |
 |---|---|---|
-| Contrôle d'accès | `auth_org_id`, `has_company_access`, `can_manage_company`, `is_org_admin`, `is_self_employee` | oui, mais sans intérêt direct pour le front |
+| Contrôle d'accès | `auth_org_id`, `has_company_access`, `can_manage_company`, `est_admin_organisation`, `is_self_employee` | oui, mais sans intérêt direct pour le front |
 | Lecture du référentiel | `fn_param`, `fn_param_num`, `fn_arbitrate`, `fn_cba_value` | oui |
 | Calcul métier | `fn_contract_compliance`, `fn_validate_schedule`, `fn_leave_balance`, `fn_compliance_scan`… | oui — c'est le contrat d'API |
 | Déclencheurs | `fn_audit`, `fn_child_privacy`, `fn_document_expiry`, `fn_sync_part_time`, `fn_check_cba_not_worse` | **non** — révoquées |
@@ -247,7 +247,7 @@ même si la transaction qui a produit le résultat est ensuite annulée.
    ligne courante (`has_company_access`, `is_self_employee`, ou un droit plus étroit pour une donnée
    chiffrée). Une ligne hors droit n'est jamais émise ; son refus est lui-même tracé.
 2. **Trace autonome** — la fonction appelle `fn_log_access_autonomous`, qui écrit dans
-   `data_access_log` par une **seconde connexion** (`dblink`), indépendante de la transaction en
+   `journal_acces` par une **seconde connexion** (`dblink`), indépendante de la transaction en
    cours.
 3. **Émission** — seulement alors, la ligne contrôlée est rendue à l'appelant (`return next`).
 
@@ -277,9 +277,9 @@ Le patron est la traduction directe d'une fonction pipelinée Oracle, dont
 
 La transaction autonome est la seule pièce qui ne se traduit pas à l'identique : PostgreSQL n'offre
 aucun mécanisme de commit partiel à l'intérieur d'une transaction en cours. `dblink` réclame une
-chaîne de connexion, à déposer dans `app_secrets` sous la clé `dblink_conninfo` — absente aujourd'hui.
+chaîne de connexion, à déposer dans `secrets_application` sous la clé `dblink_conninfo` — absente aujourd'hui.
 Tant qu'elle l'est, `fn_log_access_autonomous` écrit malgré tout, mais **dans la transaction
-appelante**, et pose `is_autonomous = false` pour que la trace dise elle-même qu'elle est aussi
+appelante**, et pose `est_autonome = false` pour que la trace dise elle-même qu'elle est aussi
 fragile que l'opération qu'elle décrit — conformément à la règle 5 du CLAUDE.md, aucun repli n'est
 silencieux.
 
@@ -291,7 +291,7 @@ silencieux.
 184 politiques sont installées : 52 en lecture, 44 en insertion, 45 en mise à jour, 43 en
 suppression. Un salarié
 ne lit que ses propres lignes, et ne voit un planning **que s'il est publié**. La table
-`app_secrets` a RLS active **sans aucune politique** : c'est le but — elle est inaccessible depuis
+`secrets_application` a RLS active **sans aucune politique** : c'est le but — elle est inaccessible depuis
 l'API, et la clé n'est lue que par une fonction `security definer`.
 
 **Chiffrement au repos** du matricule national et de l'IBAN (`pgcrypto`, qui vit dans le schéma
@@ -303,8 +303,8 @@ l'appelant ; `fn_encrypt_field` et `fn_decrypt_field` ne sont pas exposées en R
 **Bucket privé** : le premier segment du chemin de stockage est l'identifiant de société,
 l'isolation vaut donc aussi pour les fichiers.
 
-Un piège rencontré et corrigé, à connaître : la politique de `schedules` interrogeait `shifts`,
-dont la politique interrogeait `schedules`. PostgreSQL détectait une récursion infinie et refusait
+Un piège rencontré et corrigé, à connaître : la politique de `plannings` interrogeait `creneaux`,
+dont la politique interrogeait `plannings`. PostgreSQL détectait une récursion infinie et refusait
 toute lecture de planning. La migration 18 passe par des fonctions `security definer`
 (`has_shift_in_schedule`, `schedule_is_published`), qui ne déclenchent pas de nouvelle évaluation
 de politique.

@@ -20,9 +20,9 @@ const FAMILY_LABEL: Record<string, string> = {
 }
 
 function formatValue(p: LegalParameter) {
-  if (p.value_num !== null) return `${num(p.value_num, 4)}${p.unit ? ` ${p.unit}` : ''}`
-  if (p.value_text !== null) return p.value_text
-  return JSON.stringify(p.value_json)
+  if (p.valeur_num !== null) return `${num(p.valeur_num, 4)}${p.unite ? ` ${p.unite}` : ''}`
+  if (p.valeur_texte !== null) return p.valeur_texte
+  return JSON.stringify(p.valeur_json)
 }
 
 export default function Referential() {
@@ -40,21 +40,21 @@ export default function Referential() {
   const inForce = useMemo(
     () =>
       (data ?? []).filter(
-        (p) => p.valid_from <= referenceDate && (!p.valid_to || p.valid_to > referenceDate),
+        (p) => p.debut_validite <= referenceDate && (!p.fin_validite || p.fin_validite > referenceDate),
       ),
     [data, referenceDate],
   )
 
   const history = useMemo(
-    () => (selected ? (data ?? []).filter((p) => p.param_key === selected) : []),
+    () => (selected ? (data ?? []).filter((p) => p.cle_parametre === selected) : []),
     [data, selected],
   )
 
   if (isLoading) return <Card><Loading /></Card>
   if (error) return <ErrorNote error={error} />
 
-  const rows = inForce.filter((p) => p.family === family)
-  const selectedInForce = inForce.find((p) => p.param_key === selected)
+  const rows = inForce.filter((p) => p.famille === family)
+  const selectedInForce = inForce.find((p) => p.cle_parametre === selected)
 
   return (
     <div className="space-y-4">
@@ -94,22 +94,22 @@ export default function Referential() {
             {rows.map((p) => (
               <tr
                 key={p.id}
-                onClick={() => setSelected(p.param_key)}
+                onClick={() => setSelected(p.cle_parametre)}
                 className={`cursor-pointer hover:bg-rule-rail/60 ${
-                  selected === p.param_key ? 'bg-violet-veil' : ''
+                  selected === p.cle_parametre ? 'bg-violet-veil' : ''
                 }`}
               >
                 <td className="lux-td">
-                  <span className="font-medium text-ink">{p.label}</span>
-                  <span className="block font-mono text-2xs text-ink-faint">{p.param_key}</span>
+                  <span className="font-medium text-ink">{p.libelle}</span>
+                  <span className="bloc font-mono text-2xs text-ink-faint">{p.cle_parametre}</span>
                 </td>
                 <td className="lux-td whitespace-nowrap font-mono font-semibold text-ink">{formatValue(p)}</td>
                 <td className="lux-td whitespace-nowrap">
-                  {date(p.valid_from)} → {sansFin(p.valid_to) ? '…' : date(p.valid_to)}
+                  {date(p.debut_validite)} → {sansFin(p.fin_validite) ? '…' : date(p.fin_validite)}
                 </td>
-                <td className="lux-td font-mono">{p.index_ref ? num(p.index_ref, 2) : '—'}</td>
+                <td className="lux-td font-mono">{p.indice_reference ? num(p.indice_reference, 2) : '—'}</td>
                 <td className="lux-td">{p.source}</td>
-                <td className="lux-td font-mono text-2xs">{p.legal_ref ?? '—'}</td>
+                <td className="lux-td font-mono text-2xs">{p.reference_legale ?? '—'}</td>
               </tr>
             ))}
           </Table>
@@ -121,13 +121,13 @@ export default function Referential() {
             <div className="grid grid-cols-3 gap-2 text-center">
               <div>
                 <p className="text-2xl font-bold text-success-ink">
-                  {(gaps.data ?? []).filter((g) => g.covers_since).length}
+                  {(gaps.data ?? []).filter((g) => g.couvre_depuis).length}
                 </p>
                 <p className="text-2xs text-ink-muted">couvrent 2019</p>
               </div>
               <div>
                 <p className="text-2xl font-bold text-warn-ink">
-                  {(gaps.data ?? []).filter((g) => !g.covers_since).length}
+                  {(gaps.data ?? []).filter((g) => !g.couvre_depuis).length}
                 </p>
                 <p className="text-2xs text-ink-muted">à compléter</p>
               </div>
@@ -139,10 +139,10 @@ export default function Referential() {
             {(inconsistencies.data ?? []).length > 0 && (
               <div className="mt-3 space-y-1.5 border-t border-rule pt-2.5">
                 {(inconsistencies.data ?? []).map((i) => (
-                  <p key={i.param_key} className="flex items-start gap-2 text-xs text-warn-ink">
+                  <p key={i.cle_parametre} className="flex items-start gap-2 text-xs text-warn-ink">
                     <SeverityMark severity="warning" />
                     <span>
-                      {i.label} : valeur publiée {num(i.published, 2)}, dérivée de {i.source_key}{' '}
+                      {i.libelle} : valeur publiée {num(i.publie, 2)}, dérivée de {i.cle_source}{' '}
                       {num(i.derived, 2)} — écart de {num(i.difference, 2)}.
                     </span>
                   </p>
@@ -157,7 +157,7 @@ export default function Referential() {
 
           {selectedInForce ? (
             <>
-              <Card title="Historique des versions" subtitle={selectedInForce.label}>
+              <Card title="Historique des versions" subtitle={selectedInForce.libelle}>
                 <ul className="space-y-2">
                   {history.map((h) => {
                     const current = h.id === selectedInForce.id
@@ -170,7 +170,7 @@ export default function Referential() {
                       >
                         <div className="flex items-center justify-between gap-2">
                           <span className="text-2xs text-ink-muted">
-                            {date(h.valid_from)} → {sansFin(h.valid_to) ? '…' : date(h.valid_to)}
+                            {date(h.debut_validite)} → {sansFin(h.fin_validite) ? '…' : date(h.fin_validite)}
                           </span>
                           {current && <Badge tone="violet">en vigueur</Badge>}
                         </div>
@@ -189,10 +189,10 @@ export default function Referential() {
               </Card>
 
               <LegalBasis
-                reference={selectedInForce.legal_ref}
+                reference={selectedInForce.reference_legale}
                 text={selectedInForce.note ?? undefined}
                 value={formatValue(selectedInForce)}
-                validity={`depuis ${date(selectedInForce.valid_from)}`}
+                validity={`depuis ${date(selectedInForce.debut_validite)}`}
                 source={selectedInForce.source}
               />
 
@@ -213,10 +213,10 @@ export default function Referential() {
                   onClick={() =>
                     addVersion.mutate(
                       {
-                        key: selectedInForce.param_key,
+                        key: selectedInForce.cle_parametre,
                         from: newFrom,
-                        valueNum: selectedInForce.value_num !== null ? Number(newValue) : null,
-                        valueText: selectedInForce.value_text !== null ? newValue : null,
+                        valueNum: selectedInForce.valeur_num !== null ? Number(newValue) : null,
+                        valueText: selectedInForce.valeur_texte !== null ? newValue : null,
                         note: 'Saisie depuis l’écran du référentiel.',
                       },
                       { onSuccess: () => setNewValue('') },

@@ -21,39 +21,39 @@ def dashboard() -> None:
     on = db.reference_date()
     scan = db.call("fn_compliance_scan", p_company=company["id"], p_on=on)
     profile = db.profile() or {}
-    first_name = (profile.get("full_name") or "").split(" ")[0]
+    prenom = (profile.get("nom_complet") or "").split(" ")[0]
 
     attention = len(scan["overdue"]) + len(scan["due_soon"])
-    headcount = scan["headcount"]["headcount"]
+    headcount = scan["effectif"]["effectif"]
 
     st.markdown(
-        f"## Bonjour {first_name} — "
+        f"## Bonjour {prenom} — "
         + ("aucun point ne demande votre attention"
            if attention == 0
            else f"{attention} point{'s' if attention > 1 else ''} "
                 f"demande{'nt' if attention > 1 else ''} votre attention")
     )
     st.caption(
-        f"{on.strftime('%A %d %B %Y')} · {company['legal_name']} · "
-        f"{headcount['current']} salariés"
+        f"{on.strftime('%A %d %B %Y')} · {company['raison_sociale']} · "
+        f"{effectif['current']} salariés"
     )
 
     columns = st.columns(4)
     with columns[0]:
         ds.stat("En retard", len(scan["overdue"]),
-                scan["overdue"][0]["title"].split("—")[0] if scan["overdue"] else "Rien en retard",
+                scan["overdue"][0]["titre"].split("—")[0] if scan["overdue"] else "Rien en retard",
                 "blocking" if scan["overdue"] else "ok")
     with columns[1]:
         ds.stat(f"Dans les {scan['horizon_days']} jours", len(scan["due_soon"]),
                 "Essai, CDD, documents", "warning" if scan["due_soon"] else "ok")
     with columns[2]:
-        threshold = scan["headcount"]["thresholds"][0]
-        ds.stat(f"Effectif · {headcount['reference_months']} mois",
-                f"{headcount['rounded']} / {ds.fmt_num(threshold['threshold'], 0)}",
-                f"moyenne {ds.fmt_num(headcount['average'])} · {threshold['status']}",
+        threshold = scan["effectif"]["thresholds"][0]
+        ds.stat(f"Effectif · {effectif['reference_months']} mois",
+                f"{effectif['rounded']} / {ds.fmt_num(threshold['threshold'], 0)}",
+                f"moyenne {ds.fmt_num(effectif['average'])} · {threshold['statut']}",
                 "warning" if threshold["reached"] else "neutral")
     with columns[3]:
-        blocking = sum(1 for i in scan["items"] if i["rule_code"] == "schedule_blocking")
+        blocking = sum(1 for i in scan["items"] if i["code_regle"] == "schedule_blocking")
         ds.stat("Plannings à publier", blocking,
                 "avec blocage" if blocking else "aucun blocage",
                 "blocking" if blocking else "neutral")
@@ -67,13 +67,13 @@ def dashboard() -> None:
             (f"Dans les {scan['horizon_days']} jours", "warning", scan["due_soon"]),
             ("À surveiller", "info", scan["watch"]),
         ):
-            st.markdown(f"**{title} · {len(items)}**")
+            st.markdown(f"**{titre} · {len(items)}**")
             if not items:
                 st.caption("Rien à signaler dans ce bloc.")
             for item in items:
                 ds.alert_card(
-                    item["severity"], item["title"], item["detail"],
-                    item.get("consequence"), item.get("legal_ref"),
+                    item["severite"], item["titre"], item["detail"],
+                    item.get("consequence"), item.get("reference_legale"),
                     _deadline(item),
                 )
 
@@ -83,7 +83,7 @@ def dashboard() -> None:
         for label, window in (("30 jours glissants", counters["window_30"]),
                               ("90 jours glissants", counters["window_90"])):
             st.markdown(
-                f'<div class="lux-card"><div class="lux-label">{label}</div>'
+                f'<div class="lux-card"><div class="lux-libelle">{libelle}</div>'
                 f'<div style="font-size:20px;font-weight:700">{window["count"]} / '
                 f'{ds.fmt_num(window["threshold"], 0)}</div>'
                 f'<div class="lux-muted">encore {window["remaining"]} notification(s) · '
@@ -96,8 +96,8 @@ def dashboard() -> None:
         if index:
             st.markdown(
                 f'<div class="lux-card"><span class="lux-muted">Paramètres sociaux à l’indice '
-                f'<b>{ds.fmt_num(index["value_num"])}</b>, en vigueur depuis le '
-                f'<b>{ds.fmt_date(index["valid_from"])}</b>.</span></div>',
+                f'<b>{ds.fmt_num(index["valeur_num"])}</b>, en vigueur depuis le '
+                f'<b>{ds.fmt_date(index["debut_validite"])}</b>.</span></div>',
                 unsafe_allow_html=True,
             )
 
@@ -109,21 +109,21 @@ def _deadline(item: dict) -> str:
     if days is None:
         return "à surveiller"
     if days < 0:
-        return f"échu depuis {abs(days)} j"
-    return "aujourd’hui" if days == 0 else f"J-{days}"
+        return f"échu depuis {abs(jours)} j"
+    return "aujourd’hui" if days == 0 else f"J-{jours}"
 
 
 @st.cache_data(ttl=300, show_spinner=False)
 def _params_cached(_token: str) -> list[dict]:
-    return db.rows("legal_parameters", "*", _order="param_key")
+    return db.rows("parametres_legaux", "*", _order="cle_parametre")
 
 
 def _param(key: str) -> dict | None:
     token = st.session_state.get("session", {}).get("access_token", "")
     on = db.reference_date().isoformat()
     for row in _params_cached(token):
-        if row["param_key"] == key and row["valid_from"] <= on and (
-            not row["valid_to"] or row["valid_to"] > on
+        if row["cle_parametre"] == key and row["debut_validite"] <= on and (
+            not row["fin_validite"] or row["fin_validite"] > on
         ):
             return row
     return None
@@ -134,22 +134,22 @@ def _param(key: str) -> dict | None:
 def companies_view() -> None:
     ds.section("Sociétés", "Chaque dossier client est cloisonné en base, pas dans l’interface.")
     on = db.reference_date().isoformat()
-    all_companies = db.companies()
+    all_companies = db.societes()
 
     table_rows = []
     for company in all_companies:
         active = [
-            link for link in (company.get("company_collective_agreements") or [])
-            if link["valid_from"] <= on and (not link["valid_to"] or link["valid_to"] > on)
+            link for link in (company.get("conventions_de_la_societe") or [])
+            if link["debut_validite"] <= on and (not link["fin_validite"] or link["fin_validite"] > on)
         ]
         table_rows.append({
-            "Société": company["legal_name"],
-            "Secteur": company.get("sector") or "—",
+            "Société": company["raison_sociale"],
+            "Secteur": company.get("secteur") or "—",
             "Conventions": ", ".join(
-                link["collective_agreements"]["code"] for link in active
-                if link.get("collective_agreements")
+                link["conventions_collectives"]["code"] for link in active
+                if link.get("conventions_collectives")
             ) or "aucune",
-            "Matricule CCSS": company.get("ccss_matricule") or "—",
+            "Matricule CCSS": company.get("matricule_ccss") or "—",
         })
     st.dataframe(pd.DataFrame(table_rows), use_container_width=True, hide_index=True)
 
@@ -160,8 +160,8 @@ def companies_view() -> None:
 def _company_form() -> None:
     with st.form("new_company"):
         columns = st.columns(3)
-        legal_name = columns[0].text_input("Raison sociale *")
-        legal_form = columns[1].text_input("Forme juridique", "Sàrl")
+        raison_sociale = columns[0].text_input("Raison sociale *")
+        forme_juridique = columns[1].text_input("Forme juridique", "Sàrl")
         rcs = columns[2].text_input("RCS")
         ccss = columns[0].text_input("Matricule CCSS *", help="13 chiffres, vérifiés en base.")
         address = columns[1].text_input("Adresse")
@@ -174,29 +174,29 @@ def _company_form() -> None:
         accident = columns[2].number_input("Facteur accident", value=1.00, step=0.01, format="%.2f")
         activity = columns[0].text_input("Classe d’activité")
 
-        agreements = db.rows("collective_agreements", "id, name, code, scope", _order="name")
+        agreements = db.rows("conventions_collectives", "id, nom, code, portee", _order="nom")
         options = {"— aucune convention —": None} | {
-            f"{a['name']} ({a['code']})": a["id"] for a in agreements
+            f"{a['nom']} ({a['code']})": a["id"] for a in agreements
         }
         chosen = columns[1].selectbox("Convention collective", list(options))
 
         if st.form_submit_button("Créer la société", type="primary"):
-            if not legal_name:
+            if not raison_sociale:
                 st.error("La raison sociale est obligatoire.")
                 return
             try:
                 profile = db.profile()
-                created = db.client().table("companies").insert({
-                    "organization_id": profile["organization_id"],
-                    "legal_name": legal_name,
-                    "legal_form": legal_form or None,
-                    "rcs_number": rcs or None,
-                    "ccss_matricule": "".join(filter(str.isdigit, ccss)) or None,
-                    "address_line": address or None,
-                    "postal_code": postal or None,
-                    "city": city or None,
-                    "nace_code": nace or None,
-                    "sector": sector or None,
+                created = db.client().table("societes").insert({
+                    "organisation_id": profile["organisation_id"],
+                    "raison_sociale": raison_sociale,
+                    "forme_juridique": forme_juridique or None,
+                    "numero_rcs": rcs or None,
+                    "matricule_ccss": "".join(filter(str.isdigit, ccss)) or None,
+                    "ligne": address or None,
+                    "code_postal": postal or None,
+                    "localite": city or None,
+                    "code_nace": nace or None,
+                    "secteur": sector or None,
                 }).execute().data[0]
 
                 db.engine("fn_set_company_rates",
@@ -206,15 +206,15 @@ def _company_form() -> None:
                           p_note="Période ouverte à la création du dossier.")
 
                 if options[chosen]:
-                    db.client().table("company_collective_agreements").insert({
-                        "company_id": created["id"],
-                        "collective_agreement_id": options[chosen],
-                        "valid_from": rates_from.isoformat(),
+                    db.client().table("conventions_de_la_societe").insert({
+                        "societe_id": created["id"],
+                        "convention_id": options[chosen],
+                        "debut_validite": rates_from.isoformat(),
                     }).execute()
 
                 db.refresh_companies()
                 db.invalidate()
-                st.success(f"{legal_name} créée.")
+                st.success(f"{raison_sociale} créée.")
                 st.rerun()
             except Exception as error:  # aucune erreur silencieuse
                 st.error(str(error))
@@ -227,11 +227,11 @@ def company_detail() -> None:
         return
     on = db.reference_date()
 
-    st.markdown(f"## {company['legal_name']}")
+    st.markdown(f"## {company['raison_sociale']}")
     st.caption(
-        f"{('RCS ' + company['rcs_number'] + ' · ') if company.get('rcs_number') else ''}"
-        f"{company.get('address_line') or ''}, {company.get('postal_code') or ''} "
-        f"{company.get('city') or ''}"
+        f"{('RCS ' + company['numero_rcs'] + ' · ') if company.get('numero_rcs') else ''}"
+        f"{company.get('ligne') or ''}, {company.get('code_postal') or ''} "
+        f"{company.get('localite') or ''}"
     )
 
     rates = db.call("fn_company_rates", p_company=company["id"], p_on=on)
@@ -244,57 +244,57 @@ def company_detail() -> None:
             st.caption(rates.get("message", ""))
         else:
             for label, value in (
-                ("Matricule CCSS", company.get("ccss_matricule") or "—"),
-                ("Classe d’activité", rates.get("activity_class") or "—"),
-                ("Classe Mutualité", f"{rates.get('mutuality_class')} · {ds.fmt_pct(rates.get('mutuality_rate'))}"),
-                ("Facteur accident", f"{ds.fmt_num(rates.get('accident_factor'))} · {ds.fmt_pct(rates.get('accident_rate'))}"),
+                ("Matricule CCSS", company.get("matricule_ccss") or "—"),
+                ("Classe d’activité", rates.get("classe_activite") or "—"),
+                ("Classe Mutualité", f"{rates.get('classe_mutualite')} · {ds.fmt_pct(rates.get('mutuality_rate'))}"),
+                ("Facteur accident", f"{ds.fmt_num(rates.get('facteur_accident'))} · {ds.fmt_pct(rates.get('accident_rate'))}"),
                 ("Total charges patronales", ds.fmt_pct(rates.get("employer_total_pct"))),
             ):
-                st.markdown(f"<span class='lux-muted'>{label}</span><br><b>{value}</b>",
+                st.markdown(f"<span class='lux-muted'>{libelle}</span><br><b>{value}</b>",
                             unsafe_allow_html=True)
 
     with middle:
         ds.section("Conventions applicables")
-        links = company.get("company_collective_agreements") or []
+        links = company.get("conventions_de_la_societe") or []
         if not links:
             st.caption("Aucune convention rattachée. Seul le Code du travail s’applique.")
         for link in links:
-            agreement = link.get("collective_agreements") or {}
-            active = link["valid_from"] <= on.isoformat() and (
-                not link["valid_to"] or link["valid_to"] > on.isoformat()
+            agreement = link.get("conventions_collectives") or {}
+            active = link["debut_validite"] <= on.isoformat() and (
+                not link["fin_validite"] or link["fin_validite"] > on.isoformat()
             )
             st.markdown(
                 f"<div class='lux-card' style='margin-bottom:6px'>"
-                f"<b>{ds.esc(agreement.get('name',''))}</b> {ds.badge('en vigueur' if active else 'échue', 'violet' if active else 'neutral')}"
-                f"<div class='lux-muted'>{ds.fmt_date(link['valid_from'])} → "
-                f"{ds.fmt_date(link['valid_to']) if not sans_fin(link['valid_to']) else '…'}</div></div>",
+                f"<b>{ds.esc(agreement.get('nom',''))}</b> {ds.badge('en vigueur' if active else 'échue', 'violet' if active else 'neutral')}"
+                f"<div class='lux-muted'>{ds.fmt_date(link['debut_validite'])} → "
+                f"{ds.fmt_date(link['fin_validite']) if not sans_fin(link['fin_validite']) else '…'}</div></div>",
                 unsafe_allow_html=True,
             )
 
     with right:
         ds.section("Effectif et obligations")
-        headcount = obligations["headcount"]
+        headcount = obligations["effectif"]
         st.metric("Effectif moyen", headcount["rounded"],
-                  help=f"moyenne exacte {ds.fmt_num(headcount['average'])}")
+                  help=f"moyenne exacte {ds.fmt_num(effectif['average'])}")
         for threshold in obligations["thresholds"]:
             st.markdown(
-                f"{ds.badge(threshold['status'], 'warning' if threshold['reached'] else 'neutral')} "
-                f"<span class='lux-muted'>{ds.fmt_num(threshold['threshold'],0)} — {threshold['label']}</span>",
+                f"{ds.badge(threshold['statut'], 'warning' if threshold['reached'] else 'neutral')} "
+                f"<span class='lux-muted'>{ds.fmt_num(threshold['threshold'],0)} — {threshold['libelle']}</span>",
                 unsafe_allow_html=True,
             )
 
     ds.section("Historique des taux CCSS",
                "Classe d’activité, classe Mutualité et facteur accident évoluent dans le temps.")
-    periods = db.rows("company_rate_periods", "*", company_id=company["id"],
-                      _order="valid_from", _desc=True)
+    periods = db.rows("periodes_taux_societe", "*", societe_id=company["id"],
+                      _order="debut_validite", _desc=True)
     if periods:
         st.dataframe(
             pd.DataFrame([{
-                "Du": ds.fmt_date(p["valid_from"]),
-                "Au": ds.fmt_date(p["valid_to"]) if not sans_fin(p["valid_to"]) else "…",
-                "Classe d’activité": p.get("activity_class") or "—",
-                "Mutualité": p.get("mutuality_class"),
-                "Facteur accident": p.get("accident_factor"),
+                "Du": ds.fmt_date(p["debut_validite"]),
+                "Au": ds.fmt_date(p["fin_validite"]) if not sans_fin(p["fin_validite"]) else "…",
+                "Classe d’activité": p.get("classe_activite") or "—",
+                "Mutualité": p.get("classe_mutualite"),
+                "Facteur accident": p.get("facteur_accident"),
                 "Note": p.get("note") or "",
             } for p in periods]),
             use_container_width=True, hide_index=True,
@@ -329,104 +329,104 @@ def employees_view() -> None:
         return
     on = db.reference_date()
 
-    employees = db.rows(
-        "employees",
-        "*, departments(name), contracts(id, kind, status, job_title, weekly_hours, monthly_gross)",
-        company_id=company["id"], _order="last_name",
+    salaries = db.rows(
+        "salaries",
+        "*, services(nom), contrats(id, genre, statut, intitule_poste, heures_hebdomadaires, brut_mensuel)",
+        societe_id=company["id"], _order="nom",
     )
     scan = db.call("fn_compliance_scan", p_company=company["id"], p_on=on)
     alerts: dict[str, dict] = {}
     for item in scan["items"]:
-        if item.get("employee_id"):
-            alerts.setdefault(item["employee_id"], item)
+        if item.get("salarie_id"):
+            alerts.setdefault(item["salarie_id"], item)
 
     search = st.text_input("Rechercher", placeholder="Nom, prénom ou poste…")
     only_active = st.checkbox("Contrat actif seulement", value=True)
 
     table_rows = []
-    for employee in employees:
-        contract = next((c for c in employee.get("contracts", []) if c["status"] == "active"), None)
+    for employee in salaries:
+        contract = next((c for c in employee.get("contrats", []) if c["statut"] == "active"), None)
         if only_active and not contract:
             continue
-        haystack = f"{employee['first_name']} {employee['last_name']} {contract['job_title'] if contract else ''}"
+        haystack = f"{employee['prenom']} {employee['nom']} {contract['intitule_poste'] if contract else ''}"
         if search and search.lower() not in haystack.lower():
             continue
         alert = alerts.get(employee["id"])
         table_rows.append({
-            "Salarié": f"{employee['first_name']} {employee['last_name']}",
-            "Poste": contract["job_title"] if contract else "—",
-            "Contrat": contract["kind"].upper() if contract else "—",
-            "Temps": f"{contract['weekly_hours']} h" if contract else "—",
-            "Résidence": employee["residency"],
-            "Conformité": alert["title"].split("—")[0].strip() if alert else "Conforme",
+            "Salarié": f"{employee['prenom']} {employee['nom']}",
+            "Poste": contract["intitule_poste"] if contract else "—",
+            "Contrat": contract["genre"].upper() if contract else "—",
+            "Temps": f"{contract['heures_hebdomadaires']} h" if contract else "—",
+            "Résidence": employee["residence"],
+            "Conformité": alert["titre"].split("—")[0].strip() if alert else "Conforme",
         })
 
-    st.caption(f"{len(table_rows)} salarié(s) affiché(s) sur {len(employees)}.")
+    st.caption(f"{len(table_rows)} salarié(s) affiché(s) sur {len(salaries)}.")
     st.dataframe(pd.DataFrame(table_rows), use_container_width=True, hide_index=True, height=420)
 
-    names = {f"{e['last_name']} {e['first_name']}": e["id"] for e in employees}
+    names = {f"{e['nom']} {e['prenom']}": e["id"] for e in salaries}
     if names:
         chosen = st.selectbox("Ouvrir une fiche", list(names))
         if st.button("Ouvrir la fiche salarié"):
-            st.session_state["employee_id"] = names[chosen]
+            st.session_state["salarie_id"] = names[chosen]
             st.session_state["goto"] = "employee_detail"
             st.rerun()
 
 
 def employee_detail() -> None:
-    employee_id = st.session_state.get("employee_id")
-    if not employee_id:
+    salarie_id = st.session_state.get("salarie_id")
+    if not salarie_id:
         st.info("Sélectionnez un salarié depuis la liste.")
         return
     on = db.reference_date()
 
-    employee = db.client().table("employees").select(
-        "*, departments(name), employee_tax_cards(*), contracts(*)"
-    ).eq("id", employee_id).single().execute().data
-    contract = next((c for c in employee.get("contracts", []) if c["status"] == "active"), None)
+    employee = db.client().table("salaries").select(
+        "*, services(nom), fiches_retenue_impot(*), contrats(*)"
+    ).eq("id", salarie_id).single().execute().data
+    contract = next((c for c in employee.get("contrats", []) if c["statut"] == "active"), None)
 
-    st.markdown(f"## {employee['first_name']} {employee['last_name']}")
+    st.markdown(f"## {employee['prenom']} {employee['nom']}")
     st.caption(
-        f"{contract['job_title'] if contract else 'Sans contrat actif'}"
-        f"{' · entrée le ' + ds.fmt_date(contract['start_date']) if contract else ''}"
+        f"{contract['intitule_poste'] if contract else 'Sans contrat actif'}"
+        f"{' · entrée le ' + ds.fmt_date(contract['date_debut']) if contract else ''}"
     )
 
-    qualification = db.call("fn_is_qualified", p_employee=employee_id, p_on=on)
-    protections = db.call("fn_dismissal_protections", p_employee=employee_id, p_on=on)
-    overtime = db.call("fn_overtime_eligibility", p_employee=employee_id, p_on=on)
-    delegation = db.call("fn_delegation_eligibility", p_employee=employee_id, p_on=on)
-    balance = db.call("fn_leave_balance", p_employee=employee_id, p_on=on)
-    sick = db.call("fn_sick_counters", p_employee=employee_id, p_on=on)
-    disability = db.call("fn_disability_extra_leave", p_employee=employee_id, p_on=on)
-    children = db.call("fn_employee_children", p_employee=employee_id, p_on=on)
+    qualification = db.call("fn_is_qualified", p_employee=salarie_id, p_on=on)
+    protections = db.call("fn_dismissal_protections", p_employee=salarie_id, p_on=on)
+    overtime = db.call("fn_overtime_eligibility", p_employee=salarie_id, p_on=on)
+    delegation = db.call("fn_delegation_eligibility", p_employee=salarie_id, p_on=on)
+    balance = db.call("fn_leave_balance", p_employee=salarie_id, p_on=on)
+    sick = db.call("fn_sick_counters", p_employee=salarie_id, p_on=on)
+    disability = db.call("fn_disability_extra_leave", p_employee=salarie_id, p_on=on)
+    children = db.call("fn_employee_children", p_employee=salarie_id, p_on=on)
 
     columns = st.columns(4)
     columns[0].markdown(
-        f"<span class='lux-label'>Matricule</span><br>"
-        f"<span class='lux-mono'>•••• {employee.get('national_id_hint') or '••••'}</span>",
+        f"<span class='lux-libelle'>Matricule</span><br>"
+        f"<span class='lux-mono'>•••• {employee.get('matricule_national_indice') or '••••'}</span>",
         unsafe_allow_html=True)
-    columns[1].markdown(f"<span class='lux-label'>Résidence</span><br>{employee['residency']}",
+    columns[1].markdown(f"<span class='lux-libelle'>Résidence</span><br>{employee['residence']}",
                         unsafe_allow_html=True)
-    columns[2].markdown(f"<span class='lux-label'>Sexe</span><br>{employee['sex']}",
+    columns[2].markdown(f"<span class='lux-libelle'>Sexe</span><br>{employee['sexe']}",
                         unsafe_allow_html=True)
     columns[3].markdown(
-        f"<span class='lux-label'>Qualification</span><br>"
+        f"<span class='lux-libelle'>Qualification</span><br>"
         f"{'Qualifié(e)' if qualification['qualified'] else 'Non qualifié(e)'}",
         unsafe_allow_html=True)
 
     if protections.get("protected"):
         details = " · ".join(
-            f"{p['label']}" + (f" jusqu’au {ds.fmt_date(p['until'])}" if p.get("until") else "")
+            f"{p['libelle']}" + (f" jusqu’au {ds.fmt_date(p['until'])}" if p.get("until") else "")
             for p in protections["protections"]
         )
         ds.alert_card("info", "Protection contre le licenciement en cours", details,
                       "Toute notification pendant cette période serait nulle.",
-                      protections["protections"][0].get("legal_ref"))
+                      protections["protections"][0].get("reference_legale"))
 
     if st.button("Afficher le matricule complet"):
         try:
-            sensitive = db.engine("fn_employee_sensitive", p_employee=employee_id)
-            st.info(f"Matricule : {sensitive[0]['national_id']} · IBAN : {sensitive[0]['iban']}")
+            sensitive = db.engine("fn_employee_sensitive", p_employee=salarie_id)
+            st.info(f"Matricule : {sensitive[0]['matricule_national']} · IBAN : {sensitive[0]['iban']}")
         except Exception as error:
             st.error(str(error))
 
@@ -445,12 +445,12 @@ def employee_detail() -> None:
         with columns[2]:
             ds.stat("Congé handicap",
                     f"{ds.fmt_num(disability.get('extra_days'), 0)} j" if disability.get("applies") else "—",
-                    f"taux {ds.fmt_pct(disability.get('rate_pct'))}" if disability.get("applies") else "aucun statut")
+                    f"taux {ds.fmt_pct(disability.get('taux_pct'))}" if disability.get("applies") else "aucun statut")
 
         if balance.get("lines"):
             ds.section("Détail du solde", "Calcul reconstituable, ligne à ligne")
             st.dataframe(
-                pd.DataFrame([{"Ligne": l["label"], "Signe": l["sign"], "Jours": l["value"]}
+                pd.DataFrame([{"Ligne": l["libelle"], "Signe": l["sign"], "Jours": l["value"]}
                               for l in balance["lines"]]),
                 use_container_width=True, hide_index=True)
             ds.arbitration(balance.get("arbitration") or {}, "j")
@@ -462,18 +462,18 @@ def employee_detail() -> None:
             if overtime["allowed"]:
                 st.success("Aucune interdiction en vigueur.")
             for reason in overtime["reasons"]:
-                ds.alert_card("blocking", reason["label"], reason["detail"],
-                              None, reason.get("legal_ref"))
-            statuses = db.rows("employee_statuses", "*", employee_id=employee_id,
-                               _order="start_date", _desc=True)
+                ds.alert_card("blocking", reason["libelle"], reason["detail"],
+                              None, reason.get("reference_legale"))
+            statuses = db.rows("statuts_salarie", "*", salarie_id=salarie_id,
+                               _order="date_debut", _desc=True)
             ds.section("Statuts déclarés")
             if not statuses:
                 st.caption("Aucun statut particulier déclaré.")
             for status in statuses:
                 st.markdown(
-                    f"{ds.badge(status['kind'], 'violet')} "
-                    f"<span class='lux-muted'>du {ds.fmt_date(status['start_date'])} "
-                    f"{'au ' + ds.fmt_date(status['end_date']) if status['end_date'] else '(sans terme)'}</span>",
+                    f"{ds.badge(statut['genre'], 'violet')} "
+                    f"<span class='lux-muted'>du {ds.fmt_date(statut['date_debut'])} "
+                    f"{'au ' + ds.fmt_date(statut['date_fin']) if statut['date_fin'] else '(sans terme)'}</span>",
                     unsafe_allow_html=True)
         with right:
             ds.section("Éligibilité à la délégation")
@@ -481,8 +481,8 @@ def employee_detail() -> None:
                 st.success("Éligible.")
             else:
                 for reason in delegation["reasons"]:
-                    st.markdown(f"· {reason['detail']}")
-            ds.legal_basis(delegation.get("legal_ref"),
+                    st.markdown(f"· {motif['detail']}")
+            ds.legal_basis(delegation.get("reference_legale"),
                            "L’ancienneté requise et l’exclusion du personnel de direction "
                            "conditionnent l’éligibilité.")
             ds.section("Qualification")
@@ -495,27 +495,27 @@ def employee_detail() -> None:
         else:
             st.dataframe(
                 pd.DataFrame([{
-                    "Prénom": c.get("first_name") or "— (confidentiel)",
+                    "Prénom": c.get("prenom") or "— (confidentiel)",
                     "Âge": c["age"],
-                    "Né(e) le": ds.fmt_date(c["birth_date"]),
-                    "Lien": c["relationship"],
-                    "Attentions": "non" if c["privacy_opt_out"] else ("oui" if c["eligible_for_gift"] else "hors âge"),
+                    "Né(e) le": ds.fmt_date(c["date_naissance"]),
+                    "Lien": c["lien_parente"],
+                    "Attentions": "non" if c["refus_partage"] else ("oui" if c["eligible_for_gift"] else "hors âge"),
                 } for c in children["children"]]),
                 use_container_width=True, hide_index=True)
         _child_form(employee)
 
     with tabs[3]:
-        contracts = employee.get("contracts", [])
-        if contracts:
+        contrats = employee.get("contrats", [])
+        if contrats:
             st.dataframe(
                 pd.DataFrame([{
-                    "Type": c["kind"].upper(),
-                    "Poste": c["job_title"],
-                    "Début": ds.fmt_date(c["start_date"]),
-                    "Fin": ds.fmt_date(c["end_date"]) if c["end_date"] else "—",
-                    "Brut": ds.fmt_eur(c["monthly_gross"]),
-                    "Statut": c["status"],
-                } for c in contracts]),
+                    "Type": c["genre"].upper(),
+                    "Poste": c["intitule_poste"],
+                    "Début": ds.fmt_date(c["date_debut"]),
+                    "Fin": ds.fmt_date(c["date_fin"]) if c["date_fin"] else "—",
+                    "Brut": ds.fmt_eur(c["brut_mensuel"]),
+                    "Statut": c["statut"],
+                } for c in contrats]),
                 use_container_width=True, hide_index=True)
 
 
@@ -527,22 +527,22 @@ def _child_form(employee: dict) -> None:
                 help="Seule la date de naissance est alors conservée, pour établir les droits à congé.",
             )
             columns = st.columns(4)
-            first_name = columns[0].text_input("Prénom", disabled=privacy)
-            last_name = columns[1].text_input("Nom", disabled=privacy)
+            prenom = columns[0].text_input("Prénom", disabled=privacy)
+            nom = columns[1].text_input("Nom", disabled=privacy)
             sex = columns[2].selectbox("Sexe", ["unspecified", "female", "male"], disabled=privacy)
             birth = columns[3].date_input("Date de naissance")
             relationship = st.selectbox("Lien", ["child", "adopted", "foster", "stepchild"])
             if st.form_submit_button("Enregistrer", type="primary"):
                 try:
-                    db.client().table("employee_children").insert({
-                        "company_id": employee["company_id"],
-                        "employee_id": employee["id"],
-                        "first_name": None if privacy else (first_name or None),
-                        "last_name": None if privacy else (last_name or None),
-                        "sex": None if privacy else sex,
-                        "birth_date": birth.isoformat(),
-                        "relationship": relationship,
-                        "privacy_opt_out": privacy,
+                    db.client().table("enfants_salarie").insert({
+                        "societe_id": employee["societe_id"],
+                        "salarie_id": employee["id"],
+                        "prenom": None if privacy else (prenom or None),
+                        "nom": None if privacy else (nom or None),
+                        "sexe": None if privacy else sex,
+                        "date_naissance": birth.isoformat(),
+                        "lien_parente": relationship,
+                        "refus_partage": privacy,
                     }).execute()
                     db.invalidate()
                     st.success("Enfant enregistré.")

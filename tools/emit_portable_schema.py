@@ -68,7 +68,7 @@ def oracle_type(col: dict, enums: dict, indexed: bool) -> str:
     if udt in enums:
         longest = max(len(v) for v in enums[udt])
         return f'VARCHAR2({max(longest, 8)} CHAR)'
-    raise SystemExit(f'Type non traduit vers Oracle : {t} ({col["name"]})')
+    raise SystemExit(f'Type non traduit vers Oracle : {t} ({col["nom"]})')
 
 
 def mysql_type(col: dict, enums: dict, indexed: bool) -> str:
@@ -113,7 +113,7 @@ def mysql_type(col: dict, enums: dict, indexed: bool) -> str:
         # étrangère vers sa table de référence, et c'est cette clé qui remplace
         # désormais la liste de valeurs figée.
         return 'VARCHAR(64)'
-    raise SystemExit(f'Type non traduit vers MySQL : {t} ({col["name"]})')
+    raise SystemExit(f'Type non traduit vers MySQL : {t} ({col["nom"]})')
 
 
 # ------------------------------------------------------------------ défauts
@@ -215,7 +215,7 @@ def emit(cat: dict, dialect: str) -> str:
     # Les tables sont créées avant les clés étrangères : l'ordre de création
     # n'a alors plus d'importance, et un cycle de références ne bloque rien.
     for table in cat['tables']:
-        nom = table['name']
+        nom = table['nom']
         contraintes = table['constraints'] or []
         indexes = set()
         for co in contraintes:
@@ -227,8 +227,8 @@ def emit(cat: dict, dialect: str) -> str:
         lignes = []
         for col in table['columns']:
             typ = (oracle_type if dialect == 'oracle' else mysql_type)(
-                col, enums, col['name'] in indexes)
-            morceau = f"  {q(col['name'])} {typ}"
+                col, enums, col['nom'] in indexes)
+            morceau = f"  {q(col['nom'])} {typ}"
             d = default_for(col.get('default'), dialect)
             if d:
                 morceau += f" default {d}"
@@ -242,8 +242,8 @@ def emit(cat: dict, dialect: str) -> str:
             # Plus de contrainte sur un booléen non plus : le type BOOLEAN natif
             # d'Oracle 23ai s'en charge.
             if dialect == 'oracle' and col['type'] == 'jsonb':
-                morceau += f" constraint {nom[:20]}_{col['name'][:18]}_json".lower()
-                morceau += f" check ({q(col['name'])} is json)"
+                morceau += f" constraint {nom[:20]}_{col['nom'][:18]}_json".lower()
+                morceau += f" check ({q(col['nom'])} is json)"
             lignes.append(morceau)
 
         for co in contraintes:
@@ -251,12 +251,12 @@ def emit(cat: dict, dialect: str) -> str:
                 cols = re.findall(r'PRIMARY KEY \(([^)]*)\)', co['def'])
                 if cols:
                     liste = ', '.join(q(c.strip().strip('"')) for c in cols[0].split(','))
-                    lignes.append(f"  constraint {co['name'][:28]} primary key ({liste})")
+                    lignes.append(f"  constraint {co['nom'][:28]} primary key ({liste})")
             elif co['type'] == 'u':
                 cols = re.findall(r'UNIQUE \(([^)]*)\)', co['def'])
                 if cols:
                     liste = ', '.join(q(c.strip().strip('"')) for c in cols[0].split(','))
-                    lignes.append(f"  constraint {co['name'][:28]} unique ({liste})")
+                    lignes.append(f"  constraint {co['nom'][:28]} unique ({liste})")
 
         out.append(',\n'.join(lignes))
         out.append(f"){' engine=InnoDB default charset=utf8mb4' if dialect == 'mysql' else ''}{fin}")
@@ -272,9 +272,9 @@ def emit(cat: dict, dialect: str) -> str:
         for col in table['columns']:
             if col['udt'] not in enums:
                 continue
-            contrainte = f"{table['name'][:18]}_{col['name'][:16]}_ref".lower()
-            out.append(f"alter table {q(table['name'])} add constraint {contrainte[:28]} "
-                       f"foreign key ({q(col['name'])}) "
+            contrainte = f"{table['nom'][:18]}_{col['nom'][:16]}_ref".lower()
+            out.append(f"alter table {q(table['nom'])} add constraint {contrainte[:28]} "
+                       f"foreign key ({q(col['nom'])}) "
                        f"references {q('ref_' + col['udt'])} ({q('code')}){fin}")
     out.append("")
 
@@ -285,7 +285,7 @@ def emit(cat: dict, dialect: str) -> str:
             d = co['def']
             m = re.match(r'FOREIGN KEY \(([^)]*)\) REFERENCES ([\w."]+)\(([^)]*)\)(.*)', d)
             if not m:
-                reportes.append(f"{table['name']}.{co['name']} : clé étrangère illisible — {d}")
+                reportes.append(f"{table['nom']}.{co['nom']} : clé étrangère illisible — {d}")
                 continue
             source, cible, colonnes, suite = m.groups()
             if '.' in cible and not cible.startswith('public'):
@@ -298,7 +298,7 @@ def emit(cat: dict, dialect: str) -> str:
                     cible = 'app_users'
                 else:
                     reportes.append(
-                        f"{table['name']}.{co['name']} : référence {cible}, hors du schéma "
+                        f"{table['nom']}.{co['nom']} : référence {cible}, hors du schéma "
                         f"applicatif. À rattacher à la table correspondante de la cible.")
                     continue
             cible = cible.split('.')[-1].strip('"')
@@ -309,7 +309,7 @@ def emit(cat: dict, dialect: str) -> str:
                 action = ' on delete set null'
             sc = ', '.join(q(c.strip().strip('"')) for c in source.split(','))
             cc = ', '.join(q(c.strip().strip('"')) for c in colonnes.split(','))
-            out.append(f"alter table {q(table['name'])} add constraint {co['name'][:28]} "
+            out.append(f"alter table {q(table['nom'])} add constraint {co['nom'][:28]} "
                        f"foreign key ({sc}) references {q(cible)} ({cc}){action}{fin}")
     out.append("")
 
@@ -321,10 +321,10 @@ def emit(cat: dict, dialect: str) -> str:
                 continue
             traduite, motif = translate_check(co['def'], dialect)
             if traduite:
-                out.append(f"alter table {q(table['name'])} add constraint "
-                           f"{co['name'][:28]} {traduite}{fin}")
+                out.append(f"alter table {q(table['nom'])} add constraint "
+                           f"{co['nom'][:28]} {traduite}{fin}")
             else:
-                reportes.append(f"{table['name']}.{co['name']} : {motif} — {co['def']}")
+                reportes.append(f"{table['nom']}.{co['nom']} : {motif} — {co['def']}")
     out.append("")
 
     # ------------------------------------------------------------ commentaires
@@ -339,16 +339,16 @@ def emit(cat: dict, dialect: str) -> str:
     commentes_t = commentes_c = 0
     lignes_com: list[str] = []
     for table in cat['tables']:
-        if table.get('comment'):
+        if table.get('commentaire'):
             commentes_t += 1
             lignes_com.append(
-                f"comment on table {q(table['name'])} is {litteral(table['comment'])}{fin}")
+                f"comment on table {q(table['nom'])} is {litteral(table['commentaire'])}{fin}")
         for col in table['columns']:
-            if col.get('comment'):
+            if col.get('commentaire'):
                 commentes_c += 1
                 lignes_com.append(
-                    f"comment on column {q(table['name'])}.{q(col['name'])} "
-                    f"is {litteral(col['comment'])}{fin}")
+                    f"comment on column {q(table['nom'])}.{q(col['nom'])} "
+                    f"is {litteral(col['commentaire'])}{fin}")
     for nom_enum in sorted(enums):
         lignes_com.append(
             f"comment on table {q('ref_' + nom_enum)} is "
@@ -364,8 +364,8 @@ def emit(cat: dict, dialect: str) -> str:
 
     # Les colonnes sans commentaire sont dites, pas tues : c'est une dette
     # visible, et elle se comble une colonne à la fois.
-    sans = [f"{t['name']}.{c['name']}" for t in cat['tables']
-            for c in t['columns'] if not c.get('comment')]
+    sans = [f"{t['nom']}.{c['nom']}" for t in cat['tables']
+            for c in t['columns'] if not c.get('commentaire')]
     if sans:
         reportes.append(
             f"{len(sans)} colonne(s) sans commentaire dans le schéma PostgreSQL source — "
@@ -373,7 +373,7 @@ def emit(cat: dict, dialect: str) -> str:
             f"jamais directement ici. Premières : " + ', '.join(sans[:6]) + '…')
 
     # ------------------------------------------------- contraintes d'exclusion
-    exclusions = [(t['name'], co) for t in cat['tables']
+    exclusions = [(t['nom'], co) for t in cat['tables']
                   for co in (t['constraints'] or []) if co['type'] == 'x']
     if exclusions:
         out.append("-- CONTRAINTES D'EXCLUSION — sans équivalent hors PostgreSQL.")
@@ -430,7 +430,7 @@ def exclusion_trigger(table: str, co: dict, dialect: str, q, enums) -> list[str]
     egalites = re.findall(r'(\w+)\s+WITH\s+=', d)
     plage = re.search(r'daterange\((\w+),\s*(\w+)', d)
     if not plage:
-        return [f"-- {table}.{co['name']} : forme non reconnue -- {d}", ""]
+        return [f"-- {table}.{co['nom']} : forme non reconnue -- {d}", ""]
     debut, fin_col = plage.groups()
     nom = f"{table[:24]}_no_overlap".lower()
     INFINI = "date '9999-12-31'" if dialect == 'oracle' else "'9999-12-31'"

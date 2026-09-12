@@ -96,7 +96,7 @@ export default function DismissalSimulator() {
                   <ul className="mt-3 space-y-1.5 border-t border-danger/20 pt-3">
                     {result.alternatives.map((a, i) => (
                       <li key={i} className="flex items-center gap-2 text-xs text-ink-body">
-                        <span className="lux-label">Alternative</span>
+                        <span className="lux-libelle">Alternative</span>
                         {a.label}
                       </li>
                     ))}
@@ -114,7 +114,7 @@ export default function DismissalSimulator() {
                           aria-hidden
                         />
                         <p className="font-mono text-2xs text-ink-faint">{step.when}</p>
-                        <p className="text-sm font-semibold text-ink">{step.title}</p>
+                        <p className="text-sm font-semibold text-ink">{step.titre}</p>
                         <p className="text-xs leading-relaxed text-ink-muted">{step.detail}</p>
                       </li>
                     ))}
@@ -165,7 +165,7 @@ export default function DismissalSimulator() {
                     </div>
                   ) : null,
                 )}
-                <LegalBasis compact reference={counters.data?.legal_ref} />
+                <LegalBasis compact reference={counters.data?.reference_legale} />
               </div>
             )}
           </Card>

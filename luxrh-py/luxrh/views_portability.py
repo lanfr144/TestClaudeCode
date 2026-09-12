@@ -32,7 +32,7 @@ def _sections(document: dict[str, Any]) -> list[tuple[str, int]]:
 
 def _offer(document: dict[str, Any], suffix: str = "") -> None:
     """Affiche le contenu du document, puis propose de l'enregistrer."""
-    kind = document.get("kind", "export")
+    kind = document.get("genre", "export")
     stamp = (document.get("exported_at") or str(date.today()))[:10]
     name = "-".join(x for x in ("luxrh", NOM.get(kind, kind), suffix, stamp) if x) + ".json"
     corps = json.dumps(document, indent=2, ensure_ascii=False, default=str)
@@ -47,7 +47,7 @@ def _offer(document: dict[str, Any], suffix: str = "") -> None:
 
 def portability() -> None:
     profile = db.profile() or {}
-    admin = bool(profile.get("is_org_admin"))
+    admin = bool(profile.get("est_admin_organisation"))
     company = db.active_company()
 
     ds.section("Portabilité et reprise",
@@ -78,10 +78,10 @@ def portability() -> None:
         colonnes = st.columns(2)
         if company:
             with colonnes[0]:
-                if st.button(f"Exporter {company['legal_name']}", use_container_width=True):
+                if st.button(f"Exporter {company['raison_sociale']}", use_container_width=True):
                     try:
                         _offer(db.engine("fn_export_company", p_company=company["id"]),
-                               company["legal_name"][:24])
+                               company["raison_sociale"][:24])
                     except Exception as error:
                         st.error(str(error))
         if admin:
@@ -97,7 +97,7 @@ def portability() -> None:
     st.markdown("**Référentiel — transmission du savoir**")
     st.caption(
         "Paramètres légaux datés, barèmes, catalogues et CCT. L’export se lit en clés "
-        "naturelles (param_key, codes, dates) et non en identifiants techniques : il peut "
+        "naturelles (cle_parametre, codes, dates) et non en identifiants techniques : il peut "
         "donc repeupler une base neuve sans y dupliquer ce qui s’y trouve déjà."
     )
     if st.button("Exporter le référentiel"):
@@ -122,14 +122,14 @@ def portability() -> None:
         try:
             document = json.loads(fichier.getvalue().decode("utf-8"))
         except Exception:
-            st.error(f"« {fichier.name} » n’est pas un fichier JSON lisible.")
+            st.error(f"« {fichier.nom} » n’est pas un fichier JSON lisible.")
             return
         if document.get("format") != "luxrh.export/1":
-            st.error(f"« {fichier.name} » ne porte pas le format luxrh.export/1 : "
+            st.error(f"« {fichier.nom} » ne porte pas le format luxrh.export/1 : "
                      "ce n’est pas un export LuxRH.")
             return
-        if document.get("kind") != "referential":
-            st.error(f"Ce fichier est un export « {document.get('kind')} », pas un référentiel.")
+        if document.get("genre") != "referential":
+            st.error(f"Ce fichier est un export « {document.get('genre')} », pas un référentiel.")
             return
 
         try:

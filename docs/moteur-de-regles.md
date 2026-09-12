@@ -14,31 +14,31 @@ migration ultérieure, jamais réécrite dans sa migration d'origine.
 
 ## 1. Le référentiel daté
 
-### La table `legal_parameters`
+### La table `parametres_legaux`
 
 Tout ce qui pourrait être « écrit en dur » vit ici, une ligne par version.
 
 | Colonne | Rôle |
 |---|---|
 | `family` | `social`, `ccss`, `fiscal`, `worktime`, `leave`, `contract`, `headcount` |
-| `param_key` | La clé stable, par exemple `min_daily_rest_hours` |
+| `cle_parametre` | La clé stable, par exemple `min_daily_rest_hours` |
 | `label` | Le libellé affiché |
-| `value_num` · `value_text` · `value_json` | **Une seule** des trois est renseignée (contrainte `one_value`) — un barème complexe passe par `value_json` |
+| `valeur_num` · `valeur_texte` · `valeur_json` | **Une seule** des trois est renseignée (contrainte `one_value`) — un barème complexe passe par `valeur_json` |
 | `unit` | Unité affichée |
-| `valid_from` · `valid_to` | La plage de validité. `valid_to` nul = toujours en vigueur |
-| `index_ref` | L'indice appliqué, quand la valeur en dépend |
+| `debut_validite` · `fin_validite` | La plage de validité. `fin_validite` nul = toujours en vigueur |
+| `indice_reference` | L'indice appliqué, quand la valeur en dépend |
 | `source` | CCSS, ACD, Legilux, STATEC, calculé… **obligatoire** |
-| `legal_ref` | L'article, par exemple `art. L.211-12` |
-| `derived_from_key` · `derived_factor` · `derivation_tolerance` | Dérivation et contrôle de cohérence (§ 1.4) |
-| `entered_by` · `entered_at` | Qui a saisi, et **quand** — ce n'est pas la même chose que `valid_from` |
-| `validated_by` · `validated_at` | La double lecture |
+| `reference_legale` | L'article, par exemple `art. L.211-12` |
+| `derive_de_cle` · `facteur_derive` · `tolerance_derivation` | Dérivation et contrôle de cohérence (§ 1.4) |
+| `saisi_par` · `saisi_le` | Qui a saisi, et **quand** — ce n'est pas la même chose que `debut_validite` |
+| `valide_par` · `valide_le` | La double lecture |
 
 ### La contrainte qui rend l'historique fiable
 
 ```sql
 exclude using gist (
-  param_key with =,
-  daterange(valid_from, valid_to, '[)') with &&
+  cle_parametre with =,
+  daterange(debut_validite, fin_validite, '[)') with &&
 )
 ```
 
@@ -53,7 +53,7 @@ imposerait de recréer toutes les contraintes d'exclusion. C'est une advisory Su
 
 ```
 fn_param_num(clé, date) → numeric      -- la valeur
-fn_param(clé, date)     → legal_parameters  -- la ligne entière, source et article compris
+fn_param(clé, date)     → parametres_legaux  -- la ligne entière, source et article compris
 ```
 
 Ce sont les deux fonctions les plus appelées du moteur : tout le reste s'appuie dessus. Elles
@@ -79,11 +79,11 @@ lui-même un arrondi.** Dériver depuis l'arrondi introduirait deux centimes d'�
 
 La règle retenue :
 
-- si `value_num` est renseigné, **la valeur officielle fait foi** ;
-- `derived_from_key` × `derived_factor` sert alors de **contrôle de cohérence** ;
-- `fn_referential_inconsistencies(date)` liste les écarts qui dépassent `derivation_tolerance` —
+- si `valeur_num` est renseigné, **la valeur officielle fait foi** ;
+- `derive_de_cle` × `facteur_derive` sert alors de **contrôle de cohérence** ;
+- `fn_referential_inconsistencies(date)` liste les écarts qui dépassent `tolerance_derivation` —
   typiquement une indexation saisie sur le SSM mais oubliée sur le plafond ;
-- si `value_num` est nul et `derived_from_key` renseigné, la valeur est bien calculée, récursivement
+- si `valeur_num` est nul et `derive_de_cle` renseigné, la valeur est bien calculée, récursivement
   et **à la même date**.
 
 `ccss_max_monthly` porte une tolérance de 0,05 €, documentée dans la migration.
@@ -91,7 +91,7 @@ La règle retenue :
 ### 1.5 Saisie et double lecture
 
 ```
-fn_add_parameter_version(clé, valid_from, value_num, value_text, value_json, source, index_ref, note)
+fn_add_parameter_version(clé, debut_validite, valeur_num, valeur_texte, valeur_json, source, indice_reference, note)
 ```
 
 Réservée à l'administrateur de l'espace. Elle **clôture la version en cours à la date d'effet** et
@@ -112,8 +112,8 @@ coexistent donc, et sont conservées séparément :
 
 | Date | Signification |
 |---|---|
-| `valid_from` | La date d'**application** de la valeur |
-| `entered_at` | La date de **chargement** dans le référentiel |
+| `debut_validite` | La date d'**application** de la valeur |
+| `saisi_le` | La date de **chargement** dans le référentiel |
 
 Un paramètre chargé aujourd'hui mais applicable à une période déjà traitée impose de reprendre les
 calculs de cette période.
@@ -162,7 +162,7 @@ sectorielle, harcèlement, catégorie d'emploi, accord de service. Chacune a sa 
 | `fn_cba_best_num(contrat, bloc, chemin, date, plus_haut_est_mieux)` | La meilleure valeur parmi toutes les conventions applicables, pour un chemin JSON donné |
 | `fn_cba_value(cct, bloc, chemin)` | Lecture brute d'une clause |
 
-Une CCT s'exprime en sept blocs (`cba_block`) : `salary_grid`, `worktime`, `leave`, `premiums`,
+Une CCT s'exprime en sept blocs (`bloc_convention`) : `salary_grid`, `worktime`, `leave`, `primes`,
 `surcharges`, `notice_probation`, `custom_holidays`.
 
 ### Le garde-fou
@@ -172,8 +172,8 @@ l'enregistrement d'une CCT moins favorable que la loi. Il n'est pas exposé en R
 
 ### La limite à connaître
 
-`cba_rules.rules` est du JSON libre par bloc. **Une clause que le moteur ne sait pas lire est
-stockée sans être appliquée.** Le drapeau `is_complete` signale un bloc incomplet, mais il est
+`regles_convention.rules` est du JSON libre par bloc. **Une clause que le moteur ne sait pas lire est
+stockée sans être appliquée.** Le drapeau `complet` signale un bloc incomplet, mais il est
 déclaratif : personne ne vérifie qu'il dit vrai. Le détail est dans
 [couverture-droit-du-travail.md](couverture-droit-du-travail.md).
 
@@ -186,7 +186,7 @@ Trois fonctions produisent un verdict structuré, sur trois objets différents.
 ### `fn_contract_compliance(contrat, date)`
 
 Contrôle un contrat. Retourne des `ComplianceCheck` — `code`, `label`, `severity`, `detail`,
-`legal_ref` — la liste des **mentions obligatoires** avec leur état, les arbitrages retenus, et
+`reference_legale` — la liste des **mentions obligatoires** avec leur état, les arbitrages retenus, et
 deux compteurs : `blocking_count` et `can_validate`. Elle couvre notamment le salaire minimum
 applicable, la période d'essai, les bornes du CDD, les conventions applicables et les règles
 propres aux mineurs.
@@ -221,9 +221,9 @@ trois paniers :
 | `due_soon` | Dans les 30 jours (horizon lu dans `vigilance_horizon_days`, pas écrit en dur) |
 | `watch` | À surveiller |
 
-Chaque `VigilanceItem` porte : `rule_code`, le salarié ou le contrat concerné, `title`, `detail`,
-**`consequence`** (ce qui arrive si rien n'est fait), `due_date`, `days_left`, `severity`,
-`legal_ref` et une `category` (`contract`, `absence`, `headcount`, `worktime`).
+Chaque `VigilanceItem` porte : `code_regle`, le salarié ou le contrat concerné, `title`, `detail`,
+**`consequence`** (ce qui arrive si rien n'est fait), `date_echeance`, `days_left`, `severity`,
+`reference_legale` et une `category` (`contract`, `absence`, `headcount`, `worktime`).
 
 Le retour inclut aussi `headcount` (les obligations liées à la taille) et `dismissal_counters`
 (les compteurs glissants de licenciement collectif), pour que l'écran n'ait pas à faire trois
@@ -240,7 +240,7 @@ Trois fonctions exposent les manques du référentiel. Elles ne servent pas au c
 
 | Fonction | Question à laquelle elle répond |
 |---|---|
-| `fn_referential_gaps(depuis)` | Quels paramètres n'ont pas d'historique remontant assez loin ? Retourne, par clé : `earliest_covered`, `latest_covered`, `versions`, `covers_since`, `gap_days`. La profondeur exigée par défaut est le **31.12.2019** |
+| `fn_referential_gaps(depuis)` | Quels paramètres n'ont pas d'historique remontant assez loin ? Retourne, par clé : `couvert_depuis`, `couvert_jusqua`, `versions`, `couvre_depuis`, `jours_manquants`. La profondeur exigée par défaut est le **31.12.2019** |
 | `fn_referential_holes()` | Quels paramètres ont un **trou** dans leur historique — une version close le 1er mars, la suivante ouverte le 1er juin ? Un calcul daté dans l'intervalle n'aurait aucune valeur applicable |
 | `fn_referential_inconsistencies(date)` | Quelles valeurs publiées s'écartent de leur dérivation au-delà de la tolérance ? |
 
@@ -251,21 +251,21 @@ cachée.
 ### 4.1 Le trou que `fn_referential_gaps` ne pouvait pas voir — migration 50
 
 Trois versions de `fn_referential_gaps` se sont succédé (migrations 21, 22), toutes construites en
-groupant `legal_parameters` par `param_key`. Une clé que le moteur lit mais dont **aucune ligne**
+groupant `parametres_legaux` par `cle_parametre`. Une clé que le moteur lit mais dont **aucune ligne**
 n'a jamais été chargée n'apparaissait dans aucun groupe : elle était structurellement invisible,
 quelle que soit la profondeur demandée. C'est exactement ainsi que le manque de `accident_class_rates`
 (§ 5 ci-dessous) a pu passer inaperçu jusqu'à la revue du 10 septembre 2026.
 
-La migration 50 introduit la table `expected_parameters` : une ligne par clé que le moteur lit
+La migration 50 introduit la table `parametres_attendus` : une ligne par clé que le moteur lit
 réellement — relevée dans le code des migrations —, avec la ou les fonctions qui la lisent
-(`read_by`). **Elle ne porte aucune valeur légale**, seulement des clés et leurs lecteurs — 76 clés
+(`lu_par`). **Elle ne porte aucune valeur légale**, seulement des clés et leurs lecteurs — 76 clés
 y sont déclarées sur la base déployée. `fn_referential_gaps` part désormais de cette liste et fait
-un `full outer join` vers `legal_parameters` : une clé attendue sans aucune version sort avec
-`versions = 0`, **en tête de la liste retournée**. Une clé chargée mais dont `read_by` ressort nul
+un `full outer join` vers `parametres_legaux` : une clé attendue sans aucune version sort avec
+`versions = 0`, **en tête de la liste retournée**. Une clé chargée mais dont `lu_par` ressort nul
 est le signe inverse : elle est lue autrement que par `fn_param`, ou elle est devenue inutile.
 
 La migration 52 illustre l'usage prévu : `mileage_allowance_eur_per_km` y est insérée dans
-`expected_parameters` dès l'introduction de `fn_shift_travel`, **avant même qu'un tarif n'existe**
+`parametres_attendus` dès l'introduction de `fn_shift_travel`, **avant même qu'un tarif n'existe**
 — la clé attendue et le manque sont déclarés ensemble, au lieu que le manque ne se découvre qu'au
 premier appel raté. Elle reste **déclarée et vide** aujourd'hui, comme `accident_class_rates` :
 aucune valeur légale n'a été inventée pour l'une ou l'autre.
@@ -279,7 +279,7 @@ C'est la règle qui structure le comportement du moteur en cas de manque.
 **Un calcul qui ne peut pas aboutir le dit, et explique pourquoi.** Il n'existe pas de valeur par
 défaut destinée à masquer une donnée manquante.
 
-L'exemple canonique est la retenue d'impôt. La table `tax_brackets` existe, elle a exactement la
+L'exemple canonique est la retenue d'impôt. La table `tranches_impot` existe, elle a exactement la
 forme attendue, `fn_income_tax` sait la lire — et elle est **vide**, parce que le barème publié par
 l'Administration des contributions directes n'a pas été chargé et qu'aucun chiffre n'a été inventé
 pour la remplir.
@@ -310,7 +310,7 @@ Le même principe s'applique ailleurs :
 de la société. Sa ligne d'origine :
 
 ```sql
-accident_rate := coalesce(accident_rate, accident_base) * rp.accident_factor;
+accident_rate := coalesce(accident_rate, accident_base) * rp.facteur_accident;
 ```
 
 `accident_class_rates` n'a jamais été chargée dans le référentiel. `accident_rate` restait donc
@@ -321,7 +321,7 @@ lire un taux propre à sa classe de risque alors qu'il lisait toujours le taux g
 exactement ce que la règle 5 interdit — une valeur qui a l'air complète et qui ne l'est pas.
 
 Le trou n'a été visible qu'après la correction de `fn_referential_gaps` (§ 4.1) : sans la table
-`expected_parameters`, une clé jamais chargée ne remontait nulle part, et le repli silencieux de
+`parametres_attendus`, une clé jamais chargée ne remontait nulle part, et le repli silencieux de
 `fn_company_rates` n'avait aucune chance d'être détecté par un contrôle automatique.
 
 La version corrigée ne change ni le contrôle d'accès ni le calcul : elle **nomme la source retenue**.
@@ -363,16 +363,16 @@ déclencheur et `fn_generate_public_holidays` sont **révoquées** pour tous les
 
 | Ce qui évolue | Où vit l'historique |
 |---|---|
-| Classe d'activité, classe Mutualité, facteur accident | `company_rate_periods`, par période sans chevauchement |
-| Conventions collectives | `company_collective_agreements`, `contract_collective_agreements`, chacune avec sa période |
-| Droits à congé extraordinaire | `absence_entitlements` — le congé de mariage vaut 6 jours avant 2018, 3 jours après |
-| Paramètres légaux et taux | `legal_parameters`, contrainte d'exclusion GiST |
-| Barèmes d'impôt | `tax_brackets`, par classe et par période |
-| Droits du travailleur handicapé | `employee_disabilities`, par période sans chevauchement |
+| Classe d'activité, classe Mutualité, facteur accident | `periodes_taux_societe`, par période sans chevauchement |
+| Conventions collectives | `conventions_de_la_societe`, `conventions_du_contrat`, chacune avec sa période |
+| Droits à congé extraordinaire | `droits_absence` — le congé de mariage vaut 6 jours avant 2018, 3 jours après |
+| Paramètres légaux et taux | `parametres_legaux`, contrainte d'exclusion GiST |
+| Barèmes d'impôt | `tranches_impot`, par classe et par période |
+| Droits du travailleur handicapé | `handicaps_salarie`, par période sans chevauchement |
 
 C'est la même idée partout : figer une valeur mouvante sur la ligne qu'elle décrit rend tout
 recalcul daté faux. La migration 23 le dit explicitement, en sortant les taux de la table
-`companies`.
+`societes`.
 
 ---
 
@@ -388,11 +388,11 @@ commence le 1er avril sont tous deux légitimes ; un chevauchement d'un seul jou
 règle porte donc sur des **périodes**, pas sur un nombre de lignes.
 
 ```sql
-alter table contracts
+alter table contrats
   add constraint one_active_contract_at_a_time
   exclude using gist (
-    employee_id with =,
-    daterange(start_date, end_date, '[]') with &&
+    salarie_id with =,
+    daterange(date_debut, date_fin, '[]') with &&
   ) where (status = 'active');
 ```
 
@@ -400,8 +400,8 @@ alter table contracts
 1)`) ne peut se maintenir qu'en recomptant à chaque écriture, et ne dit rien de la période :
 il faudrait une colonne dérivée ou un déclencheur pour la même garantie. L'exclusion GiST fait les
 deux choses à la fois — elle compare des `daterange` avec l'opérateur de recouvrement `&&`, la même
-mécanique que la contrainte qui protège `legal_parameters` (§ 1) — et elle refuse **en base**,
-avant même qu'un déclencheur applicatif ait à s'en soucier. `end_date` nul donne une borne haute
+mécanique que la contrainte qui protège `parametres_legaux` (§ 1) — et elle refuse **en base**,
+avant même qu'un déclencheur applicatif ait à s'en soucier. `date_fin` nul donne une borne haute
 infinie : un CDI en cours bloque donc tout autre contrat actif à partir de sa date de début.
 
 Vérifié avant la pose de la contrainte : 319 contrats actifs, zéro chevauchement — la contrainte n'a
@@ -417,20 +417,20 @@ clôt et qu'un nouveau prend sa suite — et que rien ne doit se perdre au passa
 fn_amend_contract(p_contract uuid, p_effective_date date, p_changes jsonb, p_reason text) → jsonb
 ```
 
-1. Clôture le contrat en cours, `end_date = p_effective_date - 1`.
+1. Clôture le contrat en cours, `date_fin = p_effective_date - 1`.
 2. Construit le nouveau contrat par `to_jsonb(ancien) || changements`, plutôt que par une
    énumération de colonnes : une colonne ajoutée demain sera reportée sans que personne ait à y
    penser, alors qu'une énumération manuelle oublie silencieusement — et un droit oublié dans un
    avenant est un droit perdu.
-3. Reporte les lignes encore en vigueur de `contract_pay_components` et
-   `contract_collective_agreements`.
-4. Chaîne `previous_contract_id`, incrémente `version`, journalise dans `contract_amendments` avec
+3. Reporte les lignes encore en vigueur de `elements_remuneration` et
+   `conventions_du_contrat`.
+4. Chaîne `contrat_precedent_id`, incrémente `version`, journalise dans `avenants_contrat` avec
    le motif fourni — un avenant sans motif est refusé.
 5. Le nouveau contrat part **non signé** : un avenant se signe, et le moteur de vigilance le
    rappellera comme n'importe quelle autre mention manquante.
 
-`fn_amend_contract` est la **seule** fonction du moteur qui écrit dans `contracts` pour un contrat
-déjà en cours. Un `update` direct sur `contracts` reste possible pour une donnée qui n'a pas de
+`fn_amend_contract` est la **seule** fonction du moteur qui écrit dans `contrats` pour un contrat
+déjà en cours. Un `update` direct sur `contrats` reste possible pour une donnée qui n'a pas de
 portée juridique (une faute de frappe dans le poste, par exemple), mais toute modification d'un
 élément essentiel — rémunération, temps de travail, durée — doit passer par cette fonction. Elle
 n'a aujourd'hui **aucun écran** dans les deux applications — voir

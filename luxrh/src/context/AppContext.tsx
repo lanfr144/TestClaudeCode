@@ -9,7 +9,7 @@ interface AppState {
   session: Session | null
   authReady: boolean
   profile: ReturnType<typeof useProfile>['data']
-  companies: NonNullable<ReturnType<typeof useCompanies>['data']>
+  societes: NonNullable<ReturnType<typeof useCompanies>['data']>
   companiesLoading: boolean
   activeCompanyId: string | null
   activeCompany: NonNullable<ReturnType<typeof useCompanies>['data']>[number] | null
@@ -41,20 +41,20 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const { data: profile } = useProfile()
-  const { data: companies = [], isLoading: companiesLoading } = useCompanies()
+  const { data: societes = [], isLoading: companiesLoading } = useCompanies()
 
   // Un salarié en self-service n'a qu'une société : on la sélectionne d'office.
-  const isEmployeeOnly = !!profile?.selfEmployee && !profile?.is_org_admin &&
+  const isEmployeeOnly = !!profile?.selfEmployee && !profile?.est_admin_organisation &&
     !profile?.roles?.some((r) => r.role !== 'employee')
 
   useEffect(() => {
-    if (activeCompanyId && companies.some((c) => c.id === activeCompanyId)) return
-    const fallback = profile?.selfEmployee?.company_id ?? companies[0]?.id ?? null
+    if (activeCompanyId && societes.some((c) => c.id === activeCompanyId)) return
+    const fallback = profile?.selfEmployee?.societe_id ?? societes[0]?.id ?? null
     if (fallback) {
       setActive(fallback)
       localStorage.setItem(ACTIVE_COMPANY_KEY, fallback)
     }
-  }, [companies, activeCompanyId, profile])
+  }, [societes, activeCompanyId, profile])
 
   const setActiveCompany = (id: string) => {
     setActive(id)
@@ -66,10 +66,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
       session,
       authReady,
       profile,
-      companies,
+      societes,
       companiesLoading,
       activeCompanyId,
-      activeCompany: companies.find((c) => c.id === activeCompanyId) ?? null,
+      activeCompany: societes.find((c) => c.id === activeCompanyId) ?? null,
       setActiveCompany,
       referenceDate,
       setReferenceDate,
@@ -79,7 +79,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         await supabase.auth.signOut()
       },
     }),
-    [session, authReady, profile, companies, companiesLoading, activeCompanyId, referenceDate, isEmployeeOnly],
+    [session, authReady, profile, societes, companiesLoading, activeCompanyId, referenceDate, isEmployeeOnly],
   )
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>

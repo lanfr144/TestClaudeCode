@@ -78,7 +78,7 @@ export default function App() {
       <Route path="/contrats/:id" element={<Shell crumbs={['Contrats', 'Aperçu']}><ContractPreview /></Shell>} />
 
       <Route path="/planning" element={<Shell crumbs={['Planning']}><Planning /></Shell>} />
-      <Route path="/planning/modeles" element={<Shell crumbs={['Planning', 'Modèles de shifts']}><ShiftTemplates /></Shell>} />
+      <Route path="/planning/modeles" element={<Shell crumbs={['Planning', 'Modèles de creneaux']}><ShiftTemplates /></Shell>} />
       <Route path="/planning/registre" element={<Shell crumbs={['Planning', 'Registre du temps']}><TimeRegister /></Shell>} />
 
       <Route path="/conges" element={<Shell crumbs={['Congés']}><Leave /></Shell>} />

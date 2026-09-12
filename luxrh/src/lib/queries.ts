@@ -10,73 +10,73 @@ import type {
 import type { Database } from './database.types'
 
 type Tables = Database['public']['Tables']
-export type Company = Tables['companies']['Row']
-export type Employee = Tables['employees']['Row']
-export type Contract = Tables['contracts']['Row']
+export type Company = Tables['societes']['Row']
+export type Employee = Tables['salaries']['Row']
+export type Contract = Tables['contrats']['Row']
 export type Absence = Tables['absences']['Row']
-export type AbsenceType = Tables['absence_types']['Row']
-export type Shift = Tables['shifts']['Row']
-export type Schedule = Tables['schedules']['Row']
-export type ShiftTemplate = Tables['shift_templates']['Row']
-export type LegalParameter = Tables['legal_parameters']['Row']
-export type CollectiveAgreement = Tables['collective_agreements']['Row']
-export type TimeEntry = Tables['time_entries']['Row']
-export type Department = Tables['departments']['Row']
+export type AbsenceType = Tables['types_absence']['Row']
+export type Shift = Tables['creneaux']['Row']
+export type Schedule = Tables['plannings']['Row']
+export type ShiftTemplate = Tables['modeles_creneau']['Row']
+export type LegalParameter = Tables['parametres_legaux']['Row']
+export type CollectiveAgreement = Tables['conventions_collectives']['Row']
+export type TimeEntry = Tables['releves_temps']['Row']
+export type Department = Tables['services']['Row']
 
-export type CompanyRatePeriod = Tables['company_rate_periods']['Row']
-export type CbaRule = Tables['cba_rules']['Row']
-export type ContractAmendment = Tables['contract_amendments']['Row']
+export type CompanyRatePeriod = Tables['periodes_taux_societe']['Row']
+export type CbaRule = Tables['regles_convention']['Row']
+export type ContractAmendment = Tables['avenants_contrat']['Row']
 export type DocumentRow = Tables['documents']['Row']
-export type EmployeeTaxCard = Tables['employee_tax_cards']['Row']
-export type EmployeeStatus = Tables['employee_statuses']['Row']
+export type EmployeeTaxCard = Tables['fiches_retenue_impot']['Row']
+export type EmployeeStatus = Tables['statuts_salarie']['Row']
 
 /**
  * Au-delà de deux niveaux de jointure, l'inférence de supabase-js sature et
  * retombe sur `never`. Les requêtes de détail portent donc leur type explicite.
  */
-export type CompanyCbaLink = Tables['company_collective_agreements']['Row'] & {
-  collective_agreements: (CollectiveAgreement & { cba_rules: CbaRule[] }) | null
+export type CompanyCbaLink = Tables['conventions_de_la_societe']['Row'] & {
+  conventions_collectives: (CollectiveAgreement & { regles_convention: CbaRule[] }) | null
 }
 
 export type CompanyListRow = Company & {
-  company_collective_agreements: {
-    valid_from: string
-    valid_to: string | null
-    collective_agreements: { name: string; code: string; sector: string; scope: string } | null
+  conventions_de_la_societe: {
+    debut_validite: string
+    fin_validite: string | null
+    conventions_collectives: { nom: string; code: string; secteur: string; portee: string } | null
   }[]
 }
 
 export type CompanyDetailRow = Company & {
-  departments: Department[]
-  company_rate_periods: CompanyRatePeriod[]
-  company_collective_agreements: CompanyCbaLink[]
+  services: Department[]
+  periodes_taux_societe: CompanyRatePeriod[]
+  conventions_de_la_societe: CompanyCbaLink[]
 }
 
 export type ContractDetailRow = Contract & {
-  employees: Employee | null
-  companies: Company | null
-  contract_amendments: ContractAmendment[]
-  contract_collective_agreements: {
+  salaries: Employee | null
+  societes: Company | null
+  avenants_contrat: ContractAmendment[]
+  conventions_du_contrat: {
     id: string
-    valid_from: string
-    valid_to: string | null
-    collective_agreements: { name: string; code: string; scope: string } | null
+    debut_validite: string
+    fin_validite: string | null
+    conventions_collectives: { nom: string; code: string; portee: string } | null
   }[]
 }
 
 export type EmployeeDetailRow = Employee & {
-  departments: { name: string } | null
-  employee_tax_cards: EmployeeTaxCard[]
-  contracts: Contract[]
+  services: { nom: string } | null
+  fiches_retenue_impot: EmployeeTaxCard[]
+  contrats: Contract[]
   documents: DocumentRow[]
 }
 
 export type EmployeeListRow = Employee & {
-  departments: { name: string } | null
-  contracts: Pick<
+  services: { nom: string } | null
+  contrats: Pick<
     Contract,
-    | 'id' | 'kind' | 'status' | 'job_title' | 'start_date' | 'end_date'
-    | 'probation_length' | 'probation_unit' | 'weekly_hours' | 'monthly_gross'
+    | 'id' | 'genre' | 'statut' | 'intitule_poste' | 'date_debut' | 'date_fin'
+    | 'duree_essai' | 'unite_essai' | 'heures_hebdomadaires' | 'brut_mensuel'
   >[]
 }
 
@@ -94,28 +94,28 @@ export const useProfile = () =>
       const { data: auth } = await supabase.auth.getUser()
       if (!auth.user) return null
       const { data: profile, error } = await supabase
-        .from('profiles')
-        .select('*, organizations(*)')
+        .from('profils')
+        .select('*, organisations(*)')
         .eq('id', auth.user.id)
         .maybeSingle()
       if (error) throw new Error(error.message)
       if (!profile) return null
-      const roles = unwrap(await supabase.from('user_roles').select('*'))
+      const roles = unwrap(await supabase.from('roles_compte').select('*'))
       const self = unwrap(
-        await supabase.from('employees').select('id, company_id').eq('user_id', auth.user.id).maybeSingle(),
-      ) as { id: string; company_id: string } | null
+        await supabase.from('salaries').select('id, societe_id').eq('compte_id', auth.user.id).maybeSingle(),
+      ) as { id: string; societe_id: string } | null
       return { ...profile, roles, selfEmployee: self }
     },
   })
 
 export const useCompanies = () =>
   useQuery({
-    queryKey: ['companies'],
+    queryKey: ['societes'],
     queryFn: async () =>
       unwrap<CompanyListRow[]>(
-        await supabase.from('companies')
-          .select('*, company_collective_agreements(valid_from, valid_to, collective_agreements(name, code, sector, scope))')
-          .order('legal_name'),
+        await supabase.from('societes')
+          .select('*, conventions_de_la_societe(debut_validite, fin_validite, conventions_collectives(nom, code, secteur, portee))')
+          .order('raison_sociale'),
       ),
   })
 
@@ -125,8 +125,8 @@ export const useCompany = (id?: string) =>
     queryKey: ['company', id],
     queryFn: async () =>
       unwrap<CompanyDetailRow>(
-        await supabase.from('companies')
-          .select('*, departments(*), company_rate_periods(*), company_collective_agreements(*, collective_agreements(*, cba_rules(*)))')
+        await supabase.from('societes')
+          .select('*, services(*), periodes_taux_societe(*), conventions_de_la_societe(*, conventions_collectives(*, regles_convention(*)))')
           .eq('id', id!).single(),
       ),
   })
@@ -136,14 +136,14 @@ export const useCompany = (id?: string) =>
 export const useEmployees = (companyId?: string) =>
   useQuery({
     enabled: !!companyId,
-    queryKey: ['employees', companyId],
+    queryKey: ['salaries', companyId],
     queryFn: async () =>
       unwrap<EmployeeListRow[]>(
-        await supabase.from('employees')
+        await supabase.from('salaries')
           .select(
-            '*, departments(name), contracts(id, kind, status, job_title, start_date, end_date, probation_length, probation_unit, weekly_hours, monthly_gross)',
+            '*, services(nom), contrats(id, genre, statut, intitule_poste, date_debut, date_fin, duree_essai, unite_essai, heures_hebdomadaires, brut_mensuel)',
           )
-          .eq('company_id', companyId!).order('last_name'),
+          .eq('societe_id', companyId!).order('nom'),
       ),
   })
 
@@ -153,8 +153,8 @@ export const useEmployee = (id?: string) =>
     queryKey: ['employee', id],
     queryFn: async () =>
       unwrap<EmployeeDetailRow>(
-        await supabase.from('employees')
-          .select('*, departments(name), employee_tax_cards(*), contracts(*), documents(*)')
+        await supabase.from('salaries')
+          .select('*, services(nom), fiches_retenue_impot(*), contrats(*), documents(*)')
           .eq('id', id!).single(),
       ),
   })
@@ -166,7 +166,7 @@ export const useEmployeeSensitive = (id?: string) =>
     retry: false,
     queryKey: ['employee-sensitive', id],
     queryFn: async () => {
-      const rows = await callEngine<{ national_id: string | null; iban: string | null }[]>(
+      const rows = await callEngine<{ matricule_national: string | null; iban: string | null }[]>(
         'fn_employee_sensitive', { p_employee: id },
       )
       return rows?.[0] ?? null
@@ -178,12 +178,12 @@ export const useEmployeeSensitive = (id?: string) =>
 export const useContracts = (companyId?: string) =>
   useQuery({
     enabled: !!companyId,
-    queryKey: ['contracts', companyId],
+    queryKey: ['contrats', companyId],
     queryFn: async () =>
       unwrap(
-        await supabase.from('contracts')
-          .select('*, employees(first_name, last_name)')
-          .eq('company_id', companyId!).order('start_date', { ascending: false }),
+        await supabase.from('contrats')
+          .select('*, salaries(prenom, nom)')
+          .eq('societe_id', companyId!).order('date_debut', { ascending: false }),
       ),
   })
 
@@ -193,8 +193,8 @@ export const useContract = (id?: string) =>
     queryKey: ['contract', id],
     queryFn: async () =>
       unwrap<ContractDetailRow>(
-        await supabase.from('contracts')
-          .select('*, employees(*), companies(*), contract_amendments(*), contract_collective_agreements(*, collective_agreements(name, code, scope))')
+        await supabase.from('contrats')
+          .select('*, salaries(*), societes(*), avenants_contrat(*), conventions_du_contrat(*, conventions_collectives(nom, code, portee))')
           .eq('id', id!).single(),
       ),
   })
@@ -210,11 +210,11 @@ export const useContractCompliance = (contractId?: string, on?: string) =>
 export const useCreateContract = () => {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: async (c: Tables['contracts']['Insert']) =>
-      unwrap<Contract>(await supabase.from('contracts').insert(c).select().single()),
+    mutationFn: async (c: Tables['contrats']['Insert']) =>
+      unwrap<Contract>(await supabase.from('contrats').insert(c).select().single()),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['contracts'] })
-      qc.invalidateQueries({ queryKey: ['employees'] })
+      qc.invalidateQueries({ queryKey: ['contrats'] })
+      qc.invalidateQueries({ queryKey: ['salaries'] })
     },
   })
 }
@@ -222,11 +222,11 @@ export const useCreateContract = () => {
 export const useUpdateContract = () => {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: async ({ id, ...patch }: Tables['contracts']['Update'] & { id: string }) =>
-      unwrap<Contract>(await supabase.from('contracts').update(patch).eq('id', id).select().single()),
+    mutationFn: async ({ id, ...patch }: Tables['contrats']['Update'] & { id: string }) =>
+      unwrap<Contract>(await supabase.from('contrats').update(patch).eq('id', id).select().single()),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['contract'] })
-      qc.invalidateQueries({ queryKey: ['contracts'] })
+      qc.invalidateQueries({ queryKey: ['contrats'] })
       qc.invalidateQueries({ queryKey: ['contract-compliance'] })
     },
   })
@@ -237,11 +237,11 @@ export const useUpdateContract = () => {
 export const useSchedules = (companyId?: string) =>
   useQuery({
     enabled: !!companyId,
-    queryKey: ['schedules', companyId],
+    queryKey: ['plannings', companyId],
     queryFn: async () =>
       unwrap(
-        await supabase.from('schedules').select('*').eq('company_id', companyId!)
-          .order('week_start', { ascending: false }),
+        await supabase.from('plannings').select('*').eq('societe_id', companyId!)
+          .order('debut_semaine', { ascending: false }),
       ),
   })
 
@@ -251,22 +251,22 @@ export const useSchedule = (companyId?: string, weekStart?: string) =>
     queryKey: ['schedule', companyId, weekStart],
     queryFn: async () => {
       const schedule = unwrap<Schedule | null>(
-        await supabase.from('schedules').select('*')
-          .eq('company_id', companyId!).eq('week_start', weekStart!).maybeSingle(),
+        await supabase.from('plannings').select('*')
+          .eq('societe_id', companyId!).eq('debut_semaine', weekStart!).maybeSingle(),
       )
-      if (!schedule) return { schedule: null, shifts: [] as ShiftWithEmployee[] }
-      const shifts = unwrap(
-        await supabase.from('shifts')
-          .select('*, employees(id, first_name, last_name)')
-          .eq('schedule_id', schedule.id)
-          .order('shift_date').order('start_time'),
+      if (!schedule) return { schedule: null, creneaux: [] as ShiftWithEmployee[] }
+      const creneaux = unwrap(
+        await supabase.from('creneaux')
+          .select('*, salaries(id, prenom, nom)')
+          .eq('planning_id', schedule.id)
+          .order('date_creneau').order('heure_debut'),
       ) as unknown as ShiftWithEmployee[]
-      return { schedule, shifts }
+      return { schedule, creneaux }
     },
   })
 
 export type ShiftWithEmployee = Shift & {
-  employees: { id: string; first_name: string; last_name: string } | null
+  salaries: { id: string; prenom: string; nom: string } | null
 }
 
 export const useScheduleValidation = (scheduleId?: string) =>
@@ -282,7 +282,7 @@ export const useShiftTemplates = (companyId?: string) =>
     queryKey: ['shift-templates', companyId],
     queryFn: async () =>
       unwrap(
-        await supabase.from('shift_templates').select('*').eq('company_id', companyId!).order('start_time'),
+        await supabase.from('modeles_creneau').select('*').eq('societe_id', companyId!).order('heure_debut'),
       ),
   })
 
@@ -312,8 +312,8 @@ export const usePublishSchedule = () => {
 export const useCreateSchedule = () => {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: async (s: Tables['schedules']['Insert']) =>
-      unwrap<Schedule>(await supabase.from('schedules').insert(s).select().single()),
+    mutationFn: async (s: Tables['plannings']['Insert']) =>
+      unwrap<Schedule>(await supabase.from('plannings').insert(s).select().single()),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['schedule'] }),
   })
 }
@@ -321,8 +321,8 @@ export const useCreateSchedule = () => {
 export const useUpsertShift = () => {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: async (shift: Tables['shifts']['Insert']) =>
-      unwrap<Shift>(await supabase.from('shifts').upsert(shift).select().single()),
+    mutationFn: async (shift: Tables['creneaux']['Insert']) =>
+      unwrap<Shift>(await supabase.from('creneaux').upsert(shift).select().single()),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['schedule'] })
       qc.invalidateQueries({ queryKey: ['schedule-validation'] })
@@ -334,7 +334,7 @@ export const useDeleteShift = () => {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from('shifts').delete().eq('id', id)
+      const { error } = await supabase.from('creneaux').delete().eq('id', id)
       if (error) throw new Error(error.message)
     },
     onSuccess: () => {
@@ -350,14 +350,14 @@ export const useAbsenceTypes = () =>
   useQuery({
     queryKey: ['absence-types'],
     staleTime: 300000,
-    queryFn: async () => unwrap(await supabase.from('absence_types').select('*').order('label')),
+    queryFn: async () => unwrap(await supabase.from('types_absence').select('*').order('libelle')),
   })
 
-export type AbsenceEntitlement = Tables['absence_entitlements']['Row']
+export type AbsenceEntitlement = Tables['droits_absence']['Row']
 
 export type AbsenceRow = Absence & {
-  employees: { id: string; first_name: string; last_name: string } | null
-  absence_types: (AbsenceType & { absence_entitlements: AbsenceEntitlement[] }) | null
+  salaries: { id: string; prenom: string; nom: string } | null
+  types_absence: (AbsenceType & { droits_absence: AbsenceEntitlement[] }) | null
 }
 
 export const useAbsences = (companyId?: string) =>
@@ -367,8 +367,8 @@ export const useAbsences = (companyId?: string) =>
     queryFn: async () =>
       unwrap(
         await supabase.from('absences')
-          .select('*, employees(id, first_name, last_name), absence_types(*, absence_entitlements(*))')
-          .eq('company_id', companyId!).order('start_date', { ascending: false }),
+          .select('*, salaries(id, prenom, nom), types_absence(*, droits_absence(*))')
+          .eq('societe_id', companyId!).order('date_debut', { ascending: false }),
       ) as unknown as AbsenceRow[],
   })
 
@@ -404,10 +404,10 @@ export const useDecideAbsence = () => {
       return unwrap(
         await supabase.from('absences')
           .update({
-            status: v.status,
-            decided_at: new Date().toISOString(),
-            decided_by: auth.user?.id ?? null,
-            decision_note: v.note ?? null,
+            statut: v.status,
+            decide_le: new Date().toISOString(),
+            decide_par: auth.user?.id ?? null,
+            note_decision: v.note ?? null,
           })
           .eq('id', v.id).select().single(),
       )
@@ -440,7 +440,7 @@ export const useMarkCertificate = () => {
     mutationFn: async (id: string) =>
       unwrap(
         await supabase.from('absences')
-          .update({ certificate_received: true, certificate_received_at: new Date().toISOString().slice(0, 10) })
+          .update({ certificat_recu: true, certificat_recu_le: new Date().toISOString().slice(0, 10) })
           .eq('id', id).select().single(),
       ),
     onSuccess: () => {
@@ -463,7 +463,7 @@ export const useVigilance = (companyId?: string, on?: string) =>
 export const useHeadcount = (companyId?: string, on?: string) =>
   useQuery({
     enabled: !!companyId,
-    queryKey: ['headcount', companyId, on],
+    queryKey: ['effectif', companyId, on],
     queryFn: () =>
       callEngine<HeadcountObligations>('fn_headcount_obligations', { p_company: companyId, p_on: on }),
   })
@@ -491,8 +491,8 @@ export const useLegalParameters = () =>
     queryKey: ['legal-parameters'],
     queryFn: async () =>
       unwrap(
-        await supabase.from('legal_parameters').select('*')
-          .order('family').order('param_key').order('valid_from', { ascending: false }),
+        await supabase.from('parametres_legaux').select('*')
+          .order('famille').order('cle_parametre').order('debut_validite', { ascending: false }),
       ),
   })
 
@@ -501,8 +501,8 @@ export const useCollectiveAgreements = () =>
     queryKey: ['cba'],
     queryFn: async () =>
       unwrap(
-        await supabase.from('collective_agreements')
-          .select('*, cba_rules(*), cba_salary_grids(*)').order('name'),
+        await supabase.from('conventions_collectives')
+          .select('*, regles_convention(*), grilles_salaires_convention(*)').order('nom'),
       ),
   })
 
@@ -512,7 +512,7 @@ export const usePublicHolidays = (year: number) =>
     staleTime: 3600000,
     queryFn: async () =>
       unwrap(
-        await supabase.from('public_holidays').select('*').eq('year', year).order('holiday_date'),
+        await supabase.from('jours_feries').select('*').eq('annee', year).order('date_ferie'),
       ),
   })
 
@@ -524,20 +524,20 @@ export const useTimeEntries = (companyId?: string, from?: string, to?: string) =
     queryKey: ['time-entries', companyId, from, to],
     queryFn: async () =>
       unwrap(
-        await supabase.from('time_entries')
-          .select('*, employees(first_name, last_name)')
-          .eq('company_id', companyId!).gte('entry_date', from!).lte('entry_date', to!)
-          .order('entry_date', { ascending: false }),
+        await supabase.from('releves_temps')
+          .select('*, salaries(prenom, nom)')
+          .eq('societe_id', companyId!).gte('date_releve', from!).lte('date_releve', to!)
+          .order('date_releve', { ascending: false }),
       ),
   })
 
 export const useUpsertTimeEntry = () => {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: async (e: Tables['time_entries']['Insert']) =>
+    mutationFn: async (e: Tables['releves_temps']['Insert']) =>
       unwrap(
-        await supabase.from('time_entries')
-          .upsert(e, { onConflict: 'employee_id,entry_date' }).select().single(),
+        await supabase.from('releves_temps')
+          .upsert(e, { onConflict: 'salarie_id,date_releve' }).select().single(),
       ),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['time-entries'] }),
   })
@@ -551,8 +551,8 @@ export const useAuditLog = (companyId?: string) =>
     queryKey: ['audit', companyId],
     queryFn: async () =>
       unwrap(
-        await supabase.from('audit_log').select('*').eq('company_id', companyId!)
-          .order('occurred_at', { ascending: false }).limit(200),
+        await supabase.from('journal_ecritures').select('*').eq('societe_id', companyId!)
+          .order('survenu_le', { ascending: false }).limit(200),
       ),
   })
 
@@ -617,16 +617,16 @@ export const useEmployeeStatuses = (employeeId?: string) =>
     queryKey: ['employee-statuses', employeeId],
     queryFn: async () =>
       unwrap(
-        await supabase.from('employee_statuses').select('*')
-          .eq('employee_id', employeeId!).order('start_date', { ascending: false }),
+        await supabase.from('statuts_salarie').select('*')
+          .eq('salarie_id', employeeId!).order('date_debut', { ascending: false }),
       ),
   })
 
 export const useCreateEmployeeStatus = () => {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: async (v: Tables['employee_statuses']['Insert']) =>
-      unwrap<EmployeeStatus>(await supabase.from('employee_statuses').insert(v).select().single()),
+    mutationFn: async (v: Tables['statuts_salarie']['Insert']) =>
+      unwrap<EmployeeStatus>(await supabase.from('statuts_salarie').insert(v).select().single()),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['employee-statuses'] })
       qc.invalidateQueries({ queryKey: ['protections'] })
@@ -672,7 +672,7 @@ export const useDocumentTypes = () =>
   useQuery({
     queryKey: ['document-types'],
     staleTime: 300000,
-    queryFn: async () => unwrap(await supabase.from('document_types').select('*').order('label')),
+    queryFn: async () => unwrap(await supabase.from('types_document').select('*').order('libelle')),
   })
 
 export const useEndOfContractDocuments = (contractId?: string) =>
@@ -695,7 +695,7 @@ export const useReferentialHoles = () =>
   useQuery({
     queryKey: ['referential-holes'],
     queryFn: () =>
-      callEngine<{ param_key: string; gap_from: string; gap_to: string }[]>('fn_referential_holes'),
+      callEngine<{ cle_parametre: string; trou_du: string; trou_au: string }[]>('fn_referential_holes'),
   })
 
 export const useReferentialInconsistencies = (on?: string) =>

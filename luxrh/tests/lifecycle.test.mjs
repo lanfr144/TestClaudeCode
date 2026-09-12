@@ -51,49 +51,49 @@ for (const [libelle, pays, cp, attendu] of [
 ]) {
   const r = await rpc(token, 'fn_validate_address', { p_country: pays, p_postal: cp })
   if (!r.ok) ko(libelle, JSON.stringify(r.body))
-  else if (r.body?.status !== attendu) ko(libelle, `attendu ${attendu}, obtenu ${r.body?.status}`)
-  else ok(libelle, r.body.status)
+  else if (r.body?.statut !== attendu) ko(libelle, `attendu ${attendu}, obtenu ${r.body?.statut}`)
+  else ok(libelle, r.body.statut)
 }
 
 {
   // Le préfixe pays de la convention luxembourgeoise doit être toléré.
   const avec = await rpc(token, 'fn_validate_address', { p_country: 'LU', p_postal: 'L-1424' })
   const sans = await rpc(token, 'fn_validate_address', { p_country: 'LU', p_postal: '1424' })
-  avec.body?.status === sans.body?.status
+  avec.body?.statut === sans.body?.statut
     ? ok('« L-1424 » et « 1424 » donnent le même verdict')
-    : ko('préfixe pays toléré', `${avec.body?.status} vs ${sans.body?.status}`)
+    : ko('préfixe pays toléré', `${avec.body?.statut} vs ${sans.body?.statut}`)
 }
 
 // ---------------------------------------------------------------------------
 console.log('\n== Lecture auditée : périmètre et projection ==')
 
-const companies = await rest(token, 'companies?select=id,legal_name&limit=1')
-const company = companies.body?.[0]
+const societes = await rest(token, 'societes?select=id,raison_sociale&limit=1')
+const company = societes.body?.[0]
 if (!company) ko('société de démonstration', 'aucune société lisible')
 
 {
-  const r = await rpc(token, 'fn_employee_rows', { p_fields: ['last_name'] })
+  const r = await rpc(token, 'fn_employee_rows', { p_fields: ['nom'] })
   r.ok ? ko('appel sans périmètre refusé', 'a réussi') : ok('appel sans périmètre refusé', `HTTP ${r.status}`)
 }
 {
   const r = await rpc(token, 'fn_employee_rows', {
-    p_company: company?.id, p_fields: ['last_name', 'champ_invente'],
+    p_company: company?.id, p_fields: ['nom', 'champ_invente'],
   })
   r.ok ? ko('champ inconnu refusé', 'a réussi') : ok('champ inconnu refusé', `HTTP ${r.status}`)
 }
 {
   const r = await rpc(token, 'fn_employee_rows', {
-    p_company: company?.id, p_fields: ['last_name', 'job_title'], p_limit: 5,
+    p_company: company?.id, p_fields: ['nom', 'intitule_poste'], p_limit: 5,
   })
   if (!r.ok) ko('lecture pipelinée', JSON.stringify(r.body))
   else {
     const lignes = r.body ?? []
     ok('lecture pipelinée', `${lignes.length} ligne(s)`)
     const premiere = lignes[0] ?? {}
-    premiere.last_name != null
+    premiere.nom != null
       ? ok('colonne demandée renseignée')
-      : ko('colonne demandée renseignée', 'last_name nul')
-    premiere.email === null && premiere.national_id === null && premiere.iban === null
+      : ko('colonne demandée renseignée', 'nom nul')
+    premiere.courriel === null && premiere.matricule_national === null && premiere.iban === null
       ? ok('colonnes non demandées à nul — minimisation en colonnes')
       : ko('colonnes non demandées à nul', JSON.stringify(premiere).slice(0, 140))
   }
@@ -101,7 +101,7 @@ if (!company) ko('société de démonstration', 'aucune société lisible')
 {
   // Un salarié ne lit pas le dossier d'un collègue par cette porte non plus.
   const r = await rpc(employeeToken, 'fn_employee_rows', {
-    p_company: company?.id, p_fields: ['last_name'], p_limit: 50,
+    p_company: company?.id, p_fields: ['nom'], p_limit: 50,
   })
   const lignes = Array.isArray(r.body) ? r.body : []
   lignes.length <= 1
@@ -112,7 +112,7 @@ if (!company) ko('société de démonstration', 'aucune société lisible')
 // ---------------------------------------------------------------------------
 console.log('\n== Registre des accès ==')
 
-const employes = await rest(token, `employees?select=id,last_name&company_id=eq.${company?.id}&limit=1`)
+const employes = await rest(token, `salaries?select=id,nom&societe_id=eq.${company?.id}&limit=1`)
 const employe = employes.body?.[0]
 
 {
@@ -144,20 +144,20 @@ const employe = employes.body?.[0]
 console.log('\n== Un seul contrat en cours ==')
 
 const contrats = await rest(token,
-  `contracts?select=id,employee_id,company_id,start_date,end_date,monthly_gross,version,kind` +
-  `&company_id=eq.${company?.id}&status=eq.active&kind=eq.cdi&limit=1`)
+  `contrats?select=id,salarie_id,societe_id,date_debut,date_fin,brut_mensuel,version,genre` +
+  `&societe_id=eq.${company?.id}&statut=eq.active&genre=eq.cdi&limit=1`)
 const contrat = contrats.body?.[0]
 if (!contrat) ko('contrat de démonstration', 'aucun CDI actif lisible')
 
 {
   // Un second contrat actif qui recouvre le premier doit être refusé par la base.
-  const r = await rest(token, 'contracts', {
+  const r = await rest(token, 'contrats', {
     method: 'POST',
     body: JSON.stringify({
-      company_id: contrat?.company_id, employee_id: contrat?.employee_id,
-      kind: 'cdi', status: 'active', job_title: 'Doublon de test',
-      start_date: contrat?.start_date, monthly_gross: 3000,
-      weekly_hours: 40, days_per_week: 5, reference_period_months: 1,
+      societe_id: contrat?.societe_id, salarie_id: contrat?.salarie_id,
+      genre: 'cdi', statut: 'active', intitule_poste: 'Doublon de test',
+      date_debut: contrat?.date_debut, brut_mensuel: 3000,
+      heures_hebdomadaires: 40, jours_par_semaine: 5, periode_reference_mois: 1,
     }),
   })
   r.ok ? ko('second contrat actif chevauchant refusé', 'a été accepté')
@@ -176,13 +176,13 @@ const decale = (iso, jours = 0, mois = 0) => {
   d.setUTCDate(d.getUTCDate() + jours)
   return d.toISOString().slice(0, 10)
 }
-const prise_effet = decale(contrat?.start_date, 0, 3)
+const prise_effet = decale(contrat?.date_debut, 0, 3)
 const veille = decale(prise_effet, -1)
 
 {
   const r = await rpc(token, 'fn_amend_contract', {
     p_contract: contrat?.id, p_effective_date: prise_effet,
-    p_changes: { monthly_gross: 4321 }, p_reason: '',
+    p_changes: { brut_mensuel: 4321 }, p_reason: '',
   })
   r.ok ? ko('avenant sans motif refusé', 'a réussi') : ok('avenant sans motif refusé', `HTTP ${r.status}`)
 }
@@ -200,7 +200,7 @@ let nouveau = null
   const r = await rpc(token, 'fn_amend_contract', {
     p_contract: contrat?.id,
     p_effective_date: prise_effet,
-    p_changes: { monthly_gross: 4321, weekly_hours: 30 },
+    p_changes: { brut_mensuel: 4321, heures_hebdomadaires: 30 },
     p_reason: 'Augmentation et passage à temps partiel',
   })
   if (!r.ok) ko('avenant établi', JSON.stringify(r.body))
@@ -213,36 +213,36 @@ let nouveau = null
   }
 }
 if (nouveau) {
-  const ancien = await rest(token, `contracts?select=status,end_date&id=eq.${contrat.id}`)
-  ancien.body?.[0]?.status === 'ended'
+  const ancien = await rest(token, `contrats?select=statut,date_fin&id=eq.${contrat.id}`)
+  ancien.body?.[0]?.statut === 'ended'
     ? ok('ancien contrat au statut « ended »')
     : ko('statut de l’ancien', JSON.stringify(ancien.body))
 
   const neuf = await rest(token,
-    `contracts?select=status,version,start_date,monthly_gross,weekly_hours,is_part_time,` +
-    `previous_contract_id,signed_at,job_title,kind&id=eq.${nouveau}`)
+    `contrats?select=statut,version,date_debut,brut_mensuel,heures_hebdomadaires,est_temps_partiel,` +
+    `contrat_precedent_id,signe_le,intitule_poste,genre&id=eq.${nouveau}`)
   const n = neuf.body?.[0] ?? {}
-  n.status === 'active' ? ok('nouveau contrat actif') : ko('statut du nouveau', n.status)
+  n.statut === 'active' ? ok('nouveau contrat actif') : ko('statut du nouveau', n.statut)
   n.version === (contrat.version ?? 1) + 1
     ? ok('version incrémentée', String(n.version)) : ko('version', String(n.version))
-  n.previous_contract_id === contrat.id
-    ? ok('chaînage vers l’ancien conservé') : ko('chaînage', String(n.previous_contract_id))
-  Number(n.monthly_gross) === 4321
-    ? ok('modification appliquée', `${n.monthly_gross} €`) : ko('modification', String(n.monthly_gross))
-  n.is_part_time === true
+  n.contrat_precedent_id === contrat.id
+    ? ok('chaînage vers l’ancien conservé') : ko('chaînage', String(n.contrat_precedent_id))
+  Number(n.brut_mensuel) === 4321
+    ? ok('modification appliquée', `${n.brut_mensuel} €`) : ko('modification', String(n.brut_mensuel))
+  n.est_temps_partiel === true
     ? ok('temps partiel recalculé par le déclencheur')
-    : ko('temps partiel', String(n.is_part_time))
-  n.signed_at === null
+    : ko('temps partiel', String(n.est_temps_partiel))
+  n.signe_le === null
     ? ok('nouveau contrat non signé — un avenant se signe')
-    : ko('signature', String(n.signed_at))
-  n.kind === contrat.kind && n.job_title != null
-    ? ok('clauses non modifiées reprises', n.job_title)
+    : ko('signature', String(n.signe_le))
+  n.genre === contrat.genre && n.intitule_poste != null
+    ? ok('clauses non modifiées reprises', n.intitule_poste)
     : ko('reprise des clauses', JSON.stringify(n).slice(0, 140))
 
   const avenants = await rest(token,
-    `contract_amendments?select=reason,effective_date&contract_id=eq.${nouveau}`)
+    `avenants_contrat?select=motif,date_effet&contrat_id=eq.${nouveau}`)
   avenants.body?.length === 1
-    ? ok('avenant journalisé', avenants.body[0].reason)
+    ? ok('avenant journalisé', avenants.body[0].motif)
     : ko('journal de l’avenant', JSON.stringify(avenants.body))
 }
 
@@ -254,21 +254,21 @@ console.log('\n== Nettoyage ==')
 // touche qu'aux deux lignes qu'elle a créées ou modifiées.
 if (nouveau) {
   // L'avenant d'abord : tant qu'il est actif, l'ancien ne peut pas l'être aussi.
-  const suppression = await rest(token, `contracts?id=eq.${nouveau}`, { method: 'DELETE' })
+  const suppression = await rest(token, `contrats?id=eq.${nouveau}`, { method: 'DELETE' })
   suppression.ok ? ok('avenant de test supprimé') : ko('suppression de l’avenant', suppression.status)
 
-  const remise = await fetch(`${URL}/rest/v1/contracts?id=eq.${contrat.id}`, {
+  const remise = await fetch(`${URL}/rest/v1/contrats?id=eq.${contrat.id}`, {
     method: 'PATCH',
     headers: { ...h(token), Prefer: 'return=representation' },
-    body: JSON.stringify({ status: 'active', end_date: contrat.end_date }),
+    body: JSON.stringify({ statut: 'active', date_fin: contrat.date_fin }),
   })
   const revenu = await remise.json().catch(() => null)
-  remise.ok && revenu?.[0]?.status === 'active'
-    ? ok('contrat d’origine rétabli', `fin ${revenu[0].end_date ?? '—'}`)
+  remise.ok && revenu?.[0]?.statut === 'active'
+    ? ok('contrat d’origine rétabli', `fin ${revenu[0].date_fin ?? '—'}`)
     : ko('rétablissement du contrat', JSON.stringify(revenu).slice(0, 160))
 
   const restants = await rest(token,
-    `contracts?select=id&employee_id=eq.${contrat.employee_id}&status=eq.active`)
+    `contrats?select=id&salarie_id=eq.${contrat.salarie_id}&statut=eq.active`)
   restants.body?.length === 1
     ? ok('un seul contrat actif à nouveau')
     : ko('contrats actifs après nettoyage', `${restants.body?.length}`)

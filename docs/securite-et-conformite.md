@@ -33,7 +33,7 @@ tranche par un fait technique.
 | 3 | Trois fonctions de déclencheur et un utilitaire interne exposés en RPC | Moyenne | **Corrigé** — migration 46 |
 | 4 | `alter default privileges` inopérant : le trou se rouvre à chaque migration | Moyenne | **Corrigé** — migration 46 |
 | 5 | Aucune journalisation des accès en lecture | Moyenne | **Corrigé** — migrations 49 et 51 |
-| 6 | `employees`, `documents`, `employee_tax_cards` non auditées en écriture | Moyenne | **Corrigé** — migration 49 |
+| 6 | `salaries`, `documents`, `fiches_retenue_impot` non auditées en écriture | Moyenne | **Corrigé** — migration 49 |
 | 7 | La clé de chiffrement vit dans la base qu'elle protège | Moyenne | **Ouvert** |
 | 8 | `search_path` mutable sur `fn_payload_rows` | Faible | **Corrigé** — migration 46 |
 | 9 | Protection contre les mots de passe compromis désactivée | Faible | **Ouvert** — réglage Supabase |
@@ -47,7 +47,7 @@ tranche par un fait technique.
 > — il en signalait seize, dont les six points d'entrée de la portabilité — ni de `search_path`
 > mutable. Les 190 vérifications des six suites passent, le build reste à zéro erreur.
 >
-> Restent, par conception : `app_secrets` sous RLS sans politique (c'est la protection), et
+> Restent, par conception : `secrets_application` sous RLS sans politique (c'est la protection), et
 > 53 fonctions `security definer` appelables par un compte authentifié — le principe même du
 > moteur, chacune contrôlant l'accès dans son corps.
 
@@ -60,7 +60,7 @@ ACL, c'est-à-dire **`execute` accordé à PUBLIC**, dont `anon` hérite. Elles 
 appelables sur `/rest/v1/rpc/…` sans authentification.
 
 **La porte n'était pas ouverte.** Chacune contrôle l'accès dans son corps — `auth.uid()`,
-`has_company_access`, `is_org_admin` — et échoue en position fermée pour un appelant
+`has_company_access`, `est_admin_organisation` — et échoue en position fermée pour un appelant
 anonyme. Le risque n'est pas l'exfiltration immédiate : c'est qu'un seul verrou tenait là où
 l'architecture en suppose deux. Une régression dans un de ces corps devenait une fuite de
 données personnelles non authentifiée, sans autre barrière.
@@ -108,7 +108,7 @@ Traitée en détail dans la [section RGPD](#journalisation-des-accès--qui-quoi-
 ### 7. La clé de chiffrement vit dans la base qu'elle protège
 
 Le matricule national et l'IBAN sont chiffrés par `pgcrypto`, et la clé est lue dans la table
-`app_secrets` — c'est-à-dire dans la même base que les données qu'elle protège. Quiconque
+`secrets_application` — c'est-à-dire dans la même base que les données qu'elle protège. Quiconque
 obtient une copie de la base obtient aussi la clé, et le chiffrement ne protège alors plus
 rien.
 
@@ -117,7 +117,7 @@ sans service de gestion de clés. Mais il faut le savoir et l'écrire — le chi
 contre une fuite de *table*, pas contre une fuite de *base*.
 
 **Recommandation** : externaliser la clé (Supabase Vault, ou un KMS) et prévoir sa rotation.
-La table `app_secrets` est correctement verrouillée par ailleurs — RLS active sans aucune
+La table `secrets_application` est correctement verrouillée par ailleurs — RLS active sans aucune
 politique, et les deux fonctions de chiffrement révoquées pour tous les rôles applicatifs.
 
 ### 9 et 10. Réglages
@@ -138,11 +138,11 @@ de base — et renvoyait `found: true`. Un gestionnaire lisait le taux génériq
 celui de la classe de risque de sa société.
 
 Et si personne ne l'avait vu, c'est que `fn_referential_gaps` **ne pouvait pas voir une clé
-entièrement absente** : elle groupait `legal_parameters`, où la clé n'a aucune ligne. Le
+entièrement absente** : elle groupait `parametres_legaux`, où la clé n'a aucune ligne. Le
 détecteur de trous était aveugle au trou le plus béant.
 
 La migration 50 corrige les deux : la fonction dit désormais quelle source a servi et ce qui
-manque, et la table `expected_parameters` déclare les 75 clés que le moteur lit réellement, de
+manque, et la table `parametres_attendus` déclare les 75 clés que le moteur lit réellement, de
 sorte qu'une clé jamais chargée remonte en tête des trous.
 
 ### 13. L'adresse du salarié transmise à un tiers
@@ -157,7 +157,7 @@ La conception en limite la portée autant que la technique le permet :
 - la distance est **calculée une fois puis mise en cache** : une adresse n'est transmise qu'au
   premier calcul d'un couple, pas à chaque planning ;
 - le cache conserve un kilométrage et deux références, **jamais une adresse** ;
-- chaque transmission laisse une trace dans `data_access_log`, action `DOWNLOAD`, avec le nom
+- chaque transmission laisse une trace dans `journal_acces`, action `DOWNLOAD`, avec le nom
   du service consulté : on peut donc dire quelles adresses sont sorties, et quand ;
 - l'appel part d'une Edge Function : **la clé d'API ne touche ni le navigateur ni la base**, et
   le contrôle d'accès de `fn_address_of` s'applique avant tout envoi ;
@@ -178,7 +178,7 @@ Il faut le dire aussi, parce que la suite en dépend.
   Supabase : la RLS s'applique au PDF comme au reste.
 - **`.env.local` est ignoré par Git**, `.env.example` ne contient que des marqueurs, et les
   suites de tests refusent de démarrer sans mots de passe fournis par l'environnement.
-- **Minimisation effective** : la contrainte `privacy_minimises_data` sur `employee_children`
+- **Minimisation effective** : la contrainte `privacy_minimises_data` sur `enfants_salarie`
   impose que le refus d'usage efface réellement prénom, nom, sexe et note. Une règle de
   minimisation appliquée par le schéma, et non par une promesse.
 
@@ -194,7 +194,7 @@ traitement** — ce qui appelle un contrat de sous-traitance au sens de l'articl
 absence est un manque juridique, pas technique. Pour une **entreprise** gérant son seul
 personnel, elle est responsable du traitement.
 
-Cette distinction existe en base (`organizations.kind`) mais n'a aucune traduction
+Cette distinction existe en base (`organisations.kind`) mais n'a aucune traduction
 documentaire. C'est le premier point à combler.
 
 ### Bases légales et catégories de données
@@ -211,7 +211,7 @@ documentaire. C'est le premier point à combler.
 | Planning, registre du temps | Obligation légale, intérêt légitime | **Surveillance** — voir AIPD |
 
 Quatre catégories relèvent de l'article 9. Elles sont correctement isolées dans des tables
-dédiées, sous RLS, avec un drapeau `is_sensitive` sur les pièces justificatives — mais leur
+dédiées, sous RLS, avec un drapeau `sensible` sur les pièces justificatives — mais leur
 existence appelle des obligations documentaires qui, elles, manquent.
 
 ### Droits des personnes
@@ -221,7 +221,7 @@ existence appelle des obligations documentaires qui, elles, manquent.
 | Accès (art. 15) | **Couvert** — `fn_export_self`, testé, refuse l'accès au dossier d'un collègue |
 | Portabilité (art. 20) | **Couvert** — export structuré, format versionné |
 | Rectification (art. 16) | Couvert par les écrans de saisie |
-| Opposition (art. 21) | Partiellement — `privacy_opt_out` sur les enfants |
+| Opposition (art. 21) | Partiellement — `refus_partage` sur les enfants |
 | **Effacement (art. 17)** | **Absent** — aucune fonction d'effacement ni d'anonymisation |
 | Limitation (art. 18) | Absent |
 
@@ -233,7 +233,7 @@ agrégats. Cela se conçoit, cela ne s'improvise pas.
 
 ### Conservation
 
-`documents.retention_until` existe et porte la bonne intention. Mais **rien ne purge** : aucune
+`documents.conservation_jusquau` existe et porte la bonne intention. Mais **rien ne purge** : aucune
 tâche, aucune fonction, aucune politique. Une durée de conservation qui n'est jamais appliquée
 n'est pas une durée de conservation.
 
@@ -243,13 +243,13 @@ C'était la question posée. Voici l'état exact avant correction.
 
 | Question | Écritures | Lectures | Exports |
 |---|---|---|---|
-| **Qui** | Oui — `audit_log.actor_id` et `actor_label` | **Non** | Oui |
+| **Qui** | Oui — `journal_ecritures.auteur_id` et `auteur_libelle` | **Non** | Oui |
 | **Quoi** | Oui — table, identifiant, avant/après | **Non** | Partiellement — nature et volume |
 | **Quand** | Oui | **Non** | Oui |
 | **D'où** | **Non** | **Non** | **Non** |
 
-Et l'audit des écritures ne couvrait que **13 tables sur 47** : ni `employees`, ni
-`documents`, ni `employee_tax_cards` — les trois plus chargées en données personnelles.
+Et l'audit des écritures ne couvrait que **13 tables sur 47** : ni `salaries`, ni
+`documents`, ni `fiches_retenue_impot` — les trois plus chargées en données personnelles.
 Le déchiffrement du matricule national et de l'IBAN ne laissait **aucune trace**.
 
 Autrement dit : à la question « qui a consulté le dossier de cette personne, et depuis où ? »,
@@ -260,9 +260,9 @@ l'application ne savait pas répondre.
 - `fn_request_source()` lit les en-têtes HTTP exposés par PostgREST — adresse d'origine, agent
   utilisateur, identifiant de requête. C'est la seule provenance disponible en base :
   `inet_client_addr()` ne voit que le pooler.
-- Trois colonnes de provenance sur `audit_log` et `export_log`, remplies par un déclencheur —
+- Trois colonnes de provenance sur `journal_ecritures` et `journal_exports`, remplies par un déclencheur —
   aucune fonction du moteur n'a eu à être réécrite.
-- Une table `data_access_log` pour les **consultations** : lecture, déchiffrement, export,
+- Une table `journal_acces` pour les **consultations** : lecture, déchiffrement, export,
   téléchargement. Sous RLS, lisible par les gestionnaires de la société **et par la personne
   concernée** — contrepartie du droit d'accès. Aucune politique d'écriture ni de suppression :
   un journal que son sujet peut effacer ne prouve rien.
@@ -311,8 +311,8 @@ passe par une seconde connexion `dblink`.
 | `TABLE(f(x))` dans le `FROM` | `cross join lateral f(x)` |
 | `PRAGMA AUTONOMOUS_TRANSACTION` | `dblink` sur une seconde connexion |
 
-Tant que la chaîne de connexion `dblink` n'est pas déposée dans `app_secrets`, la trace est
-écrite dans la transaction courante et porte `is_autonomous = false` : **le journal déclare sa
+Tant que la chaîne de connexion `dblink` n'est pas déposée dans `secrets_application`, la trace est
+écrite dans la transaction courante et porte `est_autonome = false` : **le journal déclare sa
 propre fragilité** plutôt que de la taire.
 
 La version Oracle littérale — avec le vrai `PIPELINED`, le vrai `PIPE ROW` et le vrai
@@ -402,7 +402,7 @@ l'exploite), déjà en vigueur.
 | Ordre | Action | Effort |
 |---|---|---|
 | ✅ | ~~Appliquer les migrations 46 à 54~~ — fait le 10 septembre 2026 | — |
-| 1 | Déposer `dblink_conninfo` dans `app_secrets` — sans quoi la trace n'est pas autonome | Minute |
+| 1 | Déposer `dblink_conninfo` dans `secrets_application` — sans quoi la trace n'est pas autonome | Minute |
 | 2 | Poser `DISTANCE_API_KEY` pour l'Edge Function `travel-distance` | Minute |
 | 3 | Activer la protection contre les mots de passe compromis | Minute |
 | 4 | Externaliser la clé de chiffrement, prévoir sa rotation | Jours |

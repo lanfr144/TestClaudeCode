@@ -20,7 +20,7 @@ export default function Settings() {
       <header>
         <h1 className="text-xl font-bold tracking-tight text-ink">Paramètres et utilisateurs</h1>
         <p className="text-xs text-ink-muted">
-          {profile?.organizations?.name} · rôles, journal d’audit et conformité RGPD.
+          {profile?.organisations?.nom} · rôles, journal d’audit et conformité RGPD.
         </p>
       </header>
 
@@ -29,11 +29,11 @@ export default function Settings() {
           <Table head={['Utilisateur', 'Rôle', 'Portée']}>
             <tr>
               <td className="lux-td">
-                <span className="font-medium text-ink">{profile?.full_name}</span>
-                <span className="block text-2xs text-ink-faint">{profile?.email}</span>
+                <span className="font-medium text-ink">{profile?.nom_complet}</span>
+                <span className="bloc text-2xs text-ink-faint">{profile?.courriel}</span>
               </td>
               <td className="lux-td">
-                {profile?.is_org_admin ? (
+                {profile?.est_admin_organisation ? (
                   <Badge tone="violet">Administrateur de l’espace</Badge>
                 ) : (
                   <Badge tone="neutral">Utilisateur</Badge>
@@ -43,10 +43,10 @@ export default function Settings() {
             </tr>
             {(profile?.roles ?? []).map((r) => (
               <tr key={r.id}>
-                <td className="lux-td text-xs text-ink-muted">{r.user_id.slice(0, 8)}…</td>
+                <td className="lux-td text-xs text-ink-muted">{r.compte_id.slice(0, 8)}…</td>
                 <td className="lux-td">{ROLE_LABEL[r.role]}</td>
                 <td className="lux-td text-xs text-ink-muted">
-                  {r.company_id ? 'une société' : 'toutes les sociétés'}
+                  {r.societe_id ? 'une société' : 'toutes les sociétés'}
                 </td>
               </tr>
             ))}
@@ -61,30 +61,30 @@ export default function Settings() {
         <Card title="RGPD">
           <div className="space-y-3">
             <div>
-              <p className="lux-label">Durées de conservation</p>
+              <p className="lux-libelle">Durées de conservation</p>
               <ul className="mt-1.5 space-y-1 text-sm">
                 {RETENTION.map((r) => {
                   const p = params.data?.find(
-                    (x) => x.param_key === r.key && estEnVigueur(x, referenceDate),
+                    (x) => x.cle_parametre === r.key && estEnVigueur(x, referenceDate),
                   )
                   return (
                     <li key={r.key} className="flex justify-between gap-3 border-b border-rule pb-1">
                       <span className="text-ink-body">{r.data}</span>
-                      <span className="shrink-0 font-mono text-ink">{num(p?.value_num, 0)} ans</span>
+                      <span className="shrink-0 font-mono text-ink">{num(p?.valeur_num, 0)} ans</span>
                     </li>
                   )
                 })}
               </ul>
             </div>
             <div>
-              <p className="lux-label">Chiffrement au repos</p>
+              <p className="lux-libelle">Chiffrement au repos</p>
               <p className="mt-1 text-xs text-ink-muted">
                 Matricule national et coordonnées bancaires sont chiffrés en base. Ils ne sont lisibles que par
                 une fonction serveur qui vérifie les droits de l’appelant, jamais par une requête directe.
               </p>
             </div>
             <div>
-              <p className="lux-label">Droit d’accès et d’export</p>
+              <p className="lux-libelle">Droit d’accès et d’export</p>
               <p className="mt-1 text-xs text-ink-muted">
                 Voir la carte « Portabilité et reprise » ci-dessous : l’export est produit par le serveur,
                 qui vérifie le droit d’en faire la demande et journalise celle-ci.
@@ -103,7 +103,7 @@ export default function Settings() {
       <Card
         dense
         title="Journal d’audit"
-        subtitle={`Contrats, temps de travail et absences de ${activeCompany?.legal_name ?? 'la société active'} — inaltérable`}
+        subtitle={`Contrats, temps de travail et absences de ${activeCompany?.raison_sociale ?? 'la société active'} — inaltérable`}
       >
         {audit.isLoading ? (
           <Loading />
@@ -114,16 +114,16 @@ export default function Settings() {
             {(audit.data ?? []).slice(0, 60).map((a) => (
               <tr key={a.id}>
                 <td className="lux-td font-mono text-2xs">
-                  {new Date(a.occurred_at).toLocaleString('fr-LU')}
+                  {new Date(a.survenu_le).toLocaleString('fr-LU')}
                 </td>
-                <td className="lux-td">{a.actor_label ?? '—'}</td>
-                <td className="lux-td font-mono text-2xs">{a.entity_table}</td>
+                <td className="lux-td">{a.auteur_libelle ?? '—'}</td>
+                <td className="lux-td font-mono text-2xs">{a.entite_table}</td>
                 <td className="lux-td">
                   <Badge tone={a.action === 'DELETE' ? 'blocking' : a.action === 'INSERT' ? 'ok' : 'info'}>
                     {a.action}
                   </Badge>
                 </td>
-                <td className="lux-td font-mono text-2xs text-ink-faint">{a.entity_id?.slice(0, 8) ?? '—'}</td>
+                <td className="lux-td font-mono text-2xs text-ink-faint">{a.entite_id?.slice(0, 8) ?? '—'}</td>
               </tr>
             ))}
             {(audit.data ?? []).length === 0 && (

@@ -18,7 +18,7 @@ l'une la maquette de l'autre : ce qui est corrigé dans le moteur vaut pour les 
 ## Règles qui ne se négocient pas
 
 1. **Aucun seuil, taux ou durée légale écrit en dur dans le code applicatif.**
-   Ni en TypeScript, ni en Python. Tout vient de `legal_parameters`, daté, sourcé.
+   Ni en TypeScript, ni en Python. Tout vient de `parametres_legaux`, daté, sourcé.
    Une valeur écrite en dur est un bug, même si elle est juste aujourd'hui.
 
 2. **Le serveur calcule, valide et décide ; le front affiche et saisit.**
@@ -26,7 +26,7 @@ l'une la maquette de l'autre : ce qui est corrigé dans le moteur vaut pour les 
    invisible depuis l'autre application.
 
 3. **Le référentiel est daté, jamais écrasé.** Chaque paramètre porte
-   `valid_from`/`valid_to`, une `source` et une `legal_ref`. Une contrainte
+   `debut_validite`/`fin_validite`, une `source` et une `reference_legale`. Une contrainte
    d'exclusion GiST interdit les périodes qui se chevauchent. Un recalcul de
    paie lit la valeur en vigueur *à la date du calcul*, pas la dernière connue.
 
@@ -52,7 +52,7 @@ l'une la maquette de l'autre : ce qui est corrigé dans le moteur vaut pour les 
 
 9. **Une adresse est vérifiée, ou déclarée invérifiée.** Le Luxembourg par le
    registre BD-Adresses (API geocode du geoportail, ou `addresses.csv` en vrac).
-   Les frontaliers sont restreints aux zones de `address_zones` : Liège, Namur,
+   Les frontaliers sont restreints aux zones de `zones_adresse` : Liège, Namur,
    Luxembourg (BE) ; départements 54 et 57 (FR) ; Rhénanie-Palatinat et Sarre
    (DE). `fn_validate_address` répond `ok`, `outside` ou `unknown` — jamais un
    booléen, parce qu'« on ne sait pas » n'est pas « non ».
@@ -111,10 +111,10 @@ Python global héberge l'installation Airflow de l'utilisateur et **ne doit pas
 - Commentaires en français, comme le reste du code.
 - **Toute table et toute colonne portent un commentaire.** 75 tables, 836 colonnes, 100 %.
   Une colonne ajoutée sans commentaire est signalée par `verifier_coherence.py`.
-- **`valid_to` / `fin_validite` ne sont jamais nuls.** Une validité ouverte porte la date
+- **`fin_validite` / `fin_validite` ne sont jamais nuls.** Une validité ouverte porte la date
   sentinelle `2037-12-31`, un début de toujours porte `1970-01-01`. Borne basse incluse,
   borne haute exclue. Côté React, `estEnVigueur()` et `sansFin()` de `src/lib/format.ts` ;
-  côté Streamlit, `sans_fin()` de `luxrh/design.py`. Ne jamais tester `!row.valid_to` seul :
+  côté Streamlit, `sans_fin()` de `luxrh/design.py`. Ne jamais tester `!row.fin_validite` seul :
   ce test est toujours faux depuis la migration 70.
 - **Les horodatages de migration ne se choisissent pas.** La plateforme attribue le sien à
   l'application ; c'est le **nom** qui identifie une migration. `dump_migrations.py` renomme

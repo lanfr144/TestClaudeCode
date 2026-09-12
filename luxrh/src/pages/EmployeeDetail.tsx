@@ -24,11 +24,11 @@ export default function EmployeeDetail() {
   const [showSensitive, setShowSensitive] = useState(false)
 
   const { data: e, isLoading, error } = useEmployee(id)
-  const activeContract = e?.contracts?.find((c) => c.status === 'active') ?? e?.contracts?.[0]
+  const activeContract = e?.contrats?.find((c) => c.statut === 'active') ?? e?.contrats?.[0]
   const compliance = useContractCompliance(activeContract?.id, referenceDate)
   const leave = useLeaveBalance(id, referenceDate)
   const sick = useSickCounters(id, referenceDate)
-  const absences = useAbsences(e?.company_id)
+  const absences = useAbsences(e?.societe_id)
   const sensitive = useEmployeeSensitive(showSensitive ? id : undefined)
   const statuses = useEmployeeStatuses(id)
   const protections = useDismissalProtections(id, referenceDate)
@@ -41,30 +41,30 @@ export default function EmployeeDetail() {
   if (!e) return <Card title="Employé introuvable">Cet employé n’existe pas ou n’est pas accessible.</Card>
 
   const prob = compliance.data?.probation
-  const taxCard = e.employee_tax_cards?.find((t) => !t.valid_to || t.valid_to > referenceDate)
-  const myAbsences = (absences.data ?? []).filter((a) => a.employee_id === e.id)
+  const taxCard = e.fiches_retenue_impot?.find((t) => !t.fin_validite || t.fin_validite > referenceDate)
+  const myAbsences = (absences.data ?? []).filter((a) => a.salarie_id === e.id)
 
   return (
     <div className="space-y-4">
       <div className="lux-card p-4">
         <div className="flex flex-wrap items-start gap-4">
-          <Avatar text={initials(e.first_name, e.last_name)} />
+          <Avatar text={initials(e.prenom, e.nom)} />
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-2">
               <h1 className="text-xl font-bold tracking-tight text-ink">
-                {e.first_name} {e.last_name}
+                {e.prenom} {e.nom}
               </h1>
               {prob?.is_running && <Badge tone="warning">En essai</Badge>}
               {activeContract && (
                 <Badge tone="neutral">
-                  {CONTRACT_KIND_LABEL[activeContract.kind] ?? activeContract.kind}{' '}
-                  {activeContract.weekly_hours} h
+                  {CONTRACT_KIND_LABEL[activeContract.genre] ?? activeContract.genre}{' '}
+                  {activeContract.heures_hebdomadaires} h
                 </Badge>
               )}
             </div>
             <p className="mt-0.5 text-sm text-ink-muted">
-              {activeContract?.job_title ?? 'Sans contrat actif'}
-              {activeContract && ` · entrée le ${date(activeContract.start_date)}`}
+              {activeContract?.intitule_poste ?? 'Sans contrat actif'}
+              {activeContract && ` · entrée le ${date(activeContract.date_debut)}`}
             </p>
           </div>
           {activeContract && (
@@ -76,13 +76,13 @@ export default function EmployeeDetail() {
 
         <dl className="mt-4 grid gap-3 border-t border-rule pt-3 sm:grid-cols-2 lg:grid-cols-4">
           <div>
-            <dt className="lux-label">Matricule national</dt>
+            <dt className="lux-libelle">Matricule national</dt>
             <dd className="mt-0.5 font-mono text-sm text-ink">
               {showSensitive ? (
-                sensitive.isLoading ? '…' : (sensitive.data?.national_id ?? '—')
+                sensitive.isLoading ? '…' : (sensitive.data?.matricule_national ?? '—')
               ) : (
                 <>
-                  •••• •••• {e.national_id_hint ?? '••••'}{' '}
+                  •••• •••• {e.matricule_national_indice ?? '••••'}{' '}
                   <button
                     onClick={() => setShowSensitive(true)}
                     className="ml-1 font-sans text-2xs font-semibold text-action hover:underline"
@@ -95,19 +95,19 @@ export default function EmployeeDetail() {
             {showSensitive && sensitive.error && <ErrorNote error={sensitive.error} />}
           </div>
           <div>
-            <dt className="lux-label">Résidence</dt>
-            <dd className="mt-0.5 text-sm text-ink">{RESIDENCY_LABEL[e.residency]}</dd>
+            <dt className="lux-libelle">Résidence</dt>
+            <dd className="mt-0.5 text-sm text-ink">{RESIDENCY_LABEL[e.residence]}</dd>
           </div>
           <div>
-            <dt className="lux-label">Sexe</dt>
-            <dd className="mt-0.5 text-sm text-ink">{SEX_LABEL[e.sex]}</dd>
+            <dt className="lux-libelle">Sexe</dt>
+            <dd className="mt-0.5 text-sm text-ink">{SEX_LABEL[e.sexe]}</dd>
           </div>
           <div>
-            <dt className="lux-label">Classe d’impôt</dt>
-            <dd className="mt-0.5 text-sm text-ink">{taxCard?.tax_class ?? '—'}</dd>
+            <dt className="lux-libelle">Classe d’impôt</dt>
+            <dd className="mt-0.5 text-sm text-ink">{taxCard?.classe_impot ?? '—'}</dd>
           </div>
           <div>
-            <dt className="lux-label">Qualification</dt>
+            <dt className="lux-libelle">Qualification</dt>
             <dd className="mt-0.5 text-sm text-ink">
               {qualification.data?.qualified ? 'Qualifié(e)' : 'Non qualifié(e)'}
               {qualification.data && e.qualification === 'unqualified' && qualification.data.qualified && (
@@ -133,7 +133,7 @@ export default function EmployeeDetail() {
             l’essai.
           </p>
           <div className="mt-2">
-            <LegalBasis compact reference={prob.legal_ref} />
+            <LegalBasis compact reference={prob.reference_legale} />
           </div>
         </div>
       )}
@@ -146,10 +146,10 @@ export default function EmployeeDetail() {
           <ul className="mt-1.5 space-y-1">
             {protections.data.protections.map((p, i) => (
               <li key={i} className="text-xs text-action">
-                <strong>{p.label}</strong>
+                <strong>{p.libelle}</strong>
                 {p.until && ` jusqu’au ${date(p.until)}`}
                 {p.days_left !== null && p.days_left !== undefined && ` · J-${p.days_left}`}
-                {p.legal_ref && <span className="ml-1 font-mono text-2xs opacity-80">{p.legal_ref}</span>}
+                {p.reference_legale && <span className="ml-1 font-mono text-2xs opacity-80">{p.reference_legale}</span>}
               </li>
             ))}
           </ul>
@@ -209,7 +209,7 @@ export default function EmployeeDetail() {
                     </p>
                   )}
                   <div className="mt-2">
-                    <LegalBasis compact reference={sick.data?.legal_ref} />
+                    <LegalBasis compact reference={sick.data?.reference_legale} />
                   </div>
                 </>
               )}
@@ -227,7 +227,7 @@ export default function EmployeeDetail() {
                         l.sign === '=' ? 'font-semibold text-ink' : 'text-ink-body'
                       }`}
                     >
-                      <span className="text-sm">{l.label}</span>
+                      <span className="text-sm">{l.libelle}</span>
                       <span className="shrink-0 font-mono text-sm">
                         {l.sign === '=' ? '' : l.sign} {num(l.value, 2)} j
                       </span>
@@ -239,7 +239,7 @@ export default function EmployeeDetail() {
                 </div>
                 <div className="mt-3">
                   <LegalBasis
-                    reference={leave.data.legal_ref}
+                    reference={leave.data.reference_legale}
                     text="Le congé s’acquiert par douzième et par mois travaillé, dès la première année."
                     value={`${num(leave.data.entitlement_days, 0)} jours / an`}
                     validity={`retenu : ${leave.data.entitlement_source}`}
@@ -266,22 +266,22 @@ export default function EmployeeDetail() {
                 {(statuses.data ?? []).map((s) => (
                   <li key={s.id} className="px-4 py-2.5">
                     <div className="flex items-center justify-between gap-2">
-                      <span className="text-sm font-medium text-ink">{STATUS_KIND_LABEL[s.kind]}</span>
+                      <span className="text-sm font-medium text-ink">{STATUS_KIND_LABEL[s.genre]}</span>
                       <Badge
                         tone={
-                          s.start_date <= referenceDate && (!s.end_date || s.end_date >= referenceDate)
+                          s.date_debut <= referenceDate && (!s.date_fin || s.date_fin >= referenceDate)
                             ? 'violet'
                             : 'neutral'
                         }
                       >
-                        {s.start_date <= referenceDate && (!s.end_date || s.end_date >= referenceDate)
+                        {s.date_debut <= referenceDate && (!s.date_fin || s.date_fin >= referenceDate)
                           ? 'en cours'
                           : 'échu'}
                       </Badge>
                     </div>
                     <p className="text-2xs text-ink-muted">
-                      du {date(s.start_date)} {s.end_date ? `au ${date(s.end_date)}` : '(sans terme)'}
-                      {s.expected_birth_date && ` · terme prévu le ${date(s.expected_birth_date)}`}
+                      du {date(s.date_debut)} {s.date_fin ? `au ${date(s.date_fin)}` : '(sans terme)'}
+                      {s.date_naissance_prevue && ` · terme prévu le ${date(s.date_naissance_prevue)}`}
                     </p>
                   </li>
                 ))}
@@ -301,7 +301,7 @@ export default function EmployeeDetail() {
                     <li key={r.code}>
                       <p className="text-sm font-medium text-danger-ink">{r.label}</p>
                       <p className="text-xs text-ink-muted">{r.detail}</p>
-                      <LegalBasis compact reference={r.legal_ref} />
+                      <LegalBasis compact reference={r.reference_legale} />
                     </li>
                   ))}
                 </ul>
@@ -324,7 +324,7 @@ export default function EmployeeDetail() {
                     ))}
                   </ul>
                   <div className="mt-2">
-                    <LegalBasis compact reference={delegation.data?.legal_ref} />
+                    <LegalBasis compact reference={delegation.data?.reference_legale} />
                   </div>
                 </>
               )}
@@ -338,7 +338,7 @@ export default function EmployeeDetail() {
                   </p>
                   <p className="mt-0.5 text-xs text-ink-muted">{qualification.data.source}</p>
                   <div className="mt-2">
-                    <LegalBasis compact reference={qualification.data.legal_ref} />
+                    <LegalBasis compact reference={qualification.data.reference_legale} />
                   </div>
                 </>
               )}
@@ -350,18 +350,18 @@ export default function EmployeeDetail() {
       {tab === 'Contrats' && (
         <Card dense>
           <Table head={['Type', 'Poste', 'Début', 'Fin', 'Brut mensuel', 'Statut', '']}>
-            {(e.contracts ?? []).map((c) => (
+            {(e.contrats ?? []).map((c) => (
               <tr key={c.id}>
                 <td className="lux-td">
-                  {CONTRACT_KIND_LABEL[c.kind] ?? c.kind}
-                  {c.is_part_time && <span className="ml-1 text-2xs text-ink-muted">temps partiel</span>}
+                  {CONTRACT_KIND_LABEL[c.genre] ?? c.genre}
+                  {c.est_temps_partiel && <span className="ml-1 text-2xs text-ink-muted">temps partiel</span>}
                 </td>
-                <td className="lux-td">{c.job_title}</td>
-                <td className="lux-td">{date(c.start_date)}</td>
-                <td className="lux-td">{c.end_date ? date(c.end_date) : '—'}</td>
-                <td className="lux-td font-mono">{eur(c.monthly_gross)}</td>
+                <td className="lux-td">{c.intitule_poste}</td>
+                <td className="lux-td">{date(c.date_debut)}</td>
+                <td className="lux-td">{c.date_fin ? date(c.date_fin) : '—'}</td>
+                <td className="lux-td font-mono">{eur(c.brut_mensuel)}</td>
                 <td className="lux-td">
-                  <Badge tone={c.status === 'active' ? 'ok' : 'neutral'}>{c.status}</Badge>
+                  <Badge tone={c.statut === 'active' ? 'ok' : 'neutral'}>{c.statut}</Badge>
                 </td>
                 <td className="lux-td">
                   <Link to={`/contrats/${c.id}`} className="text-xs font-semibold text-action hover:underline">
@@ -379,18 +379,18 @@ export default function EmployeeDetail() {
           <Table head={['Type', 'Du', 'Au', 'Jours', 'Statut', 'Certificat']}>
             {myAbsences.map((a) => (
               <tr key={a.id}>
-                <td className="lux-td">{a.absence_types?.label}</td>
-                <td className="lux-td">{date(a.start_date)}</td>
-                <td className="lux-td">{date(a.end_date)}</td>
-                <td className="lux-td font-mono">{num(a.days_count, 2)}</td>
+                <td className="lux-td">{a.types_absence?.libelle}</td>
+                <td className="lux-td">{date(a.date_debut)}</td>
+                <td className="lux-td">{date(a.date_fin)}</td>
+                <td className="lux-td font-mono">{num(a.nombre_jours, 2)}</td>
                 <td className="lux-td">
-                  <Badge tone={a.status === 'approved' ? 'ok' : a.status === 'pending' ? 'info' : 'neutral'}>
-                    {ABSENCE_STATUS_LABEL[a.status]}
+                  <Badge tone={a.statut === 'approved' ? 'ok' : a.statut === 'pending' ? 'info' : 'neutral'}>
+                    {ABSENCE_STATUS_LABEL[a.statut]}
                   </Badge>
                 </td>
                 <td className="lux-td">
-                  {a.absence_types?.requires_certificate
-                    ? a.certificate_received
+                  {a.types_absence?.certificat_exige
+                    ? a.certificat_recu
                       ? <Badge tone="ok">reçu</Badge>
                       : <Badge tone="blocking">manquant</Badge>
                     : '—'}
@@ -415,10 +415,10 @@ export default function EmployeeDetail() {
             <ul className="divide-y divide-rule">
               {(e.documents ?? []).map((d) => (
                 <li key={d.id} className="flex items-center justify-between py-2">
-                  <span className="text-sm text-ink-body">{d.name}</span>
+                  <span className="text-sm text-ink-body">{d.nom}</span>
                   <span className="text-2xs text-ink-faint">
-                    {date(d.created_at)}
-                    {d.retention_until && ` · conservation jusqu’au ${date(d.retention_until)}`}
+                    {date(d.cree_le)}
+                    {d.conservation_jusquau && ` · conservation jusqu’au ${date(d.conservation_jusquau)}`}
                   </span>
                 </li>
               ))}

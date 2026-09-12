@@ -28,7 +28,7 @@ Conséquences pratiques :
 ## 2. Aucune valeur légale en dur
 
 **La règle.** Aucun seuil, taux ou durée légale n'est écrit dans le code applicatif. Ni en
-TypeScript, ni en Python. Tout vient de `legal_parameters`, daté et sourcé.
+TypeScript, ni en Python. Tout vient de `parametres_legaux`, daté et sourcé.
 
 **Pourquoi.** Une valeur écrite en dur est fausse dès qu'un paramètre change, et invisible depuis
 l'autre application. Elle est un bug **même si elle est juste aujourd'hui**.
@@ -76,7 +76,7 @@ le symptôme avant le remède.
 ### Trois pièges PostgreSQL rencontrés
 
 **Une valeur d'énumération ne peut pas être utilisée dans la transaction qui l'ajoute.** Les
-migrations 20 (`param_family` → `ccss`) et 28 (`contract_kind` → `seasonal`, `apprenticeship`,
+migrations 20 (`famille_parametre` → `ccss`) et 28 (`genre_contrat` → `seasonal`, `apprenticeship`,
 `interim`) existent **uniquement** pour isoler l'ajout. C'est le cas d'une migration d'une seule
 ligne qui est justifiée.
 
@@ -113,7 +113,7 @@ vivait que dans le schéma portable généré (pas dans le moteur PostgreSQL lui
   coûte le même prix à la centième écriture qu'à la millionième — et grandit avec la table, pas
   avec le trafic.
 - **Un index posé doit servir une requête réelle, pas seulement paraître logique.** La migration 55
-  pose un index fonctionnel `upper(last_name)` (égalité, préfixe) **et** un index trigramme GIN
+  pose un index fonctionnel `upper(nom)` (égalité, préfixe) **et** un index trigramme GIN
   (infixe), parce que `fn_employee_rows` cherche avec `ilike '%…%'` : le seul index fonctionnel
   aurait laissé cette requête sans index utile, tout en donnant l'illusion du contraire. Avant de
   poser un index, identifiez la requête qu'il doit servir et vérifiez par `explain` que c'est bien
@@ -121,7 +121,7 @@ vivait que dans le schéma portable généré (pas dans le moteur PostgreSQL lui
   [architecture.md](architecture.md).
 
 Une quatrième convention, propre au domaine du contrat : **une modification d'un élément essentiel
-d'un contrat en cours passe par `fn_amend_contract`**, jamais par un `update` direct sur `contracts`.
+d'un contrat en cours passe par `fn_amend_contract`**, jamais par un `update` direct sur `contrats`.
 C'est la fonction qui clôt l'ancien contrat, en crée un nouveau en reprenant toutes ses clauses par
 `to_jsonb`, et journalise le motif — un `update` direct contournerait ce cheminement sans que rien,
 au niveau du schéma, ne le signale. Voir [moteur-de-regles.md](moteur-de-regles.md).
@@ -133,7 +133,7 @@ au niveau du schéma, ne le signale. Voir [moteur-de-regles.md](moteur-de-regles
 L'isolation entre organisations est imposée **en base, jamais dans l'interface**. Une nouvelle table
 portant des données de société ou de salarié doit :
 
-1. porter `company_id` (et `employee_id` le cas échéant) — la dénormalisation est volontaire, elle
+1. porter `societe_id` (et `salarie_id` le cas échéant) — la dénormalisation est volontaire, elle
    permet à la politique de trancher sans jointure ;
 2. activer RLS dans la même migration ;
 3. recevoir ses politiques de lecture et d'écriture ;
@@ -185,7 +185,7 @@ migration SQL, où un `\\` perdu change le sens d'une expression régulière.
 Les requêtes de détail portent donc un type de ligne explicite :
 
 ```ts
-unwrap<CompanyDetailRow>(await supabase.from('companies').select('…').eq('id', id).single())
+unwrap<CompanyDetailRow>(await supabase.from('societes').select('…').eq('id', id).single())
 ```
 
 `queries.ts` définit ces types en tête de fichier : `CompanyDetailRow`, `ContractDetailRow`,

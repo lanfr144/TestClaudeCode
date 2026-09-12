@@ -7,7 +7,7 @@ quel ordre la suite se déroule.
 Il est tenu à jour à chaque étape. Si le travail s'interrompt, c'est ici qu'on reprend — pas
 dans l'historique d'une conversation.
 
-**État général au 12 septembre 2026** : 94 migrations appliquées, 75 tables, **836 colonnes
+**État général au 12 septembre 2026** : 103 migrations appliquées, 75 tables, **836 colonnes
 toutes commentées**, 190 vérifications en six suites, 0 échec, build à 0 erreur TypeScript,
 schémas Oracle et MySQL régénérés à **0 point non traduit**, dépôt et base réconciliés.
 
@@ -21,7 +21,7 @@ schémas Oracle et MySQL régénérés à **0 point non traduit**, dépôt et ba
 | 1b | Commentaires sur toutes les tables et colonnes | ✅ **Fait** — 75/75 tables, 836/836 colonnes | — |
 | 2 | Congés : statut « proposé », contre-proposition | ✅ **Fait** — migration 65 | — |
 | 3 | CHECK de liste → tables de domaine | ✅ **Fait** | — |
-| 4 | Bi-temporalité, `valid_to` non nul au 31/12/2037 | ✅ **Fait** — migration 70, les 13 tables héritées | — |
+| 4 | Bi-temporalité, `fin_validite` non nul au 31/12/2037 | ✅ **Fait** — migration 70, les 13 tables héritées | — |
 | 5 | Codes pays ISO-3, `frontalier_xxx` | ✅ **Fait** — migrations 67b et 67f | — |
 | 6 | `VARCHAR2(n CHAR)` sur Oracle | ✅ **Fait** | — |
 | 7 | Sévérité CCSS + ordonnanceur natif | ✅ **Fait** — `pg_cron` installé, tâche active | — |
@@ -46,14 +46,14 @@ autorisation, le connecteur ayant refusé une migration qui renomme 55 tables en
 il ne contient que des noms, séparé de l'outil qui les applique. **57 tables** et
 **328 colonnes**, vérifiés contre le catalogue réel : rien d'oublié, rien d'inventé, aucune
 collision — y compris le cas sournois de deux colonnes d'une *même* table qui aboutiraient au
-même nom français (`from_date` et `start_date` deviennent tous deux `date_debut`).
+même nom français (`date_debut` et `date_debut` deviennent tous deux `date_debut`).
 
 La règle suivie est celle des tables que vous aviez déjà nommées : nom d'abord et qualificatif
 ensuite (`date_debut`), pluriel pour les tables, **aucun accent dans un identifiant** — Oracle
 et MySQL ne les traitent pas pareil —, et les sigles métier conservés (`cct`, `ccss`, `iban`,
 `rcs`, `cdd`).
 
-**La migration** — [`76_tables_en_francais.sql`](../luxrh/supabase/migrations/76_tables_en_francais.sql),
+**La migration** — [`20260912110907_76_tables_en_francais.sql`](../luxrh/supabase/migrations/20260912110907_76_tables_en_francais.sql),
 écrite, **non appliquée**.
 
 **L'outil de réécriture du code** — [`tools/renommer.py`](../tools/renommer.py).
@@ -68,7 +68,7 @@ paraît tenir, et les **cent cinquante fonctions du moteur tombent au premier ap
 La migration reconstruit donc chaque fonction depuis sa propre définition, noms substitués,
 dans le même bloc que le renommage. `\m` et `\M` sont les bornes de mot de PostgreSQL et le
 souligné y compte comme lettre : `\mcontracts\M` ne peut pas mordre dans
-`fn_contract_compliance` ni dans `contract_id`. C'est cette propriété qui rend la substitution
+`fn_contract_compliance` ni dans `contrat_id`. C'est cette propriété qui rend la substitution
 textuelle sûre sur des identifiants.
 
 ### Trois blocs, et pourquoi
@@ -82,7 +82,7 @@ déjà (18 tables l'étaient avant de commencer).
 | Bloc | Portée | Méthode | Risque |
 |---|---|---|---|
 | **A** | 55 tables | Remplacement mot à mot partout | Nul : un nom de table ne désigne qu'une table |
-| **B** | 263 colonnes à nom composé | Idem | Nul : `monthly_gross` ne peut venir que de la base |
+| **B** | 263 colonnes à nom composé | Idem | Nul : `brut_mensuel` ne peut venir que de la base |
 | **C** | 43 colonnes à nom simple | **Littéraux de chaîne uniquement** | Réel, d'où le traitement à part |
 
 Le bloc C est le seul délicat. En TypeScript, `name` est aussi bien une colonne qu'une
@@ -109,7 +109,7 @@ d'interface, des commentaires et des chemins de route — jamais des variables.
 
 ```bash
 # 1. la base — demande votre autorisation
-#    (appliquer luxrh/supabase/migrations/76_tables_en_francais.sql)
+#    (appliquer luxrh/supabase/migrations/20260912110907_76_tables_en_francais.sql)
 # 2. le code, dans la foulée
 luxrh-py/.venv/Scripts/python tools/renommer.py tables --ecrire
 # 3. les types, la construction, les 190 vérifications
@@ -127,8 +127,8 @@ Un renommage s'annule par le renommage inverse : l'opération est réversible.
 Fait en trois temps, et le découpage a son intérêt.
 
 **Migration 71 — les colonnes structurelles, par une boucle.** Environ 350 des 519 colonnes
-non commentées étaient les mêmes d'une table à l'autre : `id`, `created_at`, `organization_id`,
-`employee_id`, `debut_validite`. Les écrire une par une aurait produit 350 variantes d'un même
+non commentées étaient les mêmes d'une table à l'autre : `id`, `cree_le`, `organisation_id`,
+`salarie_id`, `debut_validite`. Les écrire une par une aurait produit 350 variantes d'un même
 texte, promises à diverger. Un texte unique par nom de colonne, posé par une boucle qui
 **n'écrase jamais** un commentaire existant — celui-ci a été pensé pour sa table, il est
 toujours meilleur.
@@ -138,7 +138,7 @@ de la table : le `code` d'un pays et le `code` d'une convention ne disent pas la
 Un texte générique y aurait été faux, et un commentaire faux est pire que pas de commentaire.
 
 **Le critère d'écriture** : dire ce que le nom ne dit pas. « Identifiant du salarié » sur
-`employee_id` n'apprend rien ; « la ligne suit le salarié et non son contrat, elle survit à
+`salarie_id` n'apprend rien ; « la ligne suit le salarié et non son contrat, elle survit à
 l'avenant » apprend quelque chose.
 
 Conséquence : `schema/oracle.sql` et `schema/mysql.sql` portent désormais 836 `comment on
@@ -149,7 +149,7 @@ de session et 1 encore hier.
 
 ## 2. Congés : proposition et contre-proposition
 
-**Fait** : la valeur `proposed` existe dans `absence_status` (migration 60, isolée à cause du
+**Fait** : la valeur `proposed` existe dans `statut_absence` (migration 60, isolée à cause du
 piège des énumérations).
 
 **À écrire** :
@@ -183,19 +183,19 @@ dans les lignes qui la portent — ce qu'un `check` ne permet pas.
 
 **Fait partout** — migration 70. Les 16 tables neuves portaient déjà `debut_validite` au
 01/01/1970 et `fin_validite` **non nul** au 31/12/2037 ; les 13 tables héritées les ont
-rejointes : `absence_entitlements`, `collective_agreements`, `company_collective_agreements`,
-`company_rate_periods`, `contract_collective_agreements`, `contract_pay_components`,
-`employee_disabilities`, `employee_tax_cards`, `legal_parameters`, `sanction_categories`,
-`sanction_types`, `tax_brackets`, `tax_credits`.
+rejointes : `droits_absence`, `conventions_collectives`, `conventions_de_la_societe`,
+`periodes_taux_societe`, `conventions_du_contrat`, `elements_remuneration`,
+`handicaps_salarie`, `fiches_retenue_impot`, `parametres_legaux`, `categories_sanction`,
+`types_sanction`, `tranches_impot`, `credits_impot`.
 
 **Le moteur n'a pas eu à être réécrit**, contrairement à ce qui était craint ici : les
-conditions de la forme `valid_to is null or valid_to > J` continuent de fonctionner, la
+conditions de la forme `fin_validite is null or fin_validite > J` continuent de fonctionner, la
 première moitié devenant simplement toujours fausse. Remplacer NULL par une date **rétrécit**
 l'intervalle, et un rétrécissement ne peut pas créer de chevauchement : les contraintes
 d'exclusion GiST sont restées satisfaites.
 
 **Le front, lui, a cassé — et c'est là qu'était le vrai risque.** Six écrans sélectionnaient la
-version en vigueur par `!row.valid_to` **seul**, sans comparaison de repli. Ce test devient
+version en vigueur par `!row.fin_validite` **seul**, sans comparaison de repli. Ce test devient
 toujours faux : le tableau de bord aurait perdu l'indice, l'assistant contrat la durée légale
 de travail, l'écran Réglages toutes ses valeurs — **silencieusement**, sans une seule erreur.
 Corrigé par `estEnVigueur()` dans `src/lib/format.ts`, et `sansFin()` pour l'affichage, afin que
@@ -205,7 +205,7 @@ complète.
 Une migration de base peut casser une interface sans qu'aucune des deux ne le signale. C'est
 l'argument des trois niveaux de défense pris à l'envers : il faut vérifier les trois.
 
-> **Note sur le motif.** La limite de 2038 vise le type `TIMESTAMP` de MySQL. Nos `valid_to`
+> **Note sur le motif.** La limite de 2038 vise le type `TIMESTAMP` de MySQL. Nos `fin_validite`
 > sont des `DATE` (MySQL : jusqu'en 9999) et nos horodatages sont émis en `DATETIME(6)`, sans
 > cette limite. La sentinelle reste un bon choix — pour une autre raison : elle supprime les
 > tests de nullité disséminés dans le moteur. Convention retenue de bout en bout.
@@ -218,11 +218,11 @@ première quinzaine avant un déménagement.
 
 ## 5. Codes pays ISO-3
 
-**Fait** : `frontalier_fra`, `frontalier_bel`, `frontalier_deu` ajoutés à `residency_kind`.
+**Fait** : `frontalier_fra`, `frontalier_bel`, `frontalier_deu` ajoutés à `genre_residence`.
 
 **Reste** : dater les valeurs à deux lettres comme échues, une fois les deux fronts migrés. Les
-retirer maintenant casserait les types TypeScript et Python. Et normaliser `address_zones.country`
-et `employees.country` de alpha-2 vers alpha-3.
+retirer maintenant casserait les types TypeScript et Python. Et normaliser `zones_adresse.country`
+et `salaries.country` de alpha-2 vers alpha-3.
 
 ---
 
@@ -236,7 +236,7 @@ accentués.
 
 ## 7. Sévérité CCSS et ordonnanceur
 
-**Fait** : valeur `problem` ajoutée à `severity_kind`. `blocking` est conservé : les deux ne
+**Fait** : valeur `problem` ajoutée à `genre_severite`. `blocking` est conservé : les deux ne
 disent pas la même chose — `problem` constate un retard, `blocking` empêche une opération.
 
 **À écrire** — logique temporelle sur le délai d'envoi à la CCSS :
@@ -271,7 +271,7 @@ n'ont pas de serveur commun), et elle se porte. Les équivalents `DBMS_SCHEDULER
 `EVENT SCHEDULER` sont écrits en fin de ce même fichier.
 
 **Éprouvée sur données réelles, pas seulement appelée.** Un premier appel a renvoyé
-« 0 alerte examinée » : la table `compliance_alerts` est vide sur ce déploiement, le zéro
+« 0 alerte examinée » : la table `alertes_conformite` est vide sur ce déploiement, le zéro
 était donc honnête — mais il ne prouvait rien. Cinq alertes d'essai ont été insérées avec une
 sévérité **volontairement fausse**, pour que « ne rien changer » fasse échouer le test :
 
@@ -308,7 +308,7 @@ signature d'un tirage à pile ou face, donc d'une règle fausse.
 | Écarts sexe déclaré / dérivé | 160 / 322 | **0 / 322** |
 | Matricules valides (Luhn + Verhoeff) | 322 | **322** |
 
-`employees.sexe_legal` est **recalculé à chaque écriture** par déclencheur : toute valeur soumise
+`salaries.sexe_legal` est **recalculé à chaque écriture** par déclencheur : toute valeur soumise
 est ignorée. La colonne est non saisissable **par construction**, pas par interdiction.
 
 > **Le masquage au salarié a été écarté, et c'est délibéré.** L'article 15 du RGPD donne à la
@@ -363,7 +363,7 @@ heure. D'où trois niveaux, et non un.
 | Niveau | Table | Ce qu'il porte |
 |---|---|---|
 | 1 | `ref_condition_travail` | Ce qu'est une condition : pénibilité, insalubrité, danger, et ce que chaque CCT ajoute |
-| 2 | `cct_regle_prime` | Ce que la convention prévoit : taux **ou** montant, assiette, unité, seuil d'exposition, article, `source_url` |
+| 2 | `cct_regle_prime` | Ce que la convention prévoit : taux **ou** montant, assiette, unité, seuil d'exposition, article, `url_source` |
 | 3 | `creneau_condition` | Ce qui a été réellement fait : qui, quand, où, **de quelle heure à quelle heure** |
 
 `fn_primes_conditions(salarié, du, au)` croise les trois. Le niveau 3 est le maillon qui
@@ -373,7 +373,7 @@ manquait : sans lui, on connaît le taux sans savoir qui y a droit ni combien de
 
 - un taux **ou** un montant, jamais les deux — une règle ambiguë ne se calcule pas ;
 - un taux exige une assiette ;
-- `source_url` obligatoire et non vide : une règle conventionnelle sans source ne doit pas
+- `url_source` obligatoire et non vide : une règle conventionnelle sans source ne doit pas
   servir à payer ;
 - `minutes` calculé par la base, minuit franchi compris ;
 - un créneau se rattache au planning **ou** au registre du temps — flottant, il ne se
@@ -384,7 +384,7 @@ une assiette non résoluble dans `non_calculables`, et le total est toujours acc
 qu'il ne couvre pas.
 
 **Un défaut trouvé au premier essai réel** (migrations 64b puis 64c) : la résolution de la
-convention n'interrogeait que `contract_collective_agreements`, table **vide** sur le
+convention n'interrogeait que `conventions_du_contrat`, table **vide** sur le
 déploiement — le rattachement se fait au niveau de la société. Tous les créneaux ressortaient
 « sans règle ». `fn_applicable_cbas` faisait déjà le travail sur les trois niveaux. *Avant
 d'écrire une résolution, vérifier que le moteur n'en a pas déjà une.*
@@ -422,7 +422,7 @@ et l'écran de planning qui associe les conditions aux créneaux.
 4. ✅ Sévérité CCSS — migrations 66 et 73 ; `pg_cron` 1.6.4 installé, tâche nocturne active et éprouvée
 5. ✅ Quatre adresses et ISO-3 — migrations 67, 67b, 67e, 67f, 67g
 6. ✅ Consentements, santé, enfants — migrations 68 et 68b
-7. ✅ `valid_to` non nul sur les 13 tables héritées — migration 70
+7. ✅ `fin_validite` non nul sur les 13 tables héritées — migration 70
 8. ✅ Les commentaires de colonne — migrations 71, 72, 72b, 72c : **836 sur 836**
 9. ◐ Le français intégral — dictionnaire, migration 76 et outil de réécriture prêts ; **en attente d'autorisation**
 10. ✅ Vérification de la cohérence du projet — outillée, `tools/verifier_coherence.py`, **0 écart**
@@ -439,7 +439,7 @@ voir [`ecarts-a-corriger.md`](ecarts-a-corriger.md) § 0.
 | Action | Pourquoi |
 |---|---|
 | Créer le compte administrateur | Jamais écrit dans le dépôt, qui est public. Voir `fn_create_app_user` |
-| `dblink_conninfo` dans `app_secrets` | Sans quoi la trace d'accès n'est pas autonome |
+| `dblink_conninfo` dans `secrets_application` | Sans quoi la trace d'accès n'est pas autonome |
 | `DISTANCE_API_KEY` | L'Edge Function de distance est inerte sans elle |
 | ~~Installer `pg_cron`~~ | ✅ Fait le 12 septembre — 1.6.4, tâche `luxrh_severites_ccss` active |
 | ~~Réparer l'historique 43/44~~ | ✅ Fait le 12 septembre. Lancer `tools/dump_migrations.py` avant tout `db push` |

@@ -92,7 +92,7 @@ de licenciement, paramètres sans historique 2019, et **si le barème d'impôt e
 ### `rls.test.mjs` — le cloisonnement
 
 Deux séries de contrôles depuis un **autre espace de travail** : huit tables (sociétés, salariés,
-contrats, plannings, shifts, absences, journal d'audit, documents) doivent renvoyer **zéro ligne** —
+contrats, plannings, creneaux, absences, journal d'audit, documents) doivent renvoyer **zéro ligne** —
 pas une erreur, zéro ligne — et cinq fonctions du moteur (`fn_compliance_scan`,
 `fn_validate_schedule`, `fn_employee_sensitive`, `fn_headcount`, `fn_leave_balance`) doivent
 **refuser**.
@@ -148,7 +148,7 @@ Côté refus : un salarié ne peut pas exporter un collègue, ni la fiduciaire, 
 référentiel.
 
 Côté aller-retour : recharger un référentiel déjà en place ne doit **rien ajouter, rien rejeter** ;
-les CCT partagées (`organization_id` nul) doivent bien être dans l'export ; les lignes doivent
+les CCT partagées (`organisation_id` nul) doivent bien être dans l'export ; les lignes doivent
 porter des **clés naturelles** sans identifiant technique, sinon l'import dupliquerait ; un format
 étranger ou un genre incorrect doivent être refusés **et nommés**.
 
@@ -201,7 +201,7 @@ par ces migrations puis immédiatement **attrapées par les tests**, avant toute
 
 - La migration 48 ajoutait des clés étrangères composites *à côté* des clés simples existantes.
   PostgREST y voyait alors deux relations entre les mêmes tables, et une requête imbriquée du type
-  `employees?select=*,contracts(...)` échouait en `PGRST201`. Sur les 154 vérifications d'alors, 4 ont
+  `salaries?select=*,contrats(...)` échouait en `PGRST201`. Sur les 154 vérifications d'alors, 4 ont
   échoué à ce moment précis. La migration 53 retire les clés simples devenues redondantes.
 - La migration 50 écrivait `manques := manques || 'accident_class_rates'` — un littéral sans type,
   résolu comme `anyarray || anyarray`, et rejeté en « malformed array literal ». La migration 54
@@ -238,9 +238,9 @@ rejouable dès que le jeu de démonstration changeait.
 | Fonction / migration | À vérifier |
 |---|---|
 | `fn_time_entry_rows` (51) | Qu'un appel sans `p_from`/`p_to` est refusé, et que la projection est bornée à la période |
-| `fn_log_access_autonomous` (51) | Que la trace porte `is_autonomous = false` tant que `app_secrets.dblink_conninfo` est absent, et `true` une fois la clé chargée — ce second cas suppose une base de test avec `dblink` configurée |
+| `fn_log_access_autonomous` (51) | Que la trace porte `est_autonome = false` tant que `secrets_application.dblink_conninfo` est absent, et `true` une fois la clé chargée — ce second cas suppose une base de test avec `dblink` configurée |
 | `fn_shift_travel` / `fn_schedule_travel` (52) | Qu'ils renvoient `found: false` tant que `mileage_allowance_eur_per_km` n'est pas chargé ; qu'une distance n'est transmise qu'une fois par couple ; que la transmission d'une adresse est tracée en `DOWNLOAD` |
-| Clés composites (48) et clés simples retirées (53) | Qu'une écriture violant une clé composite d'isolation est rejetée ; qu'une requête imbriquée `employees?select=*,contracts(...)` ne lève plus `PGRST201` — la régression de 53 mérite une assertion qui empêche son retour |
+| Clés composites (48) et clés simples retirées (53) | Qu'une écriture violant une clé composite d'isolation est rejetée ; qu'une requête imbriquée `salaries?select=*,contrats(...)` ne lève plus `PGRST201` — la régression de 53 mérite une assertion qui empêche son retour |
 | Déclencheur `check_address` (56) | Qu'une adresse hors zone est refusée **à l'écriture**, et non seulement par `fn_validate_address` appelée à part |
 
 ---

@@ -77,7 +77,7 @@ def client() -> Client:
 
 
 def sign_in(email: str, password: str) -> None:
-    result = _base_client().auth.sign_in_with_password({"email": email, "password": password})
+    result = _base_client().auth.sign_in_with_password({"courriel": email, "password": password})
     _store_session(result)
 
 
@@ -85,8 +85,8 @@ def _store_session(result) -> None:
     st.session_state["session"] = {
         "access_token": result.session.access_token,
         "refresh_token": result.session.refresh_token,
-        "user_id": result.user.id,
-        "email": result.user.email,
+        "compte_id": result.user.id,
+        "courriel": result.user.email,
     }
     st.cache_data.clear()
 
@@ -95,7 +95,7 @@ class EmailAlreadyRegistered(Exception):
     """L'adresse existe déjà : Supabase répond « succès » sans envoyer de courriel."""
 
 
-def sign_up(email: str, password: str, full_name: str, org_name: str, org_kind: str) -> bool:
+def sign_up(email: str, password: str, nom_complet: str, org_name: str, genre_organisation: str) -> bool:
     """Ouvre un espace. Retourne True si une session est ouverte immédiatement.
 
     Lève EmailAlreadyRegistered lorsque l'adresse est déjà prise. Supabase ne le
@@ -104,14 +104,14 @@ def sign_up(email: str, password: str, full_name: str, org_name: str, org_kind: 
     """
     result = _base_client().auth.sign_up(
         {
-            "email": email,
+            "courriel": email,
             "password": password,
             "options": {
                 "email_redirect_to": app_url(),
                 "data": {
-                    "full_name": full_name,
+                    "nom_complet": nom_complet,
                     "organization_name": org_name,
-                    "organization_kind": org_kind,
+                    "organization_kind": genre_organisation,
                 },
             },
         }
@@ -231,9 +231,9 @@ def profile() -> dict | None:
     if "profile" not in st.session_state:
         data = (
             client()
-            .table("profiles")
-            .select("*, organizations(*)")
-            .eq("id", session["user_id"])
+            .table("profils")
+            .select("*, organisations(*)")
+            .eq("id", session["compte_id"])
             .maybe_single()
             .execute()
         )
@@ -241,36 +241,36 @@ def profile() -> dict | None:
     return st.session_state.get("profile")
 
 
-def companies() -> list[dict]:
-    if "companies" not in st.session_state:
-        st.session_state["companies"] = (
+def societes() -> list[dict]:
+    if "societes" not in st.session_state:
+        st.session_state["societes"] = (
             client()
-            .table("companies")
+            .table("societes")
             .select(
-                "*, company_collective_agreements(valid_from, valid_to, "
-                "collective_agreements(name, code, sector, scope))"
+                "*, conventions_de_la_societe(debut_validite, fin_validite, "
+                "conventions_collectives(nom, code, secteur, portee))"
             )
-            .order("legal_name")
+            .order("raison_sociale")
             .execute()
             .data
             or []
         )
-    return st.session_state["companies"]
+    return st.session_state["societes"]
 
 
 def refresh_companies() -> None:
-    st.session_state.pop("companies", None)
+    st.session_state.pop("societes", None)
 
 
 def active_company() -> dict | None:
-    all_companies = companies()
+    all_companies = societes()
     if not all_companies:
         return None
-    active_id = st.session_state.get("company_id")
+    active_id = st.session_state.get("societe_id")
     for company in all_companies:
         if company["id"] == active_id:
             return company
-    st.session_state["company_id"] = all_companies[0]["id"]
+    st.session_state["societe_id"] = all_companies[0]["id"]
     return all_companies[0]
 
 

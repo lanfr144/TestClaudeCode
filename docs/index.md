@@ -69,8 +69,8 @@ jamais estimés.
 | Fonctions du moteur | 110 noms distincts, 111 fonctions installées (`fn_make_national_id` est surchargée) : 102 `fn_*` et 9 fonctions de contrôle d'accès ou déclencheurs techniques. 65 `security definer`, dont 54 exécutables par `authenticated` ; 0 exécutable par `anon` |
 | Tables vivantes | 53, toutes sous Row Level Security ; 184 politiques (52 lecture, 44 insertion, 45 mise à jour, 43 suppression) |
 | Types énumérés | 20 |
-| Clés de paramètres légaux chargées (`legal_parameters`) | 100 clés distinctes |
-| Clés de paramètres attendues (`expected_parameters`, migration 50) | 76, dont `mileage_allowance_eur_per_km` et `accident_class_rates` déclarées et **vides** |
+| Clés de paramètres légaux chargées (`parametres_legaux`) | 100 clés distinctes |
+| Clés de paramètres attendues (`parametres_attendus`, migration 50) | 76, dont `mileage_allowance_eur_per_km` et `accident_class_rates` déclarées et **vides** |
 | Écrans React | 22 composants de page |
 | Écrans Streamlit | 16 vues |
 | Suites de tests | 6, soit 190 vérifications, 0 échec |

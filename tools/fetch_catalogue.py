@@ -103,9 +103,11 @@ def main() -> int:
 
     tables = catalogue.get("tables") or []
     enums = catalogue.get("enums") or {}
-    commentes = sum(1 for t in tables if t.get("comment"))
+    # Le catalogue nomme ses clés en français depuis le renommage : la fonction
+    # `fn_schema_catalogue` émet « commentaire », non « comment ».
+    commentes = sum(1 for t in tables if t.get("commentaire"))
     colonnes = sum(len(t.get("columns") or []) for t in tables)
-    col_commentees = sum(1 for t in tables for c in (t.get("columns") or []) if c.get("comment"))
+    col_commentees = sum(1 for t in tables for c in (t.get("columns") or []) if c.get("commentaire"))
 
     if not tables:
         print("Catalogue vide : rien n'est écrit, pour ne pas détruire l'existant.",

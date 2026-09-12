@@ -492,6 +492,81 @@ COLONNES: dict[str, str] = {
 }
 
 
+# ============================================================ types énumérés
+#
+# Vingt types énumérés subsistent. Ils font partie de la surface publique au même
+# titre que les tables : `database.types.ts` les expose sous `Enums`, et une
+# valeur de colonne s'y réfère par son type.
+#
+# Leur traduction n'est pas cosmétique : elle a été **imposée** par une collision.
+# `tax_class` était à la fois un nom de colonne et un nom de type. Renommer la
+# colonne substituait aussi la référence au type dans la signature des fonctions,
+# qui pointait alors vers un type inexistant — la migration 77 a échoué là-dessus,
+# et a proprement tout annulé.
+#
+# Conséquence assumée : la colonne et le type portent désormais le même nom,
+# `classe_impot`. La substitution textuelle ne peut pas les distinguer, puisque
+# c'est le même mot qui les nommait. PostgreSQL, lui, les distingue sans peine :
+# types et colonnes vivent dans des espaces de noms séparés.
+#
+# À terme, ces types ont vocation à devenir des tables de domaine, comme la
+# migration 61 l'a fait pour huit d'entre eux : une valeur ajoutée à un ENUM
+# demande une migration, une ligne ajoutée à une table n'en demande pas.
+
+TYPES: dict[str, str] = {
+    "absence_category":     "categorie_absence",
+    "absence_status":       "statut_absence",
+    "alert_state":          "etat_alerte",
+    "app_role":             "role_application",
+    "cba_block":            "bloc_convention",
+    "cba_scope":            "portee_convention",
+    "contract_kind":        "genre_contrat",
+    "contract_status":      "statut_contrat",
+    "document_stage":       "etape_document",
+    "employee_status_kind": "genre_statut_salarie",
+    "org_kind":             "genre_organisation",
+    "param_family":         "famille_parametre",
+    "pay_component_kind":   "genre_element_remuneration",
+    "qualification_kind":   "genre_qualification",
+    "residency_kind":       "genre_residence",
+    "schedule_status":      "statut_planning",
+    "severity_kind":        "genre_severite",
+    "sex_kind":             "genre_sexe",
+    "tax_class":            "classe_impot",
+    "tax_periodicity":      "periodicite_impot",
+}
+
+
+# ============================================================ sorties de fonctions
+#
+# Les fonctions qui renvoient `TABLE(...)` nomment leurs colonnes de sortie. Ces
+# noms-là ne sont pas des colonnes de table : le catalogue ne les voit pas, et la
+# vérification ci-dessous ne peut donc pas les contrôler. Ils font pourtant partie
+# de la surface publique — ce sont les clés JSON que lisent les deux interfaces.
+#
+# Les laisser en anglais donnerait une API à moitié traduite : `fn_referential_gaps`
+# renverrait `cle_parametre` à côté de `gap_days`.
+#
+# Attention : renommer une colonne de sortie change le type de retour. PostgreSQL
+# refuse alors `create or replace` ; la migration doit supprimer puis recréer la
+# fonction, et lui restituer ses droits.
+
+SORTIES_RPC: dict[str, str] = {
+    "covers_since":      "couvre_depuis",
+    "earliest_covered":  "couvert_depuis",
+    "latest_covered":    "couvert_jusqua",
+    "gap_days":          "jours_manquants",
+    "gap_from":          "trou_du",
+    "gap_to":            "trou_au",
+    "source_key":        "cle_source",
+    "derived":           "derive",
+    "difference":        "ecart",
+    "published":         "publie",
+    "origin":            "origine",
+    "national_id":       "matricule_national",
+}
+
+
 def verifier() -> int:
     """Confronte le dictionnaire au catalogue : rien d'oublié, rien d'inventé."""
     catalogue = json.loads((RACINE / "schema" / "catalogue.json").read_text(encoding="utf-8"))

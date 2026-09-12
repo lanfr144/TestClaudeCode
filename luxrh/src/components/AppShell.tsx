@@ -18,7 +18,7 @@ const RAILS: Record<string, { title: string; items: { to: string; label: string 
     title: 'Exploitation',
     items: [
       { to: '/planning', label: 'Grille hebdomadaire' },
-      { to: '/planning/modeles', label: 'Modèles de shifts' },
+      { to: '/planning/modeles', label: 'Modèles de creneaux' },
       { to: '/planning/registre', label: 'Registre du temps' },
     ],
   },
@@ -66,7 +66,7 @@ function railFor(pathname: string) {
 }
 
 function CompanySwitcher() {
-  const { companies, activeCompany, setActiveCompany } = useApp()
+  const { societes, activeCompany, setActiveCompany } = useApp()
   const [open, setOpen] = useState(false)
   const [q, setQ] = useState('')
   const ref = useRef<HTMLDivElement>(null)
@@ -79,7 +79,7 @@ function CompanySwitcher() {
     return () => document.removeEventListener('mousedown', onClick)
   }, [])
 
-  const filtered = companies.filter((c) => c.legal_name.toLowerCase().includes(q.toLowerCase()))
+  const filtered = societes.filter((c) => c.raison_sociale.toLowerCase().includes(q.toLowerCase()))
 
   return (
     <div className="relative" ref={ref}>
@@ -89,7 +89,7 @@ function CompanySwitcher() {
         aria-expanded={open}
         className="flex min-h-[34px] items-center gap-2 rounded bg-violet-deep/70 px-3 text-sm font-medium text-white hover:bg-violet-deep"
       >
-        <span className="max-w-[220px] truncate">{activeCompany?.legal_name ?? 'Choisir un dossier'}</span>
+        <span className="max-w-[220px] truncate">{activeCompany?.raison_sociale ?? 'Choisir un dossier'}</span>
         <span aria-hidden className="text-2xs opacity-80">▾</span>
       </button>
       {open && (
@@ -116,12 +116,12 @@ function CompanySwitcher() {
                   }`}
                 >
                   <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded bg-violet text-2xs font-bold text-white">
-                    {c.legal_name.slice(0, 2).toUpperCase()}
+                    {c.raison_sociale.slice(0, 2).toUpperCase()}
                   </span>
                   <span className="min-w-0">
-                    <span className="block truncate text-sm font-medium text-ink">{c.legal_name}</span>
-                    <span className="block truncate text-2xs text-ink-muted">
-                      {c.sector ?? 'Secteur non renseigné'}
+                    <span className="bloc truncate text-sm font-medium text-ink">{c.raison_sociale}</span>
+                    <span className="bloc truncate text-2xs text-ink-muted">
+                      {c.secteur ?? 'Secteur non renseigné'}
                     </span>
                   </span>
                 </button>
@@ -183,10 +183,10 @@ export function AppShell({ breadcrumb, children }: { breadcrumb?: ReactNode[]; c
             </NavLink>
             <button
               onClick={signOut}
-              title={`${profile?.full_name ?? 'Utilisateur'} — se déconnecter`}
+              title={`${profile?.nom_complet ?? 'Utilisateur'} — se déconnecter`}
               className="flex h-8 w-8 items-center justify-center rounded-md bg-white/15 text-xs font-bold"
             >
-              {initials(profile?.full_name?.split(' ')[0], profile?.full_name?.split(' ')[1])}
+              {initials(profile?.nom_complet?.split(' ')[0], profile?.nom_complet?.split(' ')[1])}
             </button>
           </div>
         </div>
@@ -227,7 +227,7 @@ export function AppShell({ breadcrumb, children }: { breadcrumb?: ReactNode[]; c
           aria-label="Fil d'Ariane"
           className="mx-auto flex max-w-[1440px] items-center gap-1.5 px-4 py-2 text-xs text-ink-muted"
         >
-          <span className="font-medium text-ink-body">{activeCompany?.legal_name ?? 'Aucun dossier'}</span>
+          <span className="font-medium text-ink-body">{activeCompany?.raison_sociale ?? 'Aucun dossier'}</span>
           {breadcrumb?.map((b, i) => (
             <span key={i} className="flex items-center gap-1.5">
               <span aria-hidden className="text-ink-faint">›</span>

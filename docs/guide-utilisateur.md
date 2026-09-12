@@ -147,7 +147,7 @@ Deux comportements qui surprennent parfois, et qui sont voulus :
   un service coupé 11:00–15:00 puis 17:00–23:00 ne déclenche rien ;
 - la pause obligatoire s'apprécie, elle, **service par service**.
 
-**Modèles de shifts** — vacations réutilisables : nom, début, fin, pause, service, couleur.
+**Modèles de creneaux** — vacations réutilisables : nom, début, fin, pause, service, couleur.
 
 **Registre du temps de travail** — le temps réellement travaillé, par période, saisi jour par jour.
 C'est ce registre, et non le planning prévisionnel, qui alimente la moyenne de la période de

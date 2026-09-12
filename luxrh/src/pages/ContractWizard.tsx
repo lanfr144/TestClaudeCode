@@ -14,45 +14,45 @@ import { currentCbas, date, estEnVigueur, eur, num } from '@/lib/format'
 const STEPS = ['Employé', 'Poste & rémunération', 'Temps de travail', 'Essai & durée', 'Relecture'] as const
 
 type Draft = {
-  employee_id: string
+  salarie_id: string
   new_employee: boolean
-  first_name: string
-  last_name: string
-  birth_date: string
-  residency: 'resident' | 'frontalier_fr' | 'frontalier_be' | 'frontalier_de'
+  prenom: string
+  nom: string
+  date_naissance: string
+  residence: 'resident' | 'frontalier_fr' | 'frontalier_be' | 'frontalier_de'
   qualification: 'qualified' | 'unqualified'
-  national_id: string
+  matricule_national: string
   iban: string
-  kind: 'cdi' | 'cdd'
-  job_title: string
-  job_description: string
-  work_place: string
-  category: string
-  monthly_gross: string
-  start_date: string
-  end_date: string
-  cdd_reason: string
-  weekly_hours: string
-  days_per_week: string
-  work_distribution: string
-  reference_period_months: string
-  night_work: boolean
-  annual_leave_days: string
-  break_minutes: string
-  non_compete_clause: boolean
-  exclusivity_clause: boolean
-  probation_length: string
-  probation_unit: 'weeks' | 'months'
+  genre: 'cdi' | 'cdd'
+  intitule_poste: string
+  description_poste: string
+  lieu_travail: string
+  categorie: string
+  brut_mensuel: string
+  date_debut: string
+  date_fin: string
+  motif_cdd: string
+  heures_hebdomadaires: string
+  jours_par_semaine: string
+  repartition_travail: string
+  periode_reference_mois: string
+  travail_nuit: boolean
+  jours_conge_annuel: string
+  pause_minutes: string
+  clause_non_concurrence: boolean
+  clause_exclusivite: boolean
+  duree_essai: string
+  unite_essai: 'weeks' | 'mois'
 }
 
 const EMPTY: Draft = {
-  employee_id: '', new_employee: true, first_name: '', last_name: '', birth_date: '',
-  residency: 'resident', qualification: 'qualified', national_id: '', iban: '',
-  kind: 'cdi', job_title: '', job_description: '', work_place: '', category: '',
-  monthly_gross: '', start_date: '', end_date: '', cdd_reason: '',
-  weekly_hours: '40', days_per_week: '5', work_distribution: '5 jours sur 7, horaires variables',
-  reference_period_months: '4', night_work: false, annual_leave_days: '', break_minutes: '30',
-  non_compete_clause: false, exclusivity_clause: false, probation_length: '3', probation_unit: 'months',
+  salarie_id: '', new_employee: true, prenom: '', nom: '', date_naissance: '',
+  residence: 'resident', qualification: 'qualified', matricule_national: '', iban: '',
+  genre: 'cdi', intitule_poste: '', description_poste: '', lieu_travail: '', categorie: '',
+  brut_mensuel: '', date_debut: '', date_fin: '', motif_cdd: '',
+  heures_hebdomadaires: '40', jours_par_semaine: '5', repartition_travail: '5 jours sur 7, horaires variables',
+  periode_reference_mois: '4', travail_nuit: false, jours_conge_annuel: '', pause_minutes: '30',
+  clause_non_concurrence: false, clause_exclusivite: false, duree_essai: '3', unite_essai: 'mois',
 }
 
 export default function ContractWizard() {
@@ -66,7 +66,7 @@ export default function ContractWizard() {
   const [err, setErr] = useState<unknown>(null)
 
   const company = useCompany(activeCompanyId ?? undefined)
-  const employees = useEmployees(activeCompanyId ?? undefined)
+  const salaries = useEmployees(activeCompanyId ?? undefined)
   const params = useLegalParameters()
   const compliance = useContractCompliance(contractId ?? undefined, referenceDate)
   const createContract = useCreateContract()
@@ -75,47 +75,47 @@ export default function ContractWizard() {
   const set = <K extends keyof Draft>(k: K, v: Draft[K]) => setD((p) => ({ ...p, [k]: v }))
 
   const cddReasons =
-    (params.data?.find((p) => p.param_key === 'cdd_reasons')?.value_json as unknown as string[] | undefined) ?? []
+    (params.data?.find((p) => p.cle_parametre === 'cdd_reasons')?.valeur_json as unknown as string[] | undefined) ?? []
   const legalWeekly = params.data?.find(
-    (p) => p.param_key === 'normal_weekly_hours' && estEnVigueur(p, referenceDate),
+    (p) => p.cle_parametre === 'normal_weekly_hours' && estEnVigueur(p, referenceDate),
   )
   const maxPrl = params.data?.find(
-    (p) => p.param_key === 'max_reference_period_months' && estEnVigueur(p, referenceDate),
+    (p) => p.cle_parametre === 'max_reference_period_months' && estEnVigueur(p, referenceDate),
   )
   const minLeave = params.data?.find(
-    (p) => p.param_key === 'annual_leave_min_days' && estEnVigueur(p, referenceDate),
+    (p) => p.cle_parametre === 'annual_leave_min_days' && estEnVigueur(p, referenceDate),
   )
   const breakThreshold = params.data?.find(
-    (p) => p.param_key === 'break_threshold_hours' && estEnVigueur(p, referenceDate),
+    (p) => p.cle_parametre === 'break_threshold_hours' && estEnVigueur(p, referenceDate),
   )
 
   function toPayload() {
     return {
-      company_id: activeCompanyId!,
-      employee_id: d.employee_id,
-      kind: d.kind,
-      status: 'draft' as const,
-      job_title: d.job_title || 'Poste à préciser',
-      job_description: d.job_description || null,
-      work_place: d.work_place || null,
-      category: d.category || null,
-      start_date: d.start_date || referenceDate,
-      end_date: d.kind === 'cdd' ? d.end_date || null : null,
-      cdd_reason: d.kind === 'cdd' ? d.cdd_reason || null : null,
-      monthly_gross: Number(d.monthly_gross || 0),
-      weekly_hours: Number(d.weekly_hours || 40),
-      days_per_week: Number(d.days_per_week || 5),
-      work_distribution: d.work_distribution || null,
-      reference_period_months: Number(d.reference_period_months || 4),
-      night_work: d.night_work,
-      annual_leave_days: d.annual_leave_days ? Number(d.annual_leave_days) : null,
-      break_minutes: d.break_minutes ? Number(d.break_minutes) : null,
-      non_compete_clause: d.non_compete_clause,
-      exclusivity_clause: d.exclusivity_clause,
-      probation_length: d.probation_length ? Number(d.probation_length) : null,
-      probation_unit: d.probation_length ? d.probation_unit : null,
-      index_ref: Number(params.data?.find((p) => p.param_key === 'wage_index' && estEnVigueur(p, referenceDate))
-        ?.value_num ?? 0) || null,
+      societe_id: activeCompanyId!,
+      salarie_id: d.salarie_id,
+      genre: d.genre,
+      statut: 'draft' as const,
+      intitule_poste: d.intitule_poste || 'Poste à préciser',
+      description_poste: d.description_poste || null,
+      lieu_travail: d.lieu_travail || null,
+      categorie: d.categorie || null,
+      date_debut: d.date_debut || referenceDate,
+      date_fin: d.genre === 'cdd' ? d.date_fin || null : null,
+      motif_cdd: d.genre === 'cdd' ? d.motif_cdd || null : null,
+      brut_mensuel: Number(d.brut_mensuel || 0),
+      heures_hebdomadaires: Number(d.heures_hebdomadaires || 40),
+      jours_par_semaine: Number(d.jours_par_semaine || 5),
+      repartition_travail: d.repartition_travail || null,
+      periode_reference_mois: Number(d.periode_reference_mois || 4),
+      travail_nuit: d.travail_nuit,
+      jours_conge_annuel: d.jours_conge_annuel ? Number(d.jours_conge_annuel) : null,
+      pause_minutes: d.pause_minutes ? Number(d.pause_minutes) : null,
+      clause_non_concurrence: d.clause_non_concurrence,
+      clause_exclusivite: d.clause_exclusivite,
+      duree_essai: d.duree_essai ? Number(d.duree_essai) : null,
+      unite_essai: d.duree_essai ? d.unite_essai : null,
+      indice_reference: Number(params.data?.find((p) => p.cle_parametre === 'wage_index' && estEnVigueur(p, referenceDate))
+        ?.valeur_num ?? 0) || null,
     }
   }
 
@@ -124,35 +124,35 @@ export default function ContractWizard() {
     setBusy(true)
     setErr(null)
     try {
-      let employeeId = d.employee_id
+      let employeeId = d.salarie_id
       if (d.new_employee && !employeeId) {
         const { data: emp, error } = await supabase
-          .from('employees')
+          .from('salaries')
           .insert({
-            company_id: activeCompanyId!,
-            first_name: d.first_name,
-            last_name: d.last_name,
-            birth_date: d.birth_date || null,
-            residency: d.residency,
+            societe_id: activeCompanyId!,
+            prenom: d.prenom,
+            nom: d.nom,
+            date_naissance: d.date_naissance || null,
+            residence: d.residence,
             qualification: d.qualification,
           })
           .select()
           .single()
         if (error) throw new Error(error.message)
         employeeId = emp.id
-        set('employee_id', employeeId)
-        if (d.national_id || d.iban) {
+        set('salarie_id', employeeId)
+        if (d.matricule_national || d.iban) {
           // Passe par callEngine : le moteur valide le matricule et chiffre les
           // deux champs. Un appel direct laisserait remonter l'erreur PL/pgSQL
           // sous une forme que le reste de l'application ne traite pas.
           await callEngine<void>('fn_set_employee_sensitive', {
             p_employee: employeeId,
-            p_national_id: d.national_id || '',
+            p_national_id: d.matricule_national || '',
             p_iban: d.iban || '',
           })
         }
       }
-      const payload = { ...toPayload(), employee_id: employeeId }
+      const payload = { ...toPayload(), salarie_id: employeeId }
       if (contractId) await updateContract.mutateAsync({ id: contractId, ...payload })
       else {
         const created = await createContract.mutateAsync(payload)
@@ -177,7 +177,7 @@ export default function ContractWizard() {
     setBusy(true)
     setErr(null)
     try {
-      await updateContract.mutateAsync({ id: contractId, status: 'active', signed_at: referenceDate })
+      await updateContract.mutateAsync({ id: contractId, statut: 'active', signe_le: referenceDate })
       navigate(`/contrats/${contractId}`)
     } catch (e) {
       setErr(e)
@@ -251,26 +251,26 @@ export default function ContractWizard() {
               {d.new_employee ? (
                 <div className="grid gap-4 sm:grid-cols-2">
                   <Field label="Prénom" required>
-                    <Input value={d.first_name} onChange={(e) => set('first_name', e.target.value)} />
+                    <Input value={d.prenom} onChange={(e) => set('prenom', e.target.value)} />
                   </Field>
                   <Field label="Nom" required>
-                    <Input value={d.last_name} onChange={(e) => set('last_name', e.target.value)} />
+                    <Input value={d.nom} onChange={(e) => set('nom', e.target.value)} />
                   </Field>
                   <Field label="Date de naissance">
-                    <Input type="date" value={d.birth_date} onChange={(e) => set('birth_date', e.target.value)} />
+                    <Input type="date" value={d.date_naissance} onChange={(e) => set('date_naissance', e.target.value)} />
                   </Field>
                   <Field
                     label="Matricule national"
                     hint="13 chiffres. La clé de contrôle est vérifiée à l’enregistrement ; la valeur est chiffrée au repos."
                   >
                     <Input
-                      value={d.national_id}
-                      onChange={(e) => set('national_id', e.target.value)}
+                      value={d.matricule_national}
+                      onChange={(e) => set('matricule_national', e.target.value)}
                       placeholder="1994 03 18 227 xx"
                     />
                   </Field>
                   <Field label="Résidence" required hint="Détermine le régime fiscal applicable.">
-                    <Select value={d.residency} onChange={(e) => set('residency', e.target.value as Draft['residency'])}>
+                    <Select value={d.residence} onChange={(e) => set('residence', e.target.value as Draft['residence'])}>
                       <option value="resident">Résident</option>
                       <option value="frontalier_fr">Frontalier (FR)</option>
                       <option value="frontalier_be">Frontalier (BE)</option>
@@ -292,11 +292,11 @@ export default function ContractWizard() {
                 </div>
               ) : (
                 <Field label="Salarié" required>
-                  <Select value={d.employee_id} onChange={(e) => set('employee_id', e.target.value)}>
+                  <Select value={d.salarie_id} onChange={(e) => set('salarie_id', e.target.value)}>
                     <option value="">Choisir…</option>
-                    {(employees.data ?? []).map((e) => (
+                    {(salaries.data ?? []).map((e) => (
                       <option key={e.id} value={e.id}>
-                        {e.last_name} {e.first_name}
+                        {e.nom} {e.prenom}
                       </option>
                     ))}
                   </Select>
@@ -308,51 +308,51 @@ export default function ContractWizard() {
           {step === 1 && (
             <div className="grid gap-4 sm:grid-cols-2">
               <Field label="Type de contrat" required>
-                <Select value={d.kind} onChange={(e) => set('kind', e.target.value as Draft['kind'])}>
+                <Select value={d.genre} onChange={(e) => set('genre', e.target.value as Draft['genre'])}>
                   <option value="cdi">CDI — durée indéterminée</option>
                   <option value="cdd">CDD — durée déterminée</option>
                 </Select>
               </Field>
               <Field label="Intitulé du poste" required>
-                <Input value={d.job_title} onChange={(e) => set('job_title', e.target.value)} />
+                <Input value={d.intitule_poste} onChange={(e) => set('intitule_poste', e.target.value)} />
               </Field>
               <Field label="Description de l’emploi" hint="Mention obligatoire au contrat.">
-                <Input value={d.job_description} onChange={(e) => set('job_description', e.target.value)} />
+                <Input value={d.description_poste} onChange={(e) => set('description_poste', e.target.value)} />
               </Field>
               <Field label="Lieu de travail" hint="Mention obligatoire au contrat.">
                 <Input
-                  value={d.work_place}
-                  onChange={(e) => set('work_place', e.target.value)}
-                  placeholder={`${company.data?.address_line ?? ''} ${company.data?.city ?? ''}`.trim()}
+                  value={d.lieu_travail}
+                  onChange={(e) => set('lieu_travail', e.target.value)}
+                  placeholder={`${company.data?.ligne ?? ''} ${company.data?.localite ?? ''}`.trim()}
                 />
               </Field>
               <Field
                 label="Catégorie de la grille conventionnelle"
                 hint={
-                  currentCbas(company.data?.company_collective_agreements, referenceDate)
-                    .map((l) => l.collective_agreements?.name)
+                  currentCbas(company.data?.conventions_de_la_societe, referenceDate)
+                    .map((l) => l.conventions_collectives?.nom)
                     .join(' · ') || 'Aucune convention rattachée à cette société'
                 }
               >
-                <Input value={d.category} onChange={(e) => set('category', e.target.value)} placeholder="A, B, C…" />
+                <Input value={d.categorie} onChange={(e) => set('categorie', e.target.value)} placeholder="A, B, C…" />
               </Field>
               <Field label="Rémunération mensuelle brute (€)" required>
                 <Input
                   type="number" step="0.01"
-                  value={d.monthly_gross}
-                  onChange={(e) => set('monthly_gross', e.target.value)}
+                  value={d.brut_mensuel}
+                  onChange={(e) => set('brut_mensuel', e.target.value)}
                 />
               </Field>
               <Field label="Date de début" required>
-                <Input type="date" value={d.start_date} onChange={(e) => set('start_date', e.target.value)} />
+                <Input type="date" value={d.date_debut} onChange={(e) => set('date_debut', e.target.value)} />
               </Field>
-              {d.kind === 'cdd' && (
+              {d.genre === 'cdd' && (
                 <>
                   <Field label="Date de fin" required>
-                    <Input type="date" value={d.end_date} onChange={(e) => set('end_date', e.target.value)} />
+                    <Input type="date" value={d.date_fin} onChange={(e) => set('date_fin', e.target.value)} />
                   </Field>
                   <Field label="Motif de recours" required hint="Un CDD exige un motif figurant dans la liste légale.">
-                    <Select value={d.cdd_reason} onChange={(e) => set('cdd_reason', e.target.value)}>
+                    <Select value={d.motif_cdd} onChange={(e) => set('motif_cdd', e.target.value)}>
                       <option value="">Choisir un motif…</option>
                       {cddReasons.map((r) => (
                         <option key={r} value={r}>{r}</option>
@@ -368,23 +368,23 @@ export default function ContractWizard() {
             <div className="grid gap-4 sm:grid-cols-2">
               <Field
                 label="Durée hebdomadaire (h)" required
-                hint={`Durée normale légale : ${num(legalWeekly?.value_num, 0)} h/semaine.`}
+                hint={`Durée normale légale : ${num(legalWeekly?.valeur_num, 0)} h/semaine.`}
               >
                 <Input
                   type="number" step="0.5"
-                  value={d.weekly_hours} onChange={(e) => set('weekly_hours', e.target.value)}
+                  value={d.heures_hebdomadaires} onChange={(e) => set('heures_hebdomadaires', e.target.value)}
                 />
               </Field>
               <Field label="Répartition" hint="Mention obligatoire au contrat.">
-                <Input value={d.work_distribution} onChange={(e) => set('work_distribution', e.target.value)} />
+                <Input value={d.repartition_travail} onChange={(e) => set('repartition_travail', e.target.value)} />
               </Field>
               <Field
                 label="Période de référence (mois)"
-                hint={`Maximum légal : ${num(maxPrl?.value_num, 0)} mois.`}
+                hint={`Maximum légal : ${num(maxPrl?.valeur_num, 0)} mois.`}
               >
                 <Select
-                  value={d.reference_period_months}
-                  onChange={(e) => set('reference_period_months', e.target.value)}
+                  value={d.periode_reference_mois}
+                  onChange={(e) => set('periode_reference_mois', e.target.value)}
                 >
                   {[1, 2, 3, 4].map((m) => (
                     <option key={m} value={m}>{m} mois</option>
@@ -393,27 +393,27 @@ export default function ContractWizard() {
               </Field>
               <Field
                 label="Congé annuel (jours ouvrables)" required
-                hint={`Minimum légal : ${num(minLeave?.value_num, 0)} jours. La CCT peut être plus favorable.`}
+                hint={`Minimum légal : ${num(minLeave?.valeur_num, 0)} jours. La CCT peut être plus favorable.`}
               >
                 <Input
                   type="number" step="0.5"
-                  value={d.annual_leave_days} onChange={(e) => set('annual_leave_days', e.target.value)}
+                  value={d.jours_conge_annuel} onChange={(e) => set('jours_conge_annuel', e.target.value)}
                 />
               </Field>
               <Field
                 label="Pause journalière (min)"
-                hint={`Obligatoire au-delà de ${num(breakThreshold?.value_num, 0)} h. Durée renvoyée à la CCT ou au contrat.`}
+                hint={`Obligatoire au-delà de ${num(breakThreshold?.valeur_num, 0)} h. Durée renvoyée à la CCT ou au contrat.`}
               >
                 <Input
                   type="number"
-                  value={d.break_minutes} onChange={(e) => set('break_minutes', e.target.value)}
+                  value={d.pause_minutes} onChange={(e) => set('pause_minutes', e.target.value)}
                 />
               </Field>
               <Field label="Travail de nuit">
                 <label className="flex min-h-[38px] items-center gap-2 text-sm text-ink-body">
                   <input
-                    type="checkbox" checked={d.night_work}
-                    onChange={(e) => set('night_work', e.target.checked)}
+                    type="checkbox" checked={d.travail_nuit}
+                    onChange={(e) => set('travail_nuit', e.target.checked)}
                   />
                   Le poste comporte du travail de nuit
                 </label>
@@ -426,23 +426,23 @@ export default function ContractWizard() {
               <Field label="Durée de la période d’essai">
                 <Input
                   type="number"
-                  value={d.probation_length} onChange={(e) => set('probation_length', e.target.value)}
+                  value={d.duree_essai} onChange={(e) => set('duree_essai', e.target.value)}
                 />
               </Field>
               <Field label="Unité">
                 <Select
-                  value={d.probation_unit}
-                  onChange={(e) => set('probation_unit', e.target.value as Draft['probation_unit'])}
+                  value={d.unite_essai}
+                  onChange={(e) => set('unite_essai', e.target.value as Draft['unite_essai'])}
                 >
-                  <option value="months">mois</option>
+                  <option value="mois">mois</option>
                   <option value="weeks">semaines</option>
                 </Select>
               </Field>
               <Field label="Clause de non-concurrence">
                 <label className="flex min-h-[38px] items-center gap-2 text-sm text-ink-body">
                   <input
-                    type="checkbox" checked={d.non_compete_clause}
-                    onChange={(e) => set('non_compete_clause', e.target.checked)}
+                    type="checkbox" checked={d.clause_non_concurrence}
+                    onChange={(e) => set('clause_non_concurrence', e.target.checked)}
                   />
                   Le contrat en comporte une
                 </label>
@@ -450,8 +450,8 @@ export default function ContractWizard() {
               <Field label="Clause d’exclusivité">
                 <label className="flex min-h-[38px] items-center gap-2 text-sm text-ink-body">
                   <input
-                    type="checkbox" checked={d.exclusivity_clause}
-                    onChange={(e) => set('exclusivity_clause', e.target.checked)}
+                    type="checkbox" checked={d.clause_exclusivite}
+                    onChange={(e) => set('clause_exclusivite', e.target.checked)}
                   />
                   Le contrat en comporte une
                 </label>
@@ -460,7 +460,7 @@ export default function ContractWizard() {
               {compliance.data?.probation && (
                 <div className="sm:col-span-2">
                   <LegalBasis
-                    reference={compliance.data.probation.legal_ref}
+                    reference={compliance.data.probation.reference_legale}
                     text="Le préavis d’essai doit expirer au plus tard le dernier jour de la période d’essai."
                     value={`fin d’essai le ${date(compliance.data.probation.end)}`}
                     validity={`préavis de ${compliance.data.probation.notice_days} jours`}
@@ -480,14 +480,14 @@ export default function ContractWizard() {
               <h2 className="text-base font-semibold text-ink">Relecture</h2>
               <dl className="grid gap-x-6 gap-y-2 text-sm sm:grid-cols-2">
                 {[
-                  ['Type', d.kind.toUpperCase()],
-                  ['Poste', d.job_title],
-                  ['Début', date(d.start_date)],
-                  ['Fin', d.kind === 'cdd' ? date(d.end_date) : '—'],
-                  ['Brut mensuel', eur(d.monthly_gross)],
-                  ['Durée hebdomadaire', `${d.weekly_hours} h`],
-                  ['Congé annuel', `${d.annual_leave_days || '—'} j`],
-                  ['Essai', d.probation_length ? `${d.probation_length} ${d.probation_unit === 'months' ? 'mois' : 'semaines'}` : '—'],
+                  ['Type', d.genre.toUpperCase()],
+                  ['Poste', d.intitule_poste],
+                  ['Début', date(d.date_debut)],
+                  ['Fin', d.genre === 'cdd' ? date(d.date_fin) : '—'],
+                  ['Brut mensuel', eur(d.brut_mensuel)],
+                  ['Durée hebdomadaire', `${d.heures_hebdomadaires} h`],
+                  ['Congé annuel', `${d.jours_conge_annuel || '—'} j`],
+                  ['Essai', d.duree_essai ? `${d.duree_essai} ${d.unite_essai === 'mois' ? 'mois' : 'semaines'}` : '—'],
                 ].map(([k, v]) => (
                   <div key={k} className="flex justify-between gap-3 border-b border-rule py-1">
                     <dt className="text-ink-muted">{k}</dt>
@@ -553,12 +553,12 @@ export default function ContractWizard() {
             <ul className="divide-y divide-rule">
               {(compliance.data?.checks ?? []).map((c) => (
                 <li key={c.code} className="flex items-start gap-2.5 px-4 py-2.5">
-                  <SeverityMark severity={c.severity} />
+                  <SeverityMark severity={c.severite} />
                   <div className="min-w-0">
-                    <p className="text-sm font-medium text-ink">{c.label}</p>
+                    <p className="text-sm font-medium text-ink">{c.libelle}</p>
                     <p className="text-xs text-ink-muted">{c.detail}</p>
-                    {c.legal_ref && (
-                      <span className="mt-1 inline-block font-mono text-2xs text-ink-faint">{c.legal_ref}</span>
+                    {c.reference_legale && (
+                      <span className="mt-1 inline-bloc font-mono text-2xs text-ink-faint">{c.reference_legale}</span>
                     )}
                   </div>
                 </li>
@@ -569,9 +569,9 @@ export default function ContractWizard() {
           <Card title="Mentions obligatoires" dense>
             <ul className="divide-y divide-rule">
               {(compliance.data?.mandatory_mentions ?? []).map((m) => (
-                <li key={m.label} className="flex items-center gap-2 px-4 py-2 text-sm">
+                <li key={m.libelle} className="flex items-center gap-2 px-4 py-2 text-sm">
                   <span className={m.ok ? 'text-success' : 'text-ink-faint'}>{m.ok ? '✓' : '○'}</span>
-                  <span className={m.ok ? 'text-ink-body' : 'text-ink-muted'}>{m.label}</span>
+                  <span className={m.ok ? 'text-ink-body' : 'text-ink-muted'}>{m.libelle}</span>
                 </li>
               ))}
               {!compliance.data && (

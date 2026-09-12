@@ -12,31 +12,31 @@ export default function TimeRegister() {
   const [from, setFrom] = useState(() => `${referenceDate.slice(0, 7)}-01`)
   const [to, setTo] = useState(referenceDate)
   const entries = useTimeEntries(activeCompanyId ?? undefined, from, to)
-  const employees = useEmployees(activeCompanyId ?? undefined)
+  const salaries = useEmployees(activeCompanyId ?? undefined)
   const upsert = useUpsertTimeEntry()
 
   const [form, setForm] = useState({
-    employee_id: '', entry_date: referenceDate, start_time: '09:00', end_time: '17:00',
-    break_minutes: '30', planned_hours: '', note: '',
+    salarie_id: '', date_releve: referenceDate, heure_debut: '09:00', heure_fin: '17:00',
+    pause_minutes: '30', heures_prevues: '', note: '',
   })
 
   const worked = useMemo(() => {
-    const [sh, sm] = form.start_time.split(':').map(Number)
-    const [eh, em] = form.end_time.split(':').map(Number)
+    const [sh, sm] = form.heure_debut.split(':').map(Number)
+    const [eh, em] = form.heure_fin.split(':').map(Number)
     let mins = eh * 60 + em - (sh * 60 + sm)
     if (mins <= 0) mins += 24 * 60
-    return Math.round((mins - Number(form.break_minutes || 0)) / 0.6) / 100
-  }, [form.start_time, form.end_time, form.break_minutes])
+    return Math.round((mins - Number(form.pause_minutes || 0)) / 0.6) / 100
+  }, [form.heure_debut, form.heure_fin, form.pause_minutes])
 
   function exportCsv() {
     const rows = [
       ['Salarié', 'Date', 'Début', 'Fin', 'Pause (min)', 'Heures prestées', 'Heures prévues', 'Écart', 'Validé'],
       ...(entries.data ?? []).map((e) => [
-        `${e.employees?.first_name ?? ''} ${e.employees?.last_name ?? ''}`.trim(),
-        e.entry_date, e.start_time ?? '', e.end_time ?? '', String(e.break_minutes),
-        String(e.worked_hours ?? ''), String(e.planned_hours ?? ''),
-        String(Number(e.worked_hours ?? 0) - Number(e.planned_hours ?? 0)),
-        e.is_validated ? 'oui' : 'non',
+        `${e.salaries?.prenom ?? ''} ${e.salaries?.nom ?? ''}`.trim(),
+        e.date_releve, e.heure_debut ?? '', e.heure_fin ?? '', String(e.pause_minutes),
+        String(e.heures_travaillees ?? ''), String(e.heures_prevues ?? ''),
+        String(Number(e.heures_travaillees ?? 0) - Number(e.heures_prevues ?? 0)),
+        e.valide ? 'oui' : 'non',
       ]),
     ]
     const csv = rows.map((r) => r.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(';')).join('\r\n')
@@ -70,38 +70,38 @@ export default function TimeRegister() {
       <Card title="Saisir une journée">
         <div className="grid gap-3 sm:grid-cols-6">
           <Field label="Salarié" required>
-            <Select value={form.employee_id} onChange={(e) => setForm({ ...form, employee_id: e.target.value })}>
+            <Select value={form.salarie_id} onChange={(e) => setForm({ ...form, salarie_id: e.target.value })}>
               <option value="">Choisir…</option>
-              {(employees.data ?? []).map((e) => (
-                <option key={e.id} value={e.id}>{e.last_name} {e.first_name}</option>
+              {(salaries.data ?? []).map((e) => (
+                <option key={e.id} value={e.id}>{e.nom} {e.prenom}</option>
               ))}
             </Select>
           </Field>
           <Field label="Date" required>
-            <Input type="date" value={form.entry_date} onChange={(e) => setForm({ ...form, entry_date: e.target.value })} />
+            <Input type="date" value={form.date_releve} onChange={(e) => setForm({ ...form, date_releve: e.target.value })} />
           </Field>
-          <Field label="Début"><Input type="time" value={form.start_time} onChange={(e) => setForm({ ...form, start_time: e.target.value })} /></Field>
-          <Field label="Fin"><Input type="time" value={form.end_time} onChange={(e) => setForm({ ...form, end_time: e.target.value })} /></Field>
-          <Field label="Pause (min)"><Input type="number" value={form.break_minutes} onChange={(e) => setForm({ ...form, break_minutes: e.target.value })} /></Field>
+          <Field label="Début"><Input type="time" value={form.heure_debut} onChange={(e) => setForm({ ...form, heure_debut: e.target.value })} /></Field>
+          <Field label="Fin"><Input type="time" value={form.heure_fin} onChange={(e) => setForm({ ...form, heure_fin: e.target.value })} /></Field>
+          <Field label="Pause (min)"><Input type="number" value={form.pause_minutes} onChange={(e) => setForm({ ...form, pause_minutes: e.target.value })} /></Field>
           <Field label="Heures prévues" hint={`Presté calculé : ${num(worked, 2)} h`}>
-            <Input type="number" step="0.25" value={form.planned_hours} onChange={(e) => setForm({ ...form, planned_hours: e.target.value })} />
+            <Input type="number" step="0.25" value={form.heures_prevues} onChange={(e) => setForm({ ...form, heures_prevues: e.target.value })} />
           </Field>
         </div>
         <ErrorNote error={upsert.error} />
         <div className="mt-4 flex justify-end">
           <Button
             variant="primary"
-            disabled={!form.employee_id || upsert.isPending}
+            disabled={!form.salarie_id || upsert.isPending}
             onClick={() =>
               upsert.mutate({
-                company_id: activeCompanyId,
-                employee_id: form.employee_id,
-                entry_date: form.entry_date,
-                start_time: form.start_time,
-                end_time: form.end_time,
-                break_minutes: Number(form.break_minutes || 0),
-                worked_hours: worked,
-                planned_hours: form.planned_hours ? Number(form.planned_hours) : null,
+                societe_id: activeCompanyId,
+                salarie_id: form.salarie_id,
+                date_releve: form.date_releve,
+                heure_debut: form.heure_debut,
+                heure_fin: form.heure_fin,
+                pause_minutes: Number(form.pause_minutes || 0),
+                heures_travaillees: worked,
+                heures_prevues: form.heures_prevues ? Number(form.heures_prevues) : null,
                 note: form.note || null,
               })
             }
@@ -119,21 +119,21 @@ export default function TimeRegister() {
         ) : (
           <Table head={['Salarié', 'Date', 'Début', 'Fin', 'Pause', 'Presté', 'Prévu', 'Écart', 'Statut']}>
             {(entries.data ?? []).map((e) => {
-              const gap = Number(e.worked_hours ?? 0) - Number(e.planned_hours ?? 0)
+              const gap = Number(e.heures_travaillees ?? 0) - Number(e.heures_prevues ?? 0)
               return (
                 <tr key={e.id}>
-                  <td className="lux-td">{e.employees?.first_name} {e.employees?.last_name}</td>
-                  <td className="lux-td font-mono">{date(e.entry_date)}</td>
-                  <td className="lux-td font-mono">{e.start_time?.slice(0, 5) ?? '—'}</td>
-                  <td className="lux-td font-mono">{e.end_time?.slice(0, 5) ?? '—'}</td>
-                  <td className="lux-td">{e.break_minutes} min</td>
-                  <td className="lux-td font-mono font-semibold">{num(e.worked_hours, 2)} h</td>
-                  <td className="lux-td font-mono">{e.planned_hours !== null ? `${num(e.planned_hours, 2)} h` : '—'}</td>
+                  <td className="lux-td">{e.salaries?.prenom} {e.salaries?.nom}</td>
+                  <td className="lux-td font-mono">{date(e.date_releve)}</td>
+                  <td className="lux-td font-mono">{e.heure_debut?.slice(0, 5) ?? '—'}</td>
+                  <td className="lux-td font-mono">{e.heure_fin?.slice(0, 5) ?? '—'}</td>
+                  <td className="lux-td">{e.pause_minutes} min</td>
+                  <td className="lux-td font-mono font-semibold">{num(e.heures_travaillees, 2)} h</td>
+                  <td className="lux-td font-mono">{e.heures_prevues !== null ? `${num(e.heures_prevues, 2)} h` : '—'}</td>
                   <td className={`lux-td font-mono ${gap > 0 ? 'text-warn-ink' : gap < 0 ? 'text-danger-ink' : ''}`}>
-                    {e.planned_hours !== null ? `${gap > 0 ? '+' : ''}${num(gap, 2)} h` : '—'}
+                    {e.heures_prevues !== null ? `${gap > 0 ? '+' : ''}${num(gap, 2)} h` : '—'}
                   </td>
                   <td className="lux-td">
-                    <Badge tone={e.is_validated ? 'ok' : 'neutral'}>{e.is_validated ? 'validé' : 'saisi'}</Badge>
+                    <Badge tone={e.valide ? 'ok' : 'neutral'}>{e.valide ? 'validé' : 'saisi'}</Badge>
                   </td>
                 </tr>
               )

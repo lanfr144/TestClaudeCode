@@ -33,7 +33,7 @@ export default function Login() {
             // « Site URL » du projet Supabase, qui n'est pas cette application.
             emailRedirectTo: appUrl(),
             data: {
-              full_name: fullName,
+              nom_complet: fullName,
               organization_name: orgName,
               organization_kind: orgKind,
             },

@@ -20,10 +20,10 @@ export default function Planning() {
 
   const { data, isLoading, error } = useSchedule(activeCompanyId ?? undefined, weekStart)
   const schedule = data?.schedule ?? null
-  const shifts = data?.shifts ?? []
+  const creneaux = data?.creneaux ?? []
   const validation = useScheduleValidation(schedule?.id)
   const templates = useShiftTemplates(activeCompanyId ?? undefined)
-  const employees = useEmployees(activeCompanyId ?? undefined)
+  const salaries = useEmployees(activeCompanyId ?? undefined)
   const absences = useAbsences(activeCompanyId ?? undefined)
   const holidays = usePublicHolidays(new Date(`${weekStart}T00:00:00`).getFullYear())
   const prl = useReferencePeriod(activeCompanyId ?? undefined, referenceDate)
@@ -41,40 +41,40 @@ export default function Planning() {
   // Salariés présents sur la grille, plus ceux ajoutés à la main.
   const [extraRows, setExtraRows] = useState<string[]>([])
   const rowIds = useMemo(() => {
-    const fromShifts = [...new Set(shifts.map((s) => s.employee_id))]
+    const fromShifts = [...new Set(creneaux.map((s) => s.salarie_id))]
     return [...new Set([...fromShifts, ...extraRows])]
-  }, [shifts, extraRows])
+  }, [creneaux, extraRows])
 
   const rows = rowIds
-    .map((id) => (employees.data ?? []).find((e) => e.id === id))
+    .map((id) => (salaries.data ?? []).find((e) => e.id === id))
     .filter((e): e is NonNullable<typeof e> => !!e)
 
   const violationsByCell = useMemo(() => {
     const map = new Map<string, Violation[]>()
     for (const v of validation.data?.violations ?? []) {
-      if (!v.employee_id || !v.shift_date) continue
-      const k = `${v.employee_id}|${v.shift_date}`
+      if (!v.salarie_id || !v.date_creneau) continue
+      const k = `${v.salarie_id}|${v.date_creneau}`
       map.set(k, [...(map.get(k) ?? []), v])
     }
     return map
   }, [validation.data])
 
-  const summaryFor = (id: string) => validation.data?.employees.find((e) => e.employee_id === id)
+  const summaryFor = (id: string) => validation.data?.salaries.find((e) => e.salarie_id === id)
 
   const absenceOn = (employeeId: string, day: string) =>
     (absences.data ?? []).find(
-      (a) => a.employee_id === employeeId && a.status !== 'refused' && a.start_date <= day && a.end_date >= day,
+      (a) => a.salarie_id === employeeId && a.statut !== 'refused' && a.date_debut <= day && a.date_fin >= day,
     )
 
-  const isHoliday = (day: string) => (holidays.data ?? []).some((h) => h.holiday_date === day)
+  const isHoliday = (day: string) => (holidays.data ?? []).some((h) => h.date_ferie === day)
 
   async function ensureSchedule(): Promise<string> {
     if (schedule) return schedule.id
     const created = await createSchedule.mutateAsync({
-      company_id: activeCompanyId!,
-      week_start: weekStart,
-      label: `Semaine ${isoWeek(new Date(`${weekStart}T00:00:00`))}`,
-      status: 'draft',
+      societe_id: activeCompanyId!,
+      debut_semaine: weekStart,
+      libelle: `Semaine ${isoWeek(new Date(`${weekStart}T00:00:00`))}`,
+      statut: 'draft',
     })
     return created.id
   }
@@ -84,35 +84,35 @@ export default function Planning() {
     if (!t) return
     const scheduleId = await ensureSchedule()
     await upsertShift.mutateAsync({
-      schedule_id: scheduleId,
-      company_id: activeCompanyId!,
-      employee_id: employeeId,
-      shift_date: day,
-      start_time: t.start_time,
-      end_time: t.end_time,
-      break_minutes: t.break_minutes,
-      label: t.name,
-      template_id: t.id,
+      planning_id: scheduleId,
+      societe_id: activeCompanyId!,
+      salarie_id: employeeId,
+      date_creneau: day,
+      heure_debut: t.heure_debut,
+      heure_fin: t.heure_fin,
+      pause_minutes: t.pause_minutes,
+      libelle: t.nom,
+      modele_id: t.id,
     })
   }
 
   async function moveShift(shift: ShiftWithEmployee, employeeId: string, day: string) {
     await upsertShift.mutateAsync({
       id: shift.id,
-      schedule_id: shift.schedule_id,
-      company_id: shift.company_id,
-      employee_id: employeeId,
-      shift_date: day,
-      start_time: shift.start_time,
-      end_time: shift.end_time,
-      break_minutes: shift.break_minutes,
-      label: shift.label,
-      template_id: shift.template_id,
+      planning_id: shift.planning_id,
+      societe_id: shift.societe_id,
+      salarie_id: employeeId,
+      date_creneau: day,
+      heure_debut: shift.heure_debut,
+      heure_fin: shift.heure_fin,
+      pause_minutes: shift.pause_minutes,
+      libelle: shift.libelle,
+      modele_id: shift.modele_id,
     })
   }
 
   const weekNo = isoWeek(new Date(`${weekStart}T00:00:00`))
-  const published = schedule?.status === 'published'
+  const published = schedule?.statut === 'publie'
 
   if (!activeCompanyId) return <Card title="Aucun dossier sélectionné">Choisissez une société.</Card>
   if (isLoading) return <Card><Loading label="Chargement du planning…" /></Card>
@@ -124,13 +124,13 @@ export default function Planning() {
       {prl.data && (
         <div className="lux-card flex flex-wrap items-center gap-x-6 gap-y-2 px-4 py-3">
           <div>
-            <p className="lux-label">Période de référence</p>
+            <p className="lux-libelle">Période de référence</p>
             <p className="text-sm font-medium text-ink">
-              {prl.data.label} · {date(prl.data.start_date)} → {date(prl.data.end_date)}
+              {prl.data.libelle} · {date(prl.data.date_debut)} → {date(prl.data.date_fin)}
             </p>
           </div>
           <div>
-            <p className="lux-label">Moyenne constatée</p>
+            <p className="lux-libelle">Moyenne constatée</p>
             <p className="text-sm font-semibold text-ink">
               {num(prl.data.average_weekly_hours, 1)} h / sem.
             </p>
@@ -140,7 +140,7 @@ export default function Planning() {
               ? `Marge de ${num(prl.data.margin_hours, 1)} h avant heures supplémentaires.`
               : `Dépassement de ${num(Math.abs(prl.data.margin_hours), 1)} h sur la moyenne cible.`}
           </p>
-          <div className="ml-auto"><LegalBasis compact reference={prl.data.legal_ref} /></div>
+          <div className="ml-auto"><LegalBasis compact reference={prl.data.reference_legale} /></div>
         </div>
       )}
 
@@ -154,7 +154,7 @@ export default function Planning() {
               Semaine {weekNo} · {date(days[0])} – {date(days[6])}
             </h1>
             <p className="text-xs text-ink-muted">
-              {published ? `Publié le ${date(schedule?.published_at)}` : 'Brouillon — non publié'}
+              {published ? `Publié le ${date(schedule?.publie_le)}` : 'Brouillon — non publié'}
             </p>
           </div>
           <Button size="sm" onClick={() => setWeekStart(iso(addDays(weekStart, 7)))} aria-label="Semaine suivante">
@@ -185,17 +185,17 @@ export default function Planning() {
         <div className="space-y-3">
           {/* Palette de modèles : glisser sur une case. */}
           <div className="lux-card flex flex-wrap items-center gap-2 px-3 py-2.5">
-            <span className="lux-label">Modèles</span>
+            <span className="lux-libelle">Modèles</span>
             {(templates.data ?? []).map((t) => (
               <span
                 key={t.id}
                 draggable
                 onDragStart={(e) => e.dataTransfer.setData('application/x-template', t.id)}
                 className="cursor-grab rounded border px-2 py-1 text-2xs font-semibold text-white active:cursor-grabbing"
-                style={{ background: t.color, borderColor: t.color }}
-                title={`${time(t.start_time)}–${time(t.end_time)}`}
+                style={{ background: t.couleur, borderColor: t.couleur }}
+                title={`${time(t.heure_debut)}–${time(t.heure_fin)}`}
               >
-                {t.name} · {time(t.start_time)}–{time(t.end_time)}
+                {t.nom} · {time(t.heure_debut)}–{time(t.heure_fin)}
               </span>
             ))}
             {(templates.data ?? []).length === 0 && (
@@ -211,7 +211,7 @@ export default function Planning() {
                   {days.map((d, i) => (
                     <th key={d} className={`lux-th text-center ${isHoliday(d) ? 'bg-violet-veil' : ''}`}>
                       {DAY_LABELS[i]} {new Date(`${d}T00:00:00`).getDate()}
-                      {isHoliday(d) && <span className="block text-2xs font-normal text-violet">férié</span>}
+                      {isHoliday(d) && <span className="bloc text-2xs font-normal text-violet">férié</span>}
                     </th>
                   ))}
                 </tr>
@@ -223,25 +223,25 @@ export default function Planning() {
                     <tr key={emp.id} className="align-top">
                       <td className="px-3 py-2">
                         <p className="text-sm font-medium text-ink">
-                          {emp.first_name} {emp.last_name}
+                          {emp.prenom} {emp.nom}
                         </p>
-                        <p className="text-2xs text-ink-muted">{sum?.job_title ?? '—'}</p>
+                        <p className="text-2xs text-ink-muted">{sum?.intitule_poste ?? '—'}</p>
                         {sum && (
                           <p className="mt-1 text-2xs text-ink-faint">
                             {hours(sum.total_hours)}
-                            {sum.overtime_hours > 0 && (
-                              <span className="text-warn-ink"> · +{num(sum.overtime_hours, 1)} h supp.</span>
+                            {sum.heures_supplementaires > 0 && (
+                              <span className="text-warn-ink"> · +{num(sum.heures_supplementaires, 1)} h supp.</span>
                             )}
                             {sum.sundays > 0 && <span> · {sum.sundays} dim.</span>}
                           </p>
                         )}
                       </td>
                       {days.map((d) => {
-                        const cellShifts = shifts.filter((s) => s.employee_id === emp.id && s.shift_date === d)
+                        const cellShifts = creneaux.filter((s) => s.salarie_id === emp.id && s.date_creneau === d)
                         const abs = absenceOn(emp.id, d)
                         const cellViolations = violationsByCell.get(`${emp.id}|${d}`) ?? []
-                        const worst = cellViolations.find((v) => v.severity === 'blocking')
-                          ?? cellViolations.find((v) => v.severity === 'warning')
+                        const worst = cellViolations.find((v) => v.severite === 'blocking')
+                          ?? cellViolations.find((v) => v.severite === 'warning')
                         return (
                           <td
                             key={d}
@@ -255,14 +255,14 @@ export default function Planning() {
                               const shiftId = e.dataTransfer.getData('application/x-shift')
                               if (tpl) void dropTemplate(emp.id, d, tpl)
                               else if (shiftId) {
-                                const s = shifts.find((x) => x.id === shiftId)
+                                const s = creneaux.find((x) => x.id === shiftId)
                                 if (s) void moveShift(s, emp.id, d)
                               }
                             }}
                             className={`min-w-[110px] px-1.5 py-1.5 ${
-                              worst?.severity === 'blocking'
+                              worst?.severite === 'blocking'
                                 ? 'bg-danger-veil'
-                                : worst?.severity === 'warning'
+                                : worst?.severite === 'warning'
                                   ? 'bg-warn-veil'
                                   : isHoliday(d)
                                     ? 'bg-violet-veil/50'
@@ -272,16 +272,16 @@ export default function Planning() {
                             {abs && (
                               <div
                                 className={`mb-1 rounded border px-1.5 py-1 text-2xs ${
-                                  abs.absence_types?.category === 'sick'
+                                  abs.types_absence?.categorie === 'sick'
                                     ? 'border-warn/30 bg-warn-veil text-warn-ink'
-                                    : abs.status === 'approved'
+                                    : abs.statut === 'approved'
                                       ? 'border-action/30 bg-action-veil text-action'
                                       : 'border-rule-strong bg-white text-ink-muted'
                                 }`}
                               >
-                                <span className="block font-semibold">{abs.absence_types?.label}</span>
-                                <span className="block">
-                                  {abs.status === 'approved' ? 'validé' : 'en attente'}
+                                <span className="bloc font-semibold">{abs.types_absence?.libelle}</span>
+                                <span className="bloc">
+                                  {abs.statut === 'approved' ? 'validé' : 'en attente'}
                                 </span>
                               </div>
                             )}
@@ -292,14 +292,14 @@ export default function Planning() {
                                 onDragStart={(e) => e.dataTransfer.setData('application/x-shift', s.id)}
                                 className="group mb-1 rounded border border-rule-strong bg-white px-1.5 py-1 text-2xs"
                               >
-                                <span className="block font-semibold text-ink">
-                                  {time(s.start_time)}–{time(s.end_time)}
+                                <span className="bloc font-semibold text-ink">
+                                  {time(s.heure_debut)}–{time(s.heure_fin)}
                                 </span>
-                                <span className="block truncate text-ink-muted">{s.label ?? 'Service'}</span>
+                                <span className="bloc truncate text-ink-muted">{s.libelle ?? 'Service'}</span>
                                 {!published && (
                                   <button
                                     onClick={() => deleteShift.mutate(s.id)}
-                                    className="mt-0.5 hidden text-danger group-hover:block"
+                                    className="mt-0.5 hidden text-danger group-hover:bloc"
                                   >
                                     Supprimer
                                   </button>
@@ -308,7 +308,7 @@ export default function Planning() {
                             ))}
                             {worst && (
                               <p className="flex items-center gap-1 text-2xs font-semibold text-ink-body">
-                                <SeverityMark severity={worst.severity} />
+                                <SeverityMark severity={worst.severite} />
                                 {worst.code === 'daily_rest' ? 'Repos 11 h' : worst.code === 'max_daily_hours' ? '10 h max' : 'Contrôle'}
                               </p>
                             )}
@@ -340,11 +340,11 @@ export default function Planning() {
                 className="max-w-xs"
               >
                 <option value="">Ajouter un salarié à la grille…</option>
-                {(employees.data ?? [])
+                {(salaries.data ?? [])
                   .filter((e) => !rowIds.includes(e.id))
                   .map((e) => (
                     <option key={e.id} value={e.id}>
-                      {e.last_name} {e.first_name}
+                      {e.nom} {e.prenom}
                     </option>
                   ))}
               </Select>
@@ -387,13 +387,13 @@ export default function Planning() {
             <ul className="divide-y divide-rule">
               {(validation.data?.violations ?? []).map((v, i) => (
                 <li key={i} className="flex items-start gap-2.5 px-4 py-3">
-                  <SeverityMark severity={v.severity} />
+                  <SeverityMark severity={v.severite} />
                   <div className="min-w-0">
-                    <p className="text-sm font-semibold text-ink">{v.title}</p>
+                    <p className="text-sm font-semibold text-ink">{v.titre}</p>
                     <p className="mt-0.5 text-xs leading-relaxed text-ink-muted">{v.detail}</p>
-                    {v.legal_ref && (
-                      <span className="mt-1.5 inline-block">
-                        <LegalBasis compact reference={v.legal_ref} />
+                    {v.reference_legale && (
+                      <span className="mt-1.5 inline-bloc">
+                        <LegalBasis compact reference={v.reference_legale} />
                       </span>
                     )}
                   </div>
@@ -402,15 +402,15 @@ export default function Planning() {
             </ul>
           </Card>
 
-          {validation.data && validation.data.employees.length > 0 && (
+          {validation.data && validation.data.salaries.length > 0 && (
             <Card title="Compteurs de la semaine" dense>
               <ul className="divide-y divide-rule">
-                {validation.data.employees.map((e) => (
-                  <li key={e.employee_id} className="flex items-center justify-between gap-2 px-4 py-2">
+                {validation.data.salaries.map((e) => (
+                  <li key={e.salarie_id} className="flex items-center justify-between gap-2 px-4 py-2">
                     <span className="truncate text-sm text-ink-body">{e.employee_name}</span>
                     <span className="shrink-0 font-mono text-xs text-ink-muted">
                       {num(e.total_hours, 1)} h
-                      {e.overtime_hours > 0 && <span className="text-warn-ink"> +{num(e.overtime_hours, 1)}</span>}
+                      {e.heures_supplementaires > 0 && <span className="text-warn-ink"> +{num(e.heures_supplementaires, 1)}</span>}
                     </span>
                   </li>
                 ))}

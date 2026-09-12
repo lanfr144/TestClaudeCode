@@ -25,56 +25,56 @@ def planning() -> None:
         st.info("Aucun dossier sélectionné.")
         return
 
-    week = st.session_state.setdefault("week_start", _monday(db.reference_date()))
+    week = st.session_state.setdefault("debut_semaine", _monday(db.reference_date()))
     navigation = st.columns([1, 6, 1, 2])
     if navigation[0].button("← Semaine"):
-        st.session_state["week_start"] = week - timedelta(days=7)
+        st.session_state["debut_semaine"] = week - timedelta(days=7)
         st.rerun()
     if navigation[2].button("Semaine →"):
-        st.session_state["week_start"] = week + timedelta(days=7)
+        st.session_state["debut_semaine"] = week + timedelta(days=7)
         st.rerun()
     picked = navigation[3].date_input("Aller à la semaine du", week, label_visibility="collapsed")
     if _monday(picked) != week:
-        st.session_state["week_start"] = _monday(picked)
+        st.session_state["debut_semaine"] = _monday(picked)
         st.rerun()
 
     days = [week + timedelta(days=i) for i in range(7)]
     navigation[1].markdown(
-        f"### Semaine {week.isocalendar().week} · {ds.fmt_date(days[0])} – {ds.fmt_date(days[6])}"
+        f"### Semaine {week.isocalendar().week} · {ds.fmt_date(jours[0])} – {ds.fmt_date(jours[6])}"
     )
 
-    schedules = db.rows("schedules", "*", company_id=company["id"], week_start=week.isoformat())
-    schedule = schedules[0] if schedules else None
+    plannings = db.rows("plannings", "*", societe_id=company["id"], debut_semaine=week.isoformat())
+    schedule = plannings[0] if plannings else None
 
     if not schedule:
         st.info("Aucun planning pour cette semaine.")
         if st.button("Créer le planning de la semaine", type="primary"):
-            db.client().table("schedules").insert({
-                "company_id": company["id"],
-                "week_start": week.isoformat(),
-                "label": f"Semaine {week.isocalendar().week}",
-                "status": "draft",
+            db.client().table("plannings").insert({
+                "societe_id": company["id"],
+                "debut_semaine": week.isoformat(),
+                "libelle": f"Semaine {week.isocalendar().week}",
+                "statut": "draft",
             }).execute()
             db.invalidate()
             st.rerun()
         return
 
     validation = db.call("fn_validate_schedule", p_schedule=schedule["id"])
-    shifts = db.rows("shifts", "*, employees(id, first_name, last_name)",
-                     schedule_id=schedule["id"], _order="shift_date")
-    absences = db.rows("absences", "*, absence_types(label, category)", company_id=company["id"])
+    creneaux = db.rows("creneaux", "*, salaries(id, prenom, nom)",
+                     planning_id=schedule["id"], _order="date_creneau")
+    absences = db.rows("absences", "*, types_absence(libelle, categorie)", societe_id=company["id"])
 
     header = st.columns([3, 1, 2])
     header[1].markdown(
-        ds.badge("Publié" if schedule["status"] == "published" else "Brouillon",
-                 "ok" if schedule["status"] == "published" else "neutral"),
+        ds.badge("Publié" if schedule["statut"] == "publie" else "Brouillon",
+                 "ok" if schedule["statut"] == "publie" else "neutral"),
         unsafe_allow_html=True)
     publish_label = (
         "Publier et notifier" if validation["can_publish"]
         else f"Publier · {validation['blocking_count']} blocage(s)"
     )
     if header[2].button(publish_label, type="primary",
-                        disabled=schedule["status"] == "published" or not validation["can_publish"]):
+                        disabled=schedule["statut"] == "publie" or not validation["can_publish"]):
         try:
             db.engine("fn_publish_schedule", p_schedule=schedule["id"])
             db.invalidate()
@@ -85,24 +85,24 @@ def planning() -> None:
 
     # --- grille ---
     grid: dict[str, dict[str, list[str]]] = {}
-    for shift in shifts:
-        employee = shift.get("employees") or {}
-        name = f"{employee.get('first_name','')} {employee.get('last_name','')}".strip()
-        column = DAYS[date.fromisoformat(shift["shift_date"]).weekday()]
+    for shift in creneaux:
+        employee = shift.get("salaries") or {}
+        name = f"{employee.get('prenom','')} {employee.get('nom','')}".strip()
+        column = DAYS[date.fromisoformat(shift["date_creneau"]).weekday()]
         grid.setdefault(name, {}).setdefault(column, []).append(
-            f"{shift['start_time'][:5]}–{shift['end_time'][:5]}"
+            f"{shift['heure_debut'][:5]}–{shift['heure_fin'][:5]}"
         )
     for absence in absences:
-        if absence["status"] == "refused":
+        if absence["statut"] == "refused":
             continue
         for i, day in enumerate(days):
-            if absence["start_date"] <= day.isoformat() <= absence["end_date"]:
+            if absence["date_debut"] <= day.isoformat() <= absence["date_fin"]:
                 employee = next(
-                    (f"{s['employees']['first_name']} {s['employees']['last_name']}"
-                     for s in shifts if s["employee_id"] == absence["employee_id"]), None)
+                    (f"{s['salaries']['prenom']} {s['salaries']['nom']}"
+                     for s in creneaux if s["salarie_id"] == absence["salarie_id"]), None)
                 if employee:
-                    label = (absence.get("absence_types") or {}).get("label", "Absence")
-                    grid.setdefault(employee, {}).setdefault(DAYS[i], []).append(f"[{label}]")
+                    label = (absence.get("types_absence") or {}).get("libelle", "Absence")
+                    grid.setdefault(employee, {}).setdefault(DAYS[i], []).append(f"[{libelle}]")
 
     left, right = st.columns([2, 1])
     with left:
@@ -115,16 +115,16 @@ def planning() -> None:
         else:
             st.caption("Aucun shift sur cette semaine.")
 
-        if validation["employees"]:
+        if validation["salaries"]:
             st.dataframe(
                 pd.DataFrame([{
                     "Salarié": e["employee_name"],
                     "Heures": e["total_hours"],
-                    "Heures sup.": e["overtime_hours"],
+                    "Heures sup.": e["heures_supplementaires"],
                     "Sup. autorisées": "oui" if e.get("overtime_allowed", True) else "NON",
                     "Dimanches": e["sundays"],
                     "Repos le plus long": f"{e['longest_rest_hours']} h",
-                } for e in validation["employees"]]),
+                } for e in validation["salaries"]]),
                 use_container_width=True, hide_index=True)
 
     with right:
@@ -132,46 +132,46 @@ def planning() -> None:
         if not validation["violations"]:
             st.success("Aucune violation : le planning est publiable.")
         for violation in validation["violations"]:
-            ds.alert_card(violation["severity"], violation["title"], violation["detail"],
-                          None, violation.get("legal_ref"))
+            ds.alert_card(violation["severite"], violation["titre"], violation["detail"],
+                          None, violation.get("reference_legale"))
 
     with st.expander("Ajouter un shift"):
         _shift_form(company, schedule, days)
 
 
 def _shift_form(company: dict, schedule: dict, days: list[date]) -> None:
-    employees = db.rows("employees", "id, first_name, last_name",
-                        company_id=company["id"], _order="last_name")
-    templates = db.rows("shift_templates", "*", company_id=company["id"], _order="start_time")
-    if not employees:
+    salaries = db.rows("salaries", "id, prenom, nom",
+                        societe_id=company["id"], _order="nom")
+    templates = db.rows("modeles_creneau", "*", societe_id=company["id"], _order="heure_debut")
+    if not salaries:
         st.caption("Aucun salarié dans ce dossier.")
         return
 
     with st.form("shift"):
         columns = st.columns(4)
-        names = {f"{e['last_name']} {e['first_name']}": e["id"] for e in employees}
+        names = {f"{e['nom']} {e['prenom']}": e["id"] for e in salaries}
         who = columns[0].selectbox("Salarié", list(names))
         when = columns[1].selectbox("Jour", days, format_func=ds.fmt_date)
-        template_names = {"— saisie libre —": None} | {t["name"]: t for t in templates}
+        template_names = {"— saisie libre —": None} | {t["nom"]: t for t in templates}
         template = columns[2].selectbox("Modèle", list(template_names))
-        break_minutes = columns[3].number_input("Pause (min)", 0, 240, 30, step=15)
+        pause_minutes = columns[3].number_input("Pause (min)", 0, 240, 30, step=15)
         picked = template_names[template]
-        start = columns[0].text_input("Début", picked["start_time"][:5] if picked else "09:00")
-        end = columns[1].text_input("Fin", picked["end_time"][:5] if picked else "17:00")
-        label = columns[2].text_input("Libellé", picked["name"] if picked else "Service")
+        start = columns[0].text_input("Début", picked["heure_debut"][:5] if picked else "09:00")
+        end = columns[1].text_input("Fin", picked["heure_fin"][:5] if picked else "17:00")
+        label = columns[2].text_input("Libellé", picked["nom"] if picked else "Service")
 
         if st.form_submit_button("Ajouter", type="primary"):
             try:
-                db.client().table("shifts").insert({
-                    "schedule_id": schedule["id"],
-                    "company_id": company["id"],
-                    "employee_id": names[who],
-                    "shift_date": when.isoformat(),
-                    "start_time": start,
-                    "end_time": end,
-                    "break_minutes": int(break_minutes),
-                    "label": label,
-                    "template_id": picked["id"] if picked else None,
+                db.client().table("creneaux").insert({
+                    "planning_id": schedule["id"],
+                    "societe_id": company["id"],
+                    "salarie_id": names[who],
+                    "date_creneau": when.isoformat(),
+                    "heure_debut": start,
+                    "heure_fin": end,
+                    "pause_minutes": int(pause_minutes),
+                    "libelle": label,
+                    "modele_id": picked["id"] if picked else None,
                 }).execute()
                 db.invalidate()
                 st.rerun()
@@ -190,27 +190,27 @@ def leave() -> None:
 
     absences = db.rows(
         "absences",
-        "*, employees(first_name, last_name), absence_types(label, category, counts_against_leave, legal_ref)",
-        company_id=company["id"], _order="start_date", _desc=True,
+        "*, salaries(prenom, nom), types_absence(libelle, categorie, impute_sur_conge, reference_legale)",
+        societe_id=company["id"], _order="date_debut", _desc=True,
     )
-    pending = [a for a in absences if a["status"] == "pending"]
+    pending = [a for a in absences if a["statut"] == "pending"]
 
     ds.section("Demandes en attente", f"{len(pending)} à traiter")
     for absence in pending:
-        employee = absence.get("employees") or {}
-        kind = absence.get("absence_types") or {}
+        employee = absence.get("salaries") or {}
+        kind = absence.get("types_absence") or {}
         impact = db.call("fn_leave_request_impact",
-                         p_employee=absence["employee_id"],
-                         p_type=absence["absence_type_id"],
-                         p_start=absence["start_date"], p_end=absence["end_date"])
+                         p_employee=absence["salarie_id"],
+                         p_type=absence["type_absence_id"],
+                         p_start=absence["date_debut"], p_end=absence["date_fin"])
 
         with st.container(border=True):
             columns = st.columns([3, 2, 2])
             columns[0].markdown(
-                f"**{ds.esc(employee.get('first_name',''))} {ds.esc(employee.get('last_name',''))}** — "
-                f"{ds.esc(kind.get('label',''))}<br>"
-                f"<span class='lux-muted'>{ds.fmt_date(absence['start_date'])} – "
-                f"{ds.fmt_date(absence['end_date'])} · {ds.fmt_num(absence['days_count'])} jour(s)</span>",
+                f"**{ds.esc(employee.get('prenom',''))} {ds.esc(employee.get('nom',''))}** — "
+                f"{ds.esc(genre.get('libelle',''))}<br>"
+                f"<span class='lux-muted'>{ds.fmt_date(absence['date_debut'])} – "
+                f"{ds.fmt_date(absence['date_fin'])} · {ds.fmt_num(absence['nombre_jours'])} jour(s)</span>",
                 unsafe_allow_html=True)
             columns[1].markdown(
                 ds.badge("Conforme" if impact["is_valid"] else "Refus recommandé",
@@ -219,8 +219,8 @@ def leave() -> None:
             columns[1].caption(impact["message"])
             if impact.get("balance_after") is not None:
                 columns[2].metric("Solde après", f"{ds.fmt_num(impact['balance_after'])} j")
-            if impact.get("legal_ref"):
-                columns[2].markdown(ds.legal_ref_chip(impact["legal_ref"]), unsafe_allow_html=True)
+            if impact.get("reference_legale"):
+                columns[2].markdown(ds.legal_ref_chip(impact["reference_legale"]), unsafe_allow_html=True)
 
             actions = st.columns([1, 1, 6])
             if actions[0].button("Valider", key=f"ok_{absence['id']}", type="primary"):
@@ -232,25 +232,25 @@ def leave() -> None:
     if absences:
         st.dataframe(
             pd.DataFrame([{
-                "Salarié": f"{(a.get('employees') or {}).get('first_name','')} "
-                           f"{(a.get('employees') or {}).get('last_name','')}".strip(),
-                "Type": (a.get("absence_types") or {}).get("label", ""),
-                "Du": ds.fmt_date(a["start_date"]),
-                "Au": ds.fmt_date(a["end_date"]),
-                "Jours": a["days_count"],
-                "Statut": a["status"],
+                "Salarié": f"{(a.get('salaries') or {}).get('prenom','')} "
+                           f"{(a.get('salaries') or {}).get('nom','')}".strip(),
+                "Type": (a.get("types_absence") or {}).get("libelle", ""),
+                "Du": ds.fmt_date(a["date_debut"]),
+                "Au": ds.fmt_date(a["date_fin"]),
+                "Jours": a["nombre_jours"],
+                "Statut": a["statut"],
             } for a in absences]),
             use_container_width=True, hide_index=True, height=360)
 
     ds.section("Soldes de l’équipe")
-    employees = db.rows("employees", "id, first_name, last_name",
-                        company_id=company["id"], _order="last_name", _limit=25)
+    salaries = db.rows("salaries", "id, prenom, nom",
+                        societe_id=company["id"], _order="nom", _limit=25)
     balances = []
-    for employee in employees:
+    for employee in salaries:
         balance = db.call("fn_leave_balance", p_employee=employee["id"], p_on=on)
         if not balance.get("no_contract"):
             balances.append({
-                "Salarié": f"{employee['first_name']} {employee['last_name']}",
+                "Salarié": f"{employee['prenom']} {employee['nom']}",
                 "Droit annuel": balance.get("entitlement_days"),
                 "Source": balance.get("entitlement_source"),
                 "Acquis": balance.get("accrued"),
@@ -264,9 +264,9 @@ def leave() -> None:
 def _decide(absence_id: str, status: str) -> None:
     try:
         db.client().table("absences").update({
-            "status": status,
-            "decided_at": "now()",
-            "decided_by": st.session_state["session"]["user_id"],
+            "statut": status,
+            "decide_le": "now()",
+            "decide_par": st.session_state["session"]["compte_id"],
         }).eq("id", absence_id).execute()
         db.invalidate()
         st.rerun()
@@ -285,15 +285,15 @@ def sick_leave() -> None:
 
     ds.section("Compteurs de maladie",
                "77 jours sur 18 mois, protection de 26 semaines, suivi des certificats")
-    employees = db.rows("employees", "id, first_name, last_name",
-                        company_id=company["id"], _order="last_name")
+    salaries = db.rows("salaries", "id, prenom, nom",
+                        societe_id=company["id"], _order="nom")
     table_rows = []
-    for employee in employees:
+    for employee in salaries:
         counters = db.call("fn_sick_counters", p_employee=employee["id"], p_on=on)
         if counters["days_in_window"] == 0:
             continue
         table_rows.append({
-            "Salarié": f"{employee['first_name']} {employee['last_name']}",
+            "Salarié": f"{employee['prenom']} {employee['nom']}",
             "Incapacité / période": f"{ds.fmt_num(counters['days_in_window'],0)} / "
                                     f"{ds.fmt_num(counters['limit_days'],0)} j",
             "Fin de continuation": ds.fmt_date(counters["continuation_end"]) if counters["continuation_end"] else "en cours",
@@ -318,15 +318,15 @@ def sick_leave() -> None:
 
 
 def _sick_form(company: dict) -> None:
-    employees = db.rows("employees", "id, first_name, last_name",
-                        company_id=company["id"], _order="last_name")
-    types = db.rows("absence_types", "id, code, label")
+    salaries = db.rows("salaries", "id, prenom, nom",
+                        societe_id=company["id"], _order="nom")
+    types = db.rows("types_absence", "id, code, libelle")
     sick_type = next((t for t in types if t["code"] == "sick"), None)
-    if not employees or not sick_type:
+    if not salaries or not sick_type:
         return
     with st.form("sick"):
         columns = st.columns(5)
-        names = {f"{e['last_name']} {e['first_name']}": e["id"] for e in employees}
+        names = {f"{e['nom']} {e['prenom']}": e["id"] for e in salaries}
         who = columns[0].selectbox("Salarié", list(names))
         start = columns[1].date_input("Du", db.reference_date())
         end = columns[2].date_input("Au", db.reference_date())
@@ -338,15 +338,15 @@ def _sick_form(company: dict) -> None:
         if st.form_submit_button("Enregistrer", type="primary"):
             try:
                 db.client().table("absences").insert({
-                    "company_id": company["id"],
-                    "employee_id": names[who],
-                    "absence_type_id": sick_type["id"],
-                    "start_date": start.isoformat(),
-                    "end_date": end.isoformat(),
-                    "days_count": float(days),
-                    "status": "approved",
-                    "certificate_received": certificate,
-                    "certificate_original_received": original,
+                    "societe_id": company["id"],
+                    "salarie_id": names[who],
+                    "type_absence_id": sick_type["id"],
+                    "date_debut": start.isoformat(),
+                    "date_fin": end.isoformat(),
+                    "nombre_jours": float(days),
+                    "statut": "approved",
+                    "certificat_recu": certificate,
+                    "certificat_original_recu": original,
                 }).execute()
                 db.invalidate()
                 st.success("Incapacité enregistrée.")
@@ -368,32 +368,32 @@ def overtime() -> None:
         "La demande est adressée aux RH et doit être acceptée par les deux parties "
         "AVANT que les heures ne soient prestées.",
     )
-    requests = db.rows("overtime_requests", "*, employees(first_name, last_name)",
-                       company_id=company["id"], _order="period_start", _desc=True)
+    requests = db.rows("demandes_heures_sup", "*, salaries(prenom, nom)",
+                       societe_id=company["id"], _order="debut_periode", _desc=True)
 
     for request in requests:
-        employee = request.get("employees") or {}
+        employee = request.get("salaries") or {}
         with st.container(border=True):
             columns = st.columns([3, 2, 2, 2])
             columns[0].markdown(
-                f"**{ds.esc(employee.get('first_name',''))} {ds.esc(employee.get('last_name',''))}**<br>"
-                f"<span class='lux-muted'>{ds.fmt_date(request['period_start'])} – "
-                f"{ds.fmt_date(request['period_end'])} · {ds.fmt_num(request['hours'])} h · "
-                f"{ds.esc(request['reason'])}</span>",
+                f"**{ds.esc(employee.get('prenom',''))} {ds.esc(employee.get('nom',''))}**<br>"
+                f"<span class='lux-muted'>{ds.fmt_date(request['debut_periode'])} – "
+                f"{ds.fmt_date(request['fin_periode'])} · {ds.fmt_num(request['heures'])} h · "
+                f"{ds.esc(request['motif'])}</span>",
                 unsafe_allow_html=True)
             tone = {"approved": "ok", "rejected": "blocking", "requested": "info",
-                    "hr_approved": "warning", "cancelled": "neutral"}[request["status"]]
-            columns[1].markdown(ds.badge(request["status"], tone), unsafe_allow_html=True)
+                    "hr_approved": "warning", "cancelled": "neutral"}[request["statut"]]
+            columns[1].markdown(ds.badge(request["statut"], tone), unsafe_allow_html=True)
             columns[2].caption(
-                ("RH : validé" if request["hr_validated_at"] else "RH : en attente")
+                ("RH : validé" if request["valide_rh_le"] else "RH : en attente")
                 + " · "
-                + ("salarié : accepté" if request["employee_accepted_at"] else "salarié : en attente")
+                + ("salarié : accepté" if request["accepte_par_salarie_le"] else "salarié : en attente")
             )
-            if request["status"] in ("requested", "hr_approved"):
-                if not request["hr_validated_at"] and columns[3].button(
+            if request["statut"] in ("requested", "hr_approved"):
+                if not request["valide_rh_le"] and columns[3].button(
                         "Valider (RH)", key=f"hr_{request['id']}", type="primary"):
                     _approve(request["id"], True)
-                if not request["employee_accepted_at"] and columns[3].button(
+                if not request["accepte_par_salarie_le"] and columns[3].button(
                         "Accepter (salarié)", key=f"emp_{request['id']}"):
                     _approve(request["id"], False)
 
@@ -401,12 +401,12 @@ def overtime() -> None:
         st.caption("Aucune demande enregistrée.")
 
     with st.expander("Nouvelle demande"):
-        employees = db.rows("employees", "id, first_name, last_name",
-                            company_id=company["id"], _order="last_name")
-        if employees:
+        salaries = db.rows("salaries", "id, prenom, nom",
+                            societe_id=company["id"], _order="nom")
+        if salaries:
             with st.form("overtime"):
                 columns = st.columns(5)
-                names = {f"{e['last_name']} {e['first_name']}": e["id"] for e in employees}
+                names = {f"{e['nom']} {e['prenom']}": e["id"] for e in salaries}
                 who = columns[0].selectbox("Salarié", list(names))
                 start = columns[1].date_input("Du", db.reference_date())
                 end = columns[2].date_input("Au", db.reference_date())
@@ -415,15 +415,15 @@ def overtime() -> None:
                 reason = st.text_input("Motif", "Surcroît ponctuel d’activité")
                 if st.form_submit_button("Enregistrer la demande", type="primary"):
                     try:
-                        db.client().table("overtime_requests").insert({
-                            "company_id": company["id"],
-                            "employee_id": names[who],
-                            "period_start": start.isoformat(),
-                            "period_end": end.isoformat(),
-                            "hours": float(hours),
-                            "reason": reason,
+                        db.client().table("demandes_heures_sup").insert({
+                            "societe_id": company["id"],
+                            "salarie_id": names[who],
+                            "debut_periode": start.isoformat(),
+                            "fin_periode": end.isoformat(),
+                            "heures": float(hours),
+                            "motif": reason,
                             "compensation": compensation,
-                            "requested_by": st.session_state["session"]["user_id"],
+                            "demande_par": st.session_state["session"]["compte_id"],
                         }).execute()
                         db.invalidate()
                         st.rerun()
@@ -431,9 +431,9 @@ def overtime() -> None:
                         st.error(str(error))
 
 
-def _approve(request_id: str, as_hr: bool) -> None:
+def _approve(identifiant_requete: str, as_hr: bool) -> None:
     try:
-        db.engine("fn_overtime_approve", p_request=request_id, p_as_hr=as_hr)
+        db.engine("fn_overtime_approve", p_request=identifiant_requete, p_as_hr=as_hr)
         db.invalidate()
         st.rerun()
     except Exception as error:
@@ -449,20 +449,20 @@ def meal_vouchers() -> None:
         return
 
     ds.section("Chèques-repas", "Attribution et périodes d’octroi")
-    grants = db.rows("meal_voucher_grants", "*, employees(first_name, last_name)",
-                     company_id=company["id"], _order="period_start", _desc=True)
+    grants = db.rows("attributions_titres_repas", "*, salaries(prenom, nom)",
+                     societe_id=company["id"], _order="debut_periode", _desc=True)
 
     if grants:
         table_rows = []
         for grant in grants:
             check = db.call("fn_meal_voucher_check", p_grant=grant["id"])
-            employee = grant.get("employees") or {}
+            employee = grant.get("salaries") or {}
             table_rows.append({
-                "Salarié": f"{employee.get('first_name','')} {employee.get('last_name','')}".strip(),
+                "Salarié": f"{employee.get('prenom','')} {employee.get('nom','')}".strip(),
                 "Période": check["period"],
-                "Nombre": grant["voucher_count"],
-                "Valeur faciale": ds.fmt_eur(grant["face_value"]),
-                "Part salarié": ds.fmt_eur(grant["employee_share"]),
+                "Nombre": grant["nombre_titres"],
+                "Valeur faciale": ds.fmt_eur(grant["valeur_faciale"]),
+                "Part salarié": ds.fmt_eur(grant["part_salariale"]),
                 "Coût employeur": ds.fmt_eur(check["employer_cost"]),
                 "Alertes": check["warning_count"],
             })
@@ -471,12 +471,12 @@ def meal_vouchers() -> None:
         st.caption("Aucune attribution enregistrée.")
 
     with st.expander("Nouvelle attribution"):
-        employees = db.rows("employees", "id, first_name, last_name",
-                            company_id=company["id"], _order="last_name")
-        if employees:
+        salaries = db.rows("salaries", "id, prenom, nom",
+                            societe_id=company["id"], _order="nom")
+        if salaries:
             with st.form("vouchers"):
                 columns = st.columns(5)
-                names = {f"{e['last_name']} {e['first_name']}": e["id"] for e in employees}
+                names = {f"{e['nom']} {e['prenom']}": e["id"] for e in salaries}
                 who = columns[0].selectbox("Salarié", list(names))
                 start = columns[1].date_input("Du", db.reference_date().replace(day=1))
                 end = columns[2].date_input("Au", db.reference_date())
@@ -485,15 +485,15 @@ def meal_vouchers() -> None:
                 share = st.number_input("Participation du salarié", 0.0, 50.0, 2.8, step=0.1)
                 if st.form_submit_button("Attribuer", type="primary"):
                     try:
-                        db.client().table("meal_voucher_grants").insert({
-                            "company_id": company["id"],
-                            "employee_id": names[who],
-                            "period_start": start.isoformat(),
-                            "period_end": end.isoformat(),
-                            "voucher_count": int(count),
-                            "face_value": float(face),
-                            "employee_share": float(share),
-                            "granted_on": db.reference_date().isoformat(),
+                        db.client().table("attributions_titres_repas").insert({
+                            "societe_id": company["id"],
+                            "salarie_id": names[who],
+                            "debut_periode": start.isoformat(),
+                            "fin_periode": end.isoformat(),
+                            "nombre_titres": int(count),
+                            "valeur_faciale": float(face),
+                            "part_salariale": float(share),
+                            "attribue_le": db.reference_date().isoformat(),
                         }).execute()
                         db.invalidate()
                         st.rerun()

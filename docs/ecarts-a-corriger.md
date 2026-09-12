@@ -69,7 +69,7 @@ numéros 45 à 45e étaient déjà pris sur le déploiement.
 
 `schema/catalogue.json`, `schema/oracle.sql` et `schema/mysql.sql` décrivaient **47 tables**,
 produits avant les migrations 49, 50 et 52. Une reprise vers Oracle ou MySQL faite sur ces
-fichiers aurait perdu quatre tables, dont `data_access_log` — c'est-à-dire la pièce de
+fichiers aurait perdu quatre tables, dont `journal_acces` — c'est-à-dire la pièce de
 conformité RGPD.
 
 **Ce qui bloquait** : la régénération lit le catalogue depuis PostgreSQL, et l'environnement
@@ -118,21 +118,21 @@ Deux conséquences concrètes :
 - **Le calcul de distance des plannings ne peut pas fonctionner** pour ces salariés :
   `fn_shift_travel` a besoin d'une adresse de domicile. Il répondra `found: false` en le
   nommant — mais la cause première est ici.
-- **`fn_commute_allowance`** repose sur `employee_tax_cards.commute_distance_km`, saisie à la
+- **`fn_commute_allowance`** repose sur `fiches_retenue_impot.distance_domicile_km`, saisie à la
   main : elle n'est pas affectée, mais rien ne la recoupe avec l'adresse réelle.
 
 **À faire** : compléter le jeu de démonstration (`fn_seed_demo`), ou accepter que ces salariés
 restent sans adresse et le documenter comme tel. Contrôle :
 
 ```sql
-select status, zone_code, count(*) from address_checks group by 1, 2 order by 3 desc;
+select status, code_zone, count(*) from controles_adresse group by 1, 2 order by 3 desc;
 ```
 
 ---
 
 ### 3. Les bornes postales allemandes ne sont pas chargées
 
-`address_zones` déclare la Rhénanie-Palatinat et la Sarre, **sans intervalle de codes postaux** :
+`zones_adresse` déclare la Rhénanie-Palatinat et la Sarre, **sans intervalle de codes postaux** :
 les codes allemands ne se rattachent pas proprement à un Land — la Rhénanie-Palatinat partage des
 préfixes avec la Hesse, la Sarre et le Bade-Wurtemberg. Écrire un intervalle plausible aurait été
 inventer, ce que la règle 7 du [`CLAUDE.md`](../CLAUDE.md) interdit.
@@ -141,17 +141,17 @@ Conséquence : une adresse allemande ressort `unknown` — ni acceptée ni refus
 Une contrainte de la table interdit d'ailleurs de se déclarer vérifié sans bornes.
 
 **À faire** : charger une correspondance code postal → Land depuis une source officielle
-(Deutsche Post, ou les données ouvertes du Bund), puis passer `is_verified` à vrai pour les deux
+(Deutsche Post, ou les données ouvertes du Bund), puis passer `verifie` à vrai pour les deux
 zones. Tant que ce n'est pas fait, la vérification d'une adresse allemande reste manuelle.
 
 ---
 
 ### 4. Deux réglages qui ne sont pas du SQL
 
-- **La trace autonome exige une chaîne de connexion `dblink`**, à déposer dans `app_secrets`
+- **La trace autonome exige une chaîne de connexion `dblink`**, à déposer dans `secrets_application`
   sous la clé `dblink_conninfo`. Tant qu'elle manque, les traces sont écrites dans la
-  transaction appelante et portent `is_autonomous = false` — elles existent, mais disparaissent
-  avec un `rollback`. Contrôle : `select is_autonomous, count(*) from data_access_log group by 1;`
+  transaction appelante et portent `est_autonome = false` — elles existent, mais disparaissent
+  avec un `rollback`. Contrôle : `select est_autonome, count(*) from journal_acces group by 1;`
 - **Le calcul de distance exige `DISTANCE_API_KEY`** dans l'environnement de l'Edge Function
   `travel-distance`. Sans elle, la fonction répond qu'elle ne peut pas conclure — elle
   n'estime rien.
@@ -225,26 +225,26 @@ une insertion chevauchante est rejetée.
 
 **`fn_amend_contract`** établit l'avenant : clôture la veille de la prise d'effet, nouveau
 contrat construit depuis `to_jsonb(ancien)` pour qu'aucune colonne ne soit oubliée, report des
-éléments de rémunération et des conventions en vigueur, chaînage `previous_contract_id`. Le
+éléments de rémunération et des conventions en vigueur, chaînage `contrat_precedent_id`. Le
 nouveau contrat part non signé — un avenant se signe.
 
-**Index de recherche par nom** : le fonctionnel `upper(last_name)` sert l'égalité et le préfixe,
+**Index de recherche par nom** : le fonctionnel `upper(nom)` sert l'égalité et le préfixe,
 un index trigramme GIN sert la recherche infixe que `fn_employee_rows` effectue réellement. Les
 deux vérifiés par `explain`. Poser le seul index fonctionnel aurait laissé la requête réelle sans
 index tout en donnant l'impression du contraire. **Aucun index plein texte** : aucun écran n'en
 a l'usage aujourd'hui.
 
-**Adresses** : `address_zones` restreint la saisie au Luxembourg et aux zones frontalières
+**Adresses** : `zones_adresse` restreint la saisie au Luxembourg et aux zones frontalières
 déclarées ; `fn_validate_address` répond `ok`, `outside` ou `unknown` ; le déclencheur
-`check_address` refuse un `outside` et consigne le reste dans `address_checks`. L'Edge Function
+`check_address` refuse un `outside` et consigne le reste dans `controles_adresse`. L'Edge Function
 `address-validate` interroge le registre officiel BD-Adresses pour le Luxembourg — API essayée,
 forme de réponse vérifiée.
 
 > **Les bornes postales allemandes sont délibérément vides.** Les codes postaux allemands ne se
 > rattachent pas proprement à un Land : la Rhénanie-Palatinat partage des préfixes avec la Hesse,
 > la Sarre et le Bade-Wurtemberg. Écrire un intervalle plausible aurait été inventer. Une adresse
-> allemande ressort donc `unknown`, et reste visible dans `address_checks`. À charger :
-> `select * from address_checks where status = 'unknown';`
+> allemande ressort donc `unknown`, et reste visible dans `controles_adresse`. À charger :
+> `select * from controles_adresse where status = 'unknown';`
 
 **Déclencheurs générés pour Oracle et MySQL** : ils ne balaient plus la table entière. Oracle
 passe par un déclencheur composé — `after each row` collecte les identifiants écrits,
@@ -269,7 +269,7 @@ Appliquées une à une par le connecteur Supabase, avec vérification après cha
 | `46_harden_grants_portability` | **0 fonction** exécutable par `anon` (16 auparavant), 80 pour `authenticated` |
 | `47_comments_tables_columns` | 47 tables et 224 colonnes commentées à l'époque ; portées depuis à 75 et 836 par les migrations 71 à 72c |
 | `48_business_constraints` | 66 contraintes `check` (34 avant), 11 clés composites d'isolation |
-| `49_access_log_rgpd` | `data_access_log` créée, sous RLS ; provenance sur les trois journaux |
+| `49_access_log_rgpd` | `journal_acces` créée, sous RLS ; provenance sur les trois journaux |
 | `50_silent_fallbacks_and_expected_keys` | 76 clés attendues déclarées ; `fn_referential_gaps` remonte `accident_class_rates` en tête |
 | `51_read_audit_pipeline` | `dblink` installée, `fn_employee_rows` et `fn_time_entry_rows` en place |
 | `52_client_sites_and_travel` | 4 tables nouvelles, 9 fonctions nouvelles |
@@ -280,10 +280,10 @@ Appliquées une à une par le connecteur Supabase, avec vérification après cha
 → **0 erreur TypeScript**. L'analyseur de sécurité ne signale plus ni fonction exécutable par
 `anon` ni `search_path` mutable.
 
-**La journalisation fonctionne** : `data_access_log` portait déjà deux traces `DECRYPT` écrites
+**La journalisation fonctionne** : `journal_acces` portait déjà deux traces `DECRYPT` écrites
 pendant la suite de tests elle-même, sans qu'aucun code applicatif ait été modifié pour cela.
 
-Restent signalés par l'analyseur, connus et assumés : `app_secrets` sous RLS sans politique
+Restent signalés par l'analyseur, connus et assumés : `secrets_application` sous RLS sans politique
 (c'est la protection, voir son commentaire), `btree_gist` dans `public`, la protection contre
 les mots de passe compromis désactivée, et 53 fonctions `security definer` appelables par un
 compte authentifié — ce qui est le principe même du moteur, chacune contrôlant l'accès dans son
@@ -295,11 +295,11 @@ Les deux ont été **attrapées par la suite de tests**, immédiatement après a
 l'argument le plus concret en faveur de ces 154 vérifications.
 
 **a) PGRST201 — l'imbrication PostgREST devenue ambiguë.** La migration 48 ajoutait des clés
-composites `(employee_id, company_id)` *à côté* des clés simples `(employee_id)` existantes.
+composites `(salarie_id, societe_id)` *à côté* des clés simples `(salarie_id)` existantes.
 PostgREST voyait alors **deux relations** entre les mêmes tables, et
-`employees?select=*,contracts(...)` échouait. Sur 154 vérifications, **4 passaient**.
+`salaries?select=*,contrats(...)` échouait. Sur 154 vérifications, **4 passaient**.
 
-La clé composite subsumant strictement la simple — mêmes colonnes plus `company_id`, même
+La clé composite subsumant strictement la simple — mêmes colonnes plus `societe_id`, même
 `on delete cascade` —, la migration 53 retire les onze clés simples redondantes. Aucune
 intégrité perdue, une seule relation par couple, l'ambiguïté disparaît.
 
@@ -321,7 +321,7 @@ même qui corrigeait une erreur silencieuse — celui-là, au moins, était bruy
 référentiel**. Le taux de classe restait donc toujours nul, et la ligne
 
 ```sql
-accident_rate := coalesce(accident_rate, accident_base) * rp.accident_factor;
+accident_rate := coalesce(accident_rate, accident_base) * rp.facteur_accident;
 ```
 
 retombait sur le taux de base — puis la fonction renvoyait `'found', true`. L'appelant croyait
@@ -336,10 +336,10 @@ pour combler la clé manquante.
 ### ✅ `fn_referential_gaps` ne voyait pas les clés absentes — migration 50
 
 C'est ce qui a permis au bug ci-dessus de passer inaperçu. L'ancienne version groupait
-`legal_parameters` : une clé sans aucune version n'y apparaissait pas, faute de ligne à
+`parametres_legaux` : une clé sans aucune version n'y apparaissait pas, faute de ligne à
 grouper. Le détecteur de trous était aveugle au trou le plus béant — la clé jamais chargée.
 
-La nouvelle table `expected_parameters` porte les **75 clés que le moteur lit réellement**,
+La nouvelle table `parametres_attendus` porte les **75 clés que le moteur lit réellement**,
 relevées dans le code des migrations avec leur fonction lectrice. `fn_referential_gaps` part
 désormais de cette liste : une clé attendue et jamais chargée sort avec `versions = 0`, en
 tête. Elle ne porte aucune valeur légale — c'est le mécanisme que réclame la règle 7.

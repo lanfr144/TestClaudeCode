@@ -33,14 +33,14 @@ export default function Holidays() {
             <Table head={['Date', 'Jour', 'Fête', 'Type']}>
               {(data ?? []).map((h) => (
                 <tr key={h.id}>
-                  <td className="lux-td font-mono">{date(h.holiday_date)}</td>
+                  <td className="lux-td font-mono">{date(h.date_ferie)}</td>
                   <td className="lux-td capitalize">
-                    {new Date(`${h.holiday_date}T00:00:00`).toLocaleDateString('fr-LU', { weekday: 'long' })}
+                    {new Date(`${h.date_ferie}T00:00:00`).toLocaleDateString('fr-LU', { weekday: 'long' })}
                   </td>
-                  <td className="lux-td font-medium text-ink">{h.name}</td>
+                  <td className="lux-td font-medium text-ink">{h.nom}</td>
                   <td className="lux-td">
-                    <Badge tone={h.is_mobile ? 'violet' : 'neutral'}>
-                      {h.is_mobile ? 'fête mobile' : 'date fixe'}
+                    <Badge tone={h.est_mobile ? 'violet' : 'neutral'}>
+                      {h.est_mobile ? 'fête mobile' : 'date fixe'}
                     </Badge>
                   </td>
                 </tr>

@@ -50,19 +50,19 @@ function CounterRow({ employeeId, name }: { employeeId: string; name: string }) 
 
 export default function SickLeave() {
   const { activeCompanyId, referenceDate } = useApp()
-  const employees = useEmployees(activeCompanyId ?? undefined)
+  const salaries = useEmployees(activeCompanyId ?? undefined)
   const absences = useAbsences(activeCompanyId ?? undefined)
   const types = useAbsenceTypes()
   const create = useCreateAbsence()
   const markCert = useMarkCertificate()
 
-  const [form, setForm] = useState({ employee_id: '', start_date: referenceDate, end_date: referenceDate, days: '' })
+  const [form, setForm] = useState({ salarie_id: '', date_debut: referenceDate, date_fin: referenceDate, days: '' })
 
   const sickType = (types.data ?? []).find((t) => t.code === 'sick')
-  const sickAbsences = (absences.data ?? []).filter((a) => a.absence_types?.category === 'sick')
+  const sickAbsences = (absences.data ?? []).filter((a) => a.types_absence?.categorie === 'sick')
 
   if (!activeCompanyId) return <Card title="Aucun dossier sélectionné">Choisissez une société.</Card>
-  if (employees.isLoading) return <Card><Loading /></Card>
+  if (salaries.isLoading) return <Card><Loading /></Card>
 
   return (
     <div className="space-y-4">
@@ -77,20 +77,20 @@ export default function SickLeave() {
         <div className="grid gap-3 sm:grid-cols-5">
           <Field label="Salarié" required>
             <Select
-              value={form.employee_id}
-              onChange={(e) => setForm({ ...form, employee_id: e.target.value })}
+              value={form.salarie_id}
+              onChange={(e) => setForm({ ...form, salarie_id: e.target.value })}
             >
               <option value="">Choisir…</option>
-              {(employees.data ?? []).map((e) => (
-                <option key={e.id} value={e.id}>{e.last_name} {e.first_name}</option>
+              {(salaries.data ?? []).map((e) => (
+                <option key={e.id} value={e.id}>{e.nom} {e.prenom}</option>
               ))}
             </Select>
           </Field>
           <Field label="Du" required>
-            <Input type="date" value={form.start_date} onChange={(e) => setForm({ ...form, start_date: e.target.value })} />
+            <Input type="date" value={form.date_debut} onChange={(e) => setForm({ ...form, date_debut: e.target.value })} />
           </Field>
           <Field label="Au" required>
-            <Input type="date" value={form.end_date} onChange={(e) => setForm({ ...form, end_date: e.target.value })} />
+            <Input type="date" value={form.date_fin} onChange={(e) => setForm({ ...form, date_fin: e.target.value })} />
           </Field>
           <Field label="Jours décomptés" hint="Jours d’incapacité imputés au compteur.">
             <Input type="number" step="0.5" value={form.days} onChange={(e) => setForm({ ...form, days: e.target.value })} />
@@ -99,16 +99,16 @@ export default function SickLeave() {
             <Button
               variant="primary"
               className="w-full"
-              disabled={!form.employee_id || !sickType || create.isPending}
+              disabled={!form.salarie_id || !sickType || create.isPending}
               onClick={() =>
                 create.mutate({
-                  company_id: activeCompanyId,
-                  employee_id: form.employee_id,
-                  absence_type_id: sickType!.id,
-                  start_date: form.start_date,
-                  end_date: form.end_date,
-                  days_count: Number(form.days || 0),
-                  status: 'approved',
+                  societe_id: activeCompanyId,
+                  salarie_id: form.salarie_id,
+                  type_absence_id: sickType!.id,
+                  date_debut: form.date_debut,
+                  date_fin: form.date_fin,
+                  nombre_jours: Number(form.days || 0),
+                  statut: 'approved',
                 })
               }
             >
@@ -136,8 +136,8 @@ export default function SickLeave() {
             'Certificats', 'Mutualité',
           ]}
         >
-          {(employees.data ?? []).map((e) => (
-            <CounterRow key={e.id} employeeId={e.id} name={`${e.first_name} ${e.last_name}`} />
+          {(salaries.data ?? []).map((e) => (
+            <CounterRow key={e.id} employeeId={e.id} name={`${e.prenom} ${e.nom}`} />
           ))}
         </Table>
       </Card>
@@ -147,20 +147,20 @@ export default function SickLeave() {
           {sickAbsences.map((a) => (
             <tr key={a.id}>
               <td className="lux-td">
-                {a.employees?.first_name} {a.employees?.last_name}
+                {a.salaries?.prenom} {a.salaries?.nom}
               </td>
-              <td className="lux-td">{date(a.start_date)}</td>
-              <td className="lux-td">{date(a.end_date)}</td>
-              <td className="lux-td font-mono">{num(a.days_count, 2)}</td>
+              <td className="lux-td">{date(a.date_debut)}</td>
+              <td className="lux-td">{date(a.date_fin)}</td>
+              <td className="lux-td font-mono">{num(a.nombre_jours, 2)}</td>
               <td className="lux-td">
-                {a.certificate_received ? (
-                  <Badge tone="ok">reçu le {date(a.certificate_received_at)}</Badge>
+                {a.certificat_recu ? (
+                  <Badge tone="ok">reçu le {date(a.certificat_recu_le)}</Badge>
                 ) : (
                   <Badge tone="blocking">manquant</Badge>
                 )}
               </td>
               <td className="lux-td">
-                {!a.certificate_received && (
+                {!a.certificat_recu && (
                   <Button size="sm" disabled={markCert.isPending} onClick={() => markCert.mutate(a.id)}>
                     Marquer reçu
                   </Button>

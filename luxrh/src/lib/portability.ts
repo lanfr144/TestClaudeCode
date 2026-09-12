@@ -11,7 +11,7 @@ import { callEngine } from './supabase'
 /** Enveloppe commune à tous les exports. */
 export interface ExportDocument {
   format: 'luxrh.export/1'
-  kind: 'employee' | 'company' | 'organization' | 'referential'
+  genre: 'employee' | 'company' | 'organization' | 'referential'
   exported_at: string
   payload: Record<string, unknown>
 }
@@ -25,7 +25,7 @@ export interface ImportReport {
   message: string
 }
 
-const NOM: Record<ExportDocument['kind'], string> = {
+const NOM: Record<ExportDocument['genre'], string> = {
   employee: 'mes-donnees',
   company: 'societe',
   organization: 'fiduciaire',
@@ -35,7 +35,7 @@ const NOM: Record<ExportDocument['kind'], string> = {
 /** Nom de fichier daté, pour que deux exports successifs ne se recouvrent pas. */
 function fileName(doc: ExportDocument, suffix?: string) {
   const jour = doc.exported_at.slice(0, 10)
-  return ['luxrh', NOM[doc.kind], suffix, jour].filter(Boolean).join('-') + '.json'
+  return ['luxrh', NOM[doc.genre], suffix, jour].filter(Boolean).join('-') + '.json'
 }
 
 /** Enregistre le document sur le poste de l'utilisateur. */
@@ -68,7 +68,7 @@ export const importReferential = (doc: ExportDocument, mode: 'skip_existing' | '
  * Lit un fichier choisi par l'utilisateur et vérifie l'enveloppe avant de
  * l'envoyer au serveur. Un fichier illisible doit se dire ici, pas à mi-import.
  */
-export async function readDocument(file: File, expected: ExportDocument['kind']) {
+export async function readDocument(file: File, expected: ExportDocument['genre']) {
   let parsed: unknown
   try {
     parsed = JSON.parse(await file.text())
@@ -81,8 +81,8 @@ export async function readDocument(file: File, expected: ExportDocument['kind'])
       `« ${file.name} » ne porte pas le format luxrh.export/1 : ce n'est pas un export LuxRH.`,
     )
   }
-  if (doc.kind !== expected) {
-    throw new Error(`Ce fichier est un export « ${doc.kind} », pas un ${expected}.`)
+  if (doc.genre !== expected) {
+    throw new Error(`Ce fichier est un export « ${doc.genre} », pas un ${expected}.`)
   }
   return doc as ExportDocument
 }

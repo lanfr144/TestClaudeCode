@@ -70,15 +70,15 @@ def login_screen() -> None:
 
         with tab_signup:
             with st.form("signup"):
-                full_name = st.text_input("Nom complet")
+                nom_complet = st.text_input("Nom complet")
                 org_name = st.text_input("Nom de l’espace de travail")
-                org_kind = st.selectbox("Type d’espace", ["fiduciary", "company"],
+                genre_organisation = st.selectbox("Type d’espace", ["fiduciary", "company"],
                                         format_func=lambda k: "Fiduciaire" if k == "fiduciary" else "Entreprise")
                 email = st.text_input("Adresse e-mail ", key="su_email")
                 password = st.text_input("Mot de passe ", type="password", key="su_password")
                 if st.form_submit_button("Créer l’espace", type="primary", use_container_width=True):
                     try:
-                        if db.sign_up(email, password, full_name, org_name, org_kind):
+                        if db.sign_up(email, password, nom_complet, org_name, genre_organisation):
                             st.rerun()
                         else:
                             st.info(
@@ -101,16 +101,16 @@ PAGES: dict[str, tuple[str, callable]] = {
     "dashboard": ("Tableau de bord", core.dashboard),
     "planning": ("Planning", timekeeping.planning),
     "overtime": ("Heures supplémentaires", timekeeping.overtime),
-    "employees": ("Employés", core.employees_view),
+    "salaries": ("Employés", core.employees_view),
     "employee_detail": ("Fiche salarié", core.employee_detail),
-    "contracts": ("Contrats", compliance.contracts),
+    "contrats": ("Contrats", compliance.contrats),
     "leave": ("Congés", timekeeping.leave),
     "sick": ("Maladies", timekeeping.sick_leave),
     "vouchers": ("Chèques-repas", timekeeping.meal_vouchers),
     "vigilance": ("Vigilance", compliance.vigilance),
     "dismissal": ("Licenciement collectif", compliance.dismissal_simulator),
-    "premiums": ("Primes", compliance.premiums),
-    "companies": ("Sociétés", core.companies_view),
+    "primes": ("Primes", compliance.primes),
+    "societes": ("Sociétés", core.companies_view),
     "company_detail": ("Fiche société", core.company_detail),
     "referential": ("Référentiel", compliance.referential),
     "portability": ("Portabilité", portability.portability),
@@ -119,14 +119,14 @@ PAGES: dict[str, tuple[str, callable]] = {
 GROUPS = [
     ("Pilotage", ["dashboard", "vigilance", "dismissal"]),
     ("Exploitation", ["planning", "overtime", "leave", "sick", "vouchers"]),
-    ("Dossiers", ["employees", "employee_detail", "contracts", "premiums"]),
-    ("Administration", ["companies", "company_detail", "referential", "portability"]),
+    ("Dossiers", ["salaries", "employee_detail", "contrats", "primes"]),
+    ("Administration", ["societes", "company_detail", "referential", "portability"]),
 ]
 
 
 def sidebar() -> str:
     profile = db.profile() or {}
-    organization = (profile.get("organizations") or {}).get("name", "")
+    organization = (profile.get("organisations") or {}).get("nom", "")
 
     with st.sidebar:
         st.markdown(
@@ -135,20 +135,20 @@ def sidebar() -> str:
             unsafe_allow_html=True)
         st.divider()
 
-        all_companies = db.companies()
+        all_companies = db.societes()
         if all_companies:
-            labels = {c["legal_name"]: c["id"] for c in all_companies}
+            labels = {c["raison_sociale"]: c["id"] for c in all_companies}
             current = db.active_company()
             index = list(labels.values()).index(current["id"]) if current else 0
             chosen = st.selectbox("Dossier client", list(labels), index=index)
-            if labels[chosen] != st.session_state.get("company_id"):
-                st.session_state["company_id"] = labels[chosen]
+            if labels[chosen] != st.session_state.get("societe_id"):
+                st.session_state["societe_id"] = labels[chosen]
                 st.session_state.pop("simulation", None)
                 db.invalidate()
                 st.rerun()
         else:
             st.caption("Aucun dossier.")
-            if profile.get("is_org_admin") and st.button("Charger le jeu de démonstration"):
+            if profile.get("est_admin_organisation") and st.button("Charger le jeu de démonstration"):
                 try:
                     result = db.engine("fn_seed_demo")
                     db.refresh_companies()
@@ -173,12 +173,12 @@ def sidebar() -> str:
                         f"opacity:.6;margin-top:8px'>{group}</div>", unsafe_allow_html=True)
             for key in keys:
                 label = PAGES[key][0]
-                if st.button(label, key=f"nav_{key}", use_container_width=True):
+                if st.button(label, key=f"nav_{cle}", use_container_width=True):
                     st.session_state["page"] = key
                     st.rerun()
 
         st.divider()
-        st.caption(profile.get("email", ""))
+        st.caption(profile.get("courriel", ""))
         if st.button("Se déconnecter", use_container_width=True):
             db.sign_out()
             st.rerun()
@@ -211,8 +211,8 @@ def main() -> None:
 
     company = db.active_company()
     st.markdown(
-        f"<div style='font-size:12px;color:{ds.INK_MUTED};margin-bottom:2px'>"
-        f"{company['legal_name'] if company else 'Aucun dossier'} › {title}</div>",
+        f"<div style='font-size:12px;couleur:{ds.INK_MUTED};margin-bottom:2px'>"
+        f"{company['raison_sociale'] if company else 'Aucun dossier'} › {titre}</div>",
         unsafe_allow_html=True)
 
     try:

@@ -165,7 +165,7 @@ identique ; le coût ne l'est pas.
 
 `schema/oracle.sql` et `schema/mysql.sql` ont été régénérés avec ce code corrigé, à partir d'un
 catalogue lui aussi rafraîchi : **les deux portent les 75 tables de la base déployée**, 95
-créations d'objets et **836 `comment on column`**. La liste « ce qui n'a pas été traduit » est
+créations d'objets et **836 `commentaire on column`**. La liste « ce qui n'a pas été traduit » est
 vide.
 
 À noter, en miroir : le moteur PL/pgSQL déployé sur PostgreSQL n'a **jamais** utilisé de `count(*)`

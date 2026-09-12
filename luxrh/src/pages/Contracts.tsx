@@ -19,11 +19,11 @@ export default function Contracts() {
   if (error) return <ErrorNote error={error} />
 
   const alertFor = (contractId: string) =>
-    (scan.data?.items ?? []).find((i) => i.contract_id === contractId)
+    (scan.data?.items ?? []).find((i) => i.contrat_id === contractId)
 
   const rows = (data ?? []).filter((c) => {
-    if (filter !== 'all' && c.status !== filter) return false
-    const name = `${c.employees?.first_name ?? ''} ${c.employees?.last_name ?? ''} ${c.job_title}`
+    if (filter !== 'all' && c.statut !== filter) return false
+    const name = `${c.salaries?.prenom ?? ''} ${c.salaries?.nom ?? ''} ${c.intitule_poste}`
     return name.toLowerCase().includes(q.toLowerCase())
   })
 
@@ -60,24 +60,24 @@ export default function Contracts() {
                 <tr key={c.id} className="hover:bg-rule-rail/50">
                   <td className="lux-td">
                     <Link to={`/contrats/${c.id}`} className="font-medium text-ink hover:text-action">
-                      {c.employees?.first_name} {c.employees?.last_name}
+                      {c.salaries?.prenom} {c.salaries?.nom}
                     </Link>
                   </td>
                   <td className="lux-td">
-                    <Badge tone={c.kind === 'cdd' ? 'warning' : 'neutral'}>{c.kind.toUpperCase()}</Badge>
+                    <Badge tone={c.genre === 'cdd' ? 'warning' : 'neutral'}>{c.genre.toUpperCase()}</Badge>
                   </td>
-                  <td className="lux-td">{c.job_title}</td>
-                  <td className="lux-td">{date(c.start_date)}</td>
-                  <td className="lux-td">{c.end_date ? date(c.end_date) : '—'}</td>
-                  <td className="lux-td font-mono">{eur(c.monthly_gross)}</td>
+                  <td className="lux-td">{c.intitule_poste}</td>
+                  <td className="lux-td">{date(c.date_debut)}</td>
+                  <td className="lux-td">{c.date_fin ? date(c.date_fin) : '—'}</td>
+                  <td className="lux-td font-mono">{eur(c.brut_mensuel)}</td>
                   <td className="lux-td">
-                    <Badge tone={c.status === 'active' ? 'ok' : c.status === 'draft' ? 'info' : 'neutral'}>
-                      {c.status}
+                    <Badge tone={c.statut === 'active' ? 'ok' : c.statut === 'draft' ? 'info' : 'neutral'}>
+                      {c.statut}
                     </Badge>
                   </td>
                   <td className="lux-td">
                     {alert ? (
-                      <Badge tone={alert.severity === 'blocking' ? 'blocking' : 'warning'}>
+                      <Badge tone={alert.severite === 'blocking' ? 'blocking' : 'warning'}>
                         {alert.days_left !== null ? `J-${alert.days_left}` : 'à surveiller'}
                       </Badge>
                     ) : (

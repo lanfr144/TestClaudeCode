@@ -55,7 +55,7 @@ motif, protections en cours), `fn_notice_period` (durée du préavis), `fn_salar
 L'écran `DismissalSimulator` traite le licenciement **collectif**. Le licenciement individuel,
 la démission, la rupture d'un commun accord, la fin de CDD : rien.
 
-C'est le manque le plus important des deux domaines. La table `contract_terminations` existe,
+C'est le manque le plus important des deux domaines. La table `ruptures_contrat` existe,
 avec la dispense de préavis, la faute grave et l'indemnité de départ.
 
 **À faire** : un écran de rupture, qui interroge `fn_can_terminate` avant de laisser
@@ -69,18 +69,18 @@ front.
 
 | Table | Ce qu'on ne peut donc pas faire |
 |---|---|
-| `employee_disabilities` | Enregistrer une reconnaissance de travailleur handicapé — alors que `fn_disability_extra_leave` calcule le congé supplémentaire |
-| `probation_extensions` | Prolonger une période d'essai suspendue par une absence |
-| `reference_periods` | Définir une période de référence par service |
-| `company_accident_claims` | Saisir la sinistralité qui nourrit le facteur bonus-malus |
+| `handicaps_salarie` | Enregistrer une reconnaissance de travailleur handicapé — alors que `fn_disability_extra_leave` calcule le congé supplémentaire |
+| `prolongations_essai` | Prolonger une période d'essai suspendue par une absence |
+| `periodes_reference` | Définir une période de référence par service |
+| `sinistres_accident_societe` | Saisir la sinistralité qui nourrit le facteur bonus-malus |
 
 ### 4. Trois domaines à peine effleurés
 
-`employee_tax_cards` et `interim_agencies` n'apparaissent que dans un seul fichier chacun — les
+`fiches_retenue_impot` et `agences_interim` n'apparaissent que dans un seul fichier chacun — les
 types générés. Donc : pas de fiche de retenue d'impôt, pas de gestion des agences d'intérim, alors
 que le type de contrat « intérim » existe et exige une agence.
 
-`contract_amendments` change de statut avec la migration 55 : le moteur sait désormais établir un
+`avenants_contrat` change de statut avec la migration 55 : le moteur sait désormais établir un
 avenant (`fn_amend_contract`), testée manuellement sur la base — clôture du contrat en cours,
 reprise de toutes ses clauses par `to_jsonb`, report de la rémunération et des conventions encore en
 vigueur, journalisation du motif. **Ce n'est plus une table à peine effleurée côté moteur** ; c'est
@@ -106,7 +106,7 @@ et `fn_overtime_approved_hours` — les heures effectivement couvertes par un ac
 
 ### 2. La période de référence ne se pilote pas
 
-`reference_periods` et `fn_reference_period_status` existent : la période de référence est ce
+`periodes_reference` et `fn_reference_period_status` existent : la période de référence est ce
 sur quoi la durée moyenne du travail se calcule, et son dépassement est un manquement. Aucun
 écran ne permet de la définir, ni de voir où l'on en est dans la période courante.
 
@@ -121,16 +121,16 @@ périmètre avant toute conception.
 La migration
 [`20260910200000_52_client_sites_and_travel.sql`](../luxrh/supabase/migrations/20260910181724_52_client_sites_and_travel.sql),
 **appliquée**, apporte ce que le modèle n'avait pas pour une vacation exécutée hors du siège :
-`client_sites` (le lieu, avec son adresse), `travel_distances` (un cache de distances, alimenté une
+`sites_client` (le lieu, avec son adresse), `distances_trajet` (un cache de distances, alimenté une
 fois par couple), et les fonctions `fn_shift_travel`, `fn_schedule_travel`, `fn_set_travel_distance`,
 `fn_address_of`, `fn_travel_distance` qui transforment un dépassement de trajet en montant.
-`shifts.client_site_id` (nul = au siège, le cas courant) désigne le lieu d'une vacation.
+`creneaux.site_client_id` (nul = au siège, le cas courant) désigne le lieu d'une vacation.
 
 **Les tables et les fonctions existent sur la base déployée, mais rien n'est encore utilisable
 depuis un écran**, pour deux raisons cumulatives :
 
 1. **Le tarif kilométrique n'existe pas.** `fn_shift_travel` lit `mileage_allowance_eur_per_km`
-   dans `legal_parameters` ; la clé est déclarée dans `expected_parameters` (migration 52) mais
+   dans `parametres_legaux` ; la clé est déclarée dans `parametres_attendus` (migration 52) mais
    **aucune valeur n'y est chargée**, faute de source publique établie — légale, conventionnelle ou
    contractuelle selon le cas. Conformément à la règle 7 du CLAUDE.md, aucun chiffre n'a été inventé
    pour la remplir : tant qu'elle manque, `fn_shift_travel` et `fn_schedule_travel` répondent
@@ -180,7 +180,7 @@ testées et supprime la seule impasse fonctionnelle du produit.
 | # | Travail | Moteur | Effort |
 |---|---|---|---|
 | 2.1 | Reconnaissance de travailleur handicapé | `fn_disability_extra_leave` prête | 1–2 j |
-| 2.2 | Avenants au contrat | **Moteur prêt** (migration 55) : `fn_amend_contract` clôt, recrée et journalise ; reste à écrire l'écran qui l'appelle et affiche l'historique par `previous_contract_id` | 1–2 j |
+| 2.2 | Avenants au contrat | **Moteur prêt** (migration 55) : `fn_amend_contract` clôt, recrée et journalise ; reste à écrire l'écran qui l'appelle et affiche l'historique par `contrat_precedent_id` | 1–2 j |
 | 2.3 | Prolongation de période d'essai | Table prête | 1 j |
 | 2.4 | Agences d'intérim | Table prête, exigée par le type « intérim » | 1 j |
 | 2.5 | Sinistralité accident | Table prête | 1 j |
@@ -198,7 +198,7 @@ testées et supprime la seule impasse fonctionnelle du produit.
 | # | Travail | Nature |
 |---|---|---|
 | 4.1 | Reclassement professionnel | Modélisation complète — Livre III |
-| 4.2 | Fiche de retenue d'impôt et calcul brut → net | V2 du PRD ; le barème `tax_brackets` est vide, faute de source publique chargée |
+| 4.2 | Fiche de retenue d'impôt et calcul brut → net | V2 du PRD ; le barème `tranches_impot` est vide, faute de source publique chargée |
 | 4.3 | Compte épargne-temps | Modélisation |
 | 4.4 | Chômage partiel et intempéries | Modélisation + périmètre d'interface ADEM |
 

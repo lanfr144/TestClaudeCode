@@ -6,15 +6,15 @@ import { Badge, Button, EmptyState, ErrorNote, Input, Loading } from '@/componen
 import { currentCbas } from '@/lib/format'
 
 export default function CompanyPicker() {
-  const { companies, companiesLoading, profile, setActiveCompany, referenceDate } = useApp()
+  const { societes, companiesLoading, profile, setActiveCompany, referenceDate } = useApp()
   const [q, setQ] = useState('')
   const navigate = useNavigate()
   const seed = useSeedDemo()
 
-  const filtered = companies.filter(
+  const filtered = societes.filter(
     (c) =>
-      c.legal_name.toLowerCase().includes(q.toLowerCase()) ||
-      (c.sector ?? '').toLowerCase().includes(q.toLowerCase()),
+      c.raison_sociale.toLowerCase().includes(q.toLowerCase()) ||
+      (c.secteur ?? '').toLowerCase().includes(q.toLowerCase()),
   )
 
   return (
@@ -29,8 +29,8 @@ export default function CompanyPicker() {
       <main className="mx-auto max-w-3xl px-4 py-8">
         <h1 className="text-xl font-bold tracking-tight text-ink">Vos dossiers</h1>
         <p className="mt-1 text-sm text-ink-muted">
-          {profile?.organizations?.name ?? 'Votre espace'} · {companies.length} société
-          {companies.length > 1 ? 's' : ''}
+          {profile?.organisations?.nom ?? 'Votre espace'} · {societes.length} société
+          {societes.length > 1 ? 's' : ''}
         </p>
 
         <div className="mt-5">
@@ -41,7 +41,7 @@ export default function CompanyPicker() {
           <div className="mt-4 lux-card">
             <Loading />
           </div>
-        ) : companies.length === 0 ? (
+        ) : societes.length === 0 ? (
           <div className="mt-4 lux-card">
             <EmptyState
               title="Aucun dossier dans cet espace"
@@ -51,7 +51,7 @@ export default function CompanyPicker() {
                   <Button variant="primary" onClick={() => navigate('/societes')}>
                     Créer une société
                   </Button>
-                  {profile?.is_org_admin && (
+                  {profile?.est_admin_organisation && (
                     <Button size="sm" onClick={() => seed.mutate()} disabled={seed.isPending}>
                       {seed.isPending ? 'Chargement…' : 'Charger le jeu de démonstration'}
                     </Button>
@@ -73,23 +73,23 @@ export default function CompanyPicker() {
                   className="lux-card flex w-full items-center gap-3 p-3 text-left hover:border-violet"
                 >
                   <span className="flex h-10 w-10 items-center justify-center rounded-md bg-violet text-sm font-bold text-white">
-                    {c.legal_name.slice(0, 2).toUpperCase()}
+                    {c.raison_sociale.slice(0, 2).toUpperCase()}
                   </span>
                   <span className="min-w-0 flex-1">
-                    <span className="block truncate text-sm font-semibold text-ink">{c.legal_name}</span>
-                    <span className="block truncate text-xs text-ink-muted">
-                      {c.sector ?? 'Secteur non renseigné'}
+                    <span className="bloc truncate text-sm font-semibold text-ink">{c.raison_sociale}</span>
+                    <span className="bloc truncate text-xs text-ink-muted">
+                      {c.secteur ?? 'Secteur non renseigné'}
                       {(() => {
-                        const cbas = currentCbas(c.company_collective_agreements, referenceDate)
+                        const cbas = currentCbas(c.conventions_de_la_societe, referenceDate)
                         return cbas.length === 0
                           ? ' · aucune convention'
-                          : ` · ${cbas.map((l) => l.collective_agreements?.code).join(' + ')}`
+                          : ` · ${cbas.map((l) => l.conventions_collectives?.code).join(' + ')}`
                       })()}
                     </span>
                   </span>
-                  {currentCbas(c.company_collective_agreements, referenceDate).length > 1 && (
+                  {currentCbas(c.conventions_de_la_societe, referenceDate).length > 1 && (
                     <Badge tone="violet">
-                      {currentCbas(c.company_collective_agreements, referenceDate).length} conventions
+                      {currentCbas(c.conventions_de_la_societe, referenceDate).length} conventions
                     </Badge>
                   )}
                 </button>

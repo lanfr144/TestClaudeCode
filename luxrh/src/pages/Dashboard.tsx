@@ -10,7 +10,7 @@ import { date, dateLong, estEnVigueur, num } from '@/lib/format'
 export default function Dashboard() {
   const { activeCompanyId, activeCompany, profile, referenceDate } = useApp()
   const scan = useVigilance(activeCompanyId ?? undefined, referenceDate)
-  const schedules = useSchedules(activeCompanyId ?? undefined)
+  const plannings = useSchedules(activeCompanyId ?? undefined)
   const absences = useAbsences(activeCompanyId ?? undefined)
   const params = useLegalParameters()
 
@@ -21,18 +21,18 @@ export default function Dashboard() {
   if (scan.error) return <ErrorNote error={scan.error} />
 
   const s = scan.data!
-  const firstName = profile?.full_name?.split(' ')[0] ?? ''
+  const firstName = profile?.nom_complet?.split(' ')[0] ?? ''
   const attention = s.overdue.length + s.due_soon.length
-  const draftSchedules = (schedules.data ?? []).filter((x) => x.status === 'draft')
-  const blockingSchedules = s.items.filter((i) => i.rule_code === 'schedule_blocking').length
+  const draftSchedules = (plannings.data ?? []).filter((x) => x.statut === 'draft')
+  const blockingSchedules = s.items.filter((i) => i.code_regle === 'schedule_blocking').length
   const ongoing = (absences.data ?? []).filter(
-    (a) => a.status === 'approved' && a.start_date <= referenceDate && a.end_date >= referenceDate,
+    (a) => a.statut === 'approved' && a.date_debut <= referenceDate && a.date_fin >= referenceDate,
   )
   const index = params.data?.find(
-    (p) => p.param_key === 'wage_index' && estEnVigueur(p, referenceDate),
+    (p) => p.cle_parametre === 'wage_index' && estEnVigueur(p, referenceDate),
   )
   const dc = s.dismissal_counters
-  const hc = s.headcount
+  const hc = s.effectif
 
   return (
     <div className="space-y-4">
@@ -42,7 +42,7 @@ export default function Dashboard() {
             Bonjour {firstName} — {attention === 0 ? 'aucun point ne demande votre attention' : `${attention} point${attention > 1 ? 's' : ''} demande${attention > 1 ? 'nt' : ''} votre attention`}
           </h1>
           <p className="mt-0.5 text-sm capitalize text-ink-muted">
-            {dateLong(referenceDate)} · {activeCompany?.legal_name} · {hc.headcount.current} salariés
+            {dateLong(referenceDate)} · {activeCompany?.raison_sociale} · {hc.effectif.current} salariés
           </p>
         </div>
         <div className="flex gap-2">
@@ -54,7 +54,7 @@ export default function Dashboard() {
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <StatTile
           label="En retard" value={s.overdue.length} tone={s.overdue.length ? 'blocking' : 'ok'}
-          hint={s.overdue[0]?.title.split('—')[0] ?? 'Rien en retard'}
+          hint={s.overdue[0]?.titre.split('—')[0] ?? 'Rien en retard'}
         />
         <StatTile
           label={`Dans les ${s.horizon_days} jours`} value={s.due_soon.length}
@@ -62,10 +62,10 @@ export default function Dashboard() {
           hint="Essai, CDD, seuil d’effectif"
         />
         <StatTile
-          label={`Effectif · ${hc.headcount.reference_months} mois`}
-          value={`${hc.headcount.rounded} / ${num(hc.thresholds[0]?.threshold, 0)}`}
+          label={`Effectif · ${hc.effectif.reference_months} mois`}
+          value={`${hc.effectif.rounded} / ${num(hc.thresholds[0]?.threshold, 0)}`}
           tone={hc.thresholds[0]?.reached ? 'warning' : 'neutral'}
-          hint={`Moyenne ${num(hc.headcount.average, 2)} · ${hc.thresholds[0]?.status}`}
+          hint={`Moyenne ${num(hc.effectif.average, 2)} · ${hc.thresholds[0]?.statut}`}
         />
         <StatTile
           label="Plannings à publier" value={draftSchedules.length}
@@ -128,13 +128,13 @@ export default function Dashboard() {
                 {ongoing.map((a) => (
                   <li key={a.id} className="flex items-center justify-between gap-2">
                     <Link
-                      to={`/employes/${a.employees?.id}`}
+                      to={`/employes/${a.salaries?.id}`}
                       className="truncate text-sm text-ink-body hover:text-action"
                     >
-                      {a.employees?.first_name} {a.employees?.last_name}
+                      {a.salaries?.prenom} {a.salaries?.nom}
                     </Link>
-                    <Badge tone={a.absence_types?.category === 'sick' ? 'warning' : 'info'}>
-                      {a.absence_types?.label}
+                    <Badge tone={a.types_absence?.categorie === 'sick' ? 'warning' : 'info'}>
+                      {a.types_absence?.libelle}
                     </Badge>
                   </li>
                 ))}
@@ -145,10 +145,10 @@ export default function Dashboard() {
           <Card title="Référentiel">
             <p className="text-xs leading-relaxed text-ink-muted">
               Paramètres sociaux à l’indice{' '}
-              <strong className="text-ink">{num(index?.value_num, 2)}</strong>, en vigueur depuis le{' '}
-              <strong className="text-ink">{date(index?.valid_from)}</strong>.
+              <strong className="text-ink">{num(index?.valeur_num, 2)}</strong>, en vigueur depuis le{' '}
+              <strong className="text-ink">{date(index?.debut_validite)}</strong>.
             </p>
-            <Link to="/referentiel" className="mt-2 inline-block text-xs font-semibold text-action hover:underline">
+            <Link to="/referentiel" className="mt-2 inline-bloc text-xs font-semibold text-action hover:underline">
               Consulter le référentiel daté →
             </Link>
           </Card>

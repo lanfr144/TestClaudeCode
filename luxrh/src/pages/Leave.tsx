@@ -19,32 +19,32 @@ const CATEGORY_STYLE: Record<string, string> = {
 
 function PendingRequest({ a }: { a: AbsenceRow }) {
   const { referenceDate } = useApp()
-  const balance = useLeaveBalance(a.employee_id, referenceDate)
+  const balance = useLeaveBalance(a.salarie_id, referenceDate)
   const decide = useDecideAbsence()
-  const counts = a.absence_types?.counts_against_leave ?? false
+  const counts = a.types_absence?.impute_sur_conge ?? false
   // Le droit applicable est celui en vigueur a la date de la demande, pas le droit actuel.
-  const entitlement = (a.absence_types?.absence_entitlements ?? []).find(
-    (e) => e.valid_from <= a.start_date && (!e.valid_to || e.valid_to > a.start_date),
+  const entitlement = (a.types_absence?.droits_absence ?? []).find(
+    (e) => e.debut_validite <= a.date_debut && (!e.fin_validite || e.fin_validite > a.date_debut),
   )
-  const after = (balance.data?.balance ?? 0) - Number(a.days_count)
+  const after = (balance.data?.balance ?? 0) - Number(a.nombre_jours)
   const insufficient = counts && after < 0
 
   return (
     <li className="px-4 py-3">
       <div className="flex flex-wrap items-start justify-between gap-2">
         <div>
-          <Link to={`/employes/${a.employee_id}`} className="text-sm font-semibold text-ink hover:text-action">
-            {a.employees?.first_name} {a.employees?.last_name}
+          <Link to={`/employes/${a.salarie_id}`} className="text-sm font-semibold text-ink hover:text-action">
+            {a.salaries?.prenom} {a.salaries?.nom}
           </Link>
           <p className="text-xs text-ink-muted">
-            {a.absence_types?.label} · {date(a.start_date)} – {date(a.end_date)} ·{' '}
-            {num(a.days_count, 2)} jour(s)
+            {a.types_absence?.libelle} · {date(a.date_debut)} – {date(a.date_fin)} ·{' '}
+            {num(a.nombre_jours, 2)} jour(s)
           </p>
         </div>
-        <Badge tone={insufficient ? 'blocking' : a.absence_types?.category === 'extraordinary' ? 'ok' : 'info'}>
+        <Badge tone={insufficient ? 'blocking' : a.types_absence?.categorie === 'extraordinary' ? 'ok' : 'info'}>
           {insufficient
             ? 'Solde insuffisant'
-            : a.absence_types?.category === 'extraordinary'
+            : a.types_absence?.categorie === 'extraordinary'
               ? 'Droit vérifié'
               : 'En attente'}
         </Badge>
@@ -53,20 +53,20 @@ function PendingRequest({ a }: { a: AbsenceRow }) {
       <div className="mt-2 grid gap-2 text-xs sm:grid-cols-3">
         {counts && (
           <div className="rounded bg-rule-rail px-2 py-1.5">
-            <span className="block text-ink-faint">Solde après</span>
+            <span className="bloc text-ink-faint">Solde après</span>
             <span className="font-mono font-semibold text-ink">{num(after, 2)} j</span>
           </div>
         )}
-        {entitlement?.days != null && (
+        {entitlement?.jours != null && (
           <div className="rounded bg-rule-rail px-2 py-1.5">
-            <span className="block text-ink-faint">Droit à cette date</span>
-            <span className="font-mono font-semibold text-ink">{num(entitlement.days, 0)} j</span>
+            <span className="bloc text-ink-faint">Droit à cette date</span>
+            <span className="font-mono font-semibold text-ink">{num(entitlement.jours, 0)} j</span>
           </div>
         )}
-        {a.comment && (
+        {a.commentaire && (
           <div className="rounded bg-rule-rail px-2 py-1.5">
-            <span className="block text-ink-faint">Commentaire</span>
-            <span className="text-ink-body">{a.comment}</span>
+            <span className="bloc text-ink-faint">Commentaire</span>
+            <span className="text-ink-body">{a.commentaire}</span>
           </div>
         )}
       </div>
@@ -77,15 +77,15 @@ function PendingRequest({ a }: { a: AbsenceRow }) {
           {num(Math.abs(after), 2)} j le droit acquis.
         </p>
       )}
-      {(entitlement?.legal_ref ?? a.absence_types?.legal_ref) && (
+      {(entitlement?.reference_legale ?? a.types_absence?.reference_legale) && (
         <div className="mt-2 flex flex-wrap items-center gap-2">
-          <LegalBasis compact reference={entitlement?.legal_ref ?? a.absence_types?.legal_ref} />
-          {entitlement?.frequency_note && (
-            <span className="text-2xs text-ink-muted">{entitlement.frequency_note}</span>
+          <LegalBasis compact reference={entitlement?.reference_legale ?? a.types_absence?.reference_legale} />
+          {entitlement?.note_frequence && (
+            <span className="text-2xs text-ink-muted">{entitlement.note_frequence}</span>
           )}
-          {entitlement?.career_cap_days != null && (
+          {entitlement?.plafond_carriere_jours != null && (
             <span className="text-2xs text-ink-muted">
-              plafond de carrière : {num(entitlement.career_cap_days, 0)} j
+              plafond de carrière : {num(entitlement.plafond_carriere_jours, 0)} j
             </span>
           )}
         </div>
@@ -125,7 +125,7 @@ function TeamBalance({ employeeId, name }: { employeeId: string; name: string })
 export default function Leave() {
   const { activeCompanyId, referenceDate } = useApp()
   const absences = useAbsences(activeCompanyId ?? undefined)
-  const employees = useEmployees(activeCompanyId ?? undefined)
+  const salaries = useEmployees(activeCompanyId ?? undefined)
   const [monthStart, setMonthStart] = useState(() => `${referenceDate.slice(0, 7)}-01`)
   const holidays = usePublicHolidays(Number(monthStart.slice(0, 4)))
 
@@ -135,8 +135,8 @@ export default function Leave() {
     return Array.from({ length: count }, (_, i) => iso(addDays(first, i)))
   }, [monthStart])
 
-  const pending = (absences.data ?? []).filter((a) => a.status === 'pending')
-  const withContract = (employees.data ?? []).filter((e) => e.contracts?.some((c) => c.status === 'active'))
+  const pending = (absences.data ?? []).filter((a) => a.statut === 'pending')
+  const withContract = (salaries.data ?? []).filter((e) => e.contrats?.some((c) => c.statut === 'active'))
 
   const shiftMonth = (delta: number) => {
     const d = new Date(`${monthStart}T00:00:00`)
@@ -145,9 +145,9 @@ export default function Leave() {
   }
 
   if (!activeCompanyId) return <Card title="Aucun dossier sélectionné">Choisissez une société.</Card>
-  if (absences.isLoading || employees.isLoading) return <Card><Loading /></Card>
+  if (absences.isLoading || salaries.isLoading) return <Card><Loading /></Card>
 
-  const nextHoliday = (holidays.data ?? []).find((h) => h.holiday_date >= referenceDate)
+  const nextHoliday = (holidays.data ?? []).find((h) => h.date_ferie >= referenceDate)
 
   return (
     <div className="space-y-4">
@@ -184,7 +184,7 @@ export default function Leave() {
                     <th className="lux-th sticky left-0 w-44 bg-rule-rail/60">Salarié</th>
                     {days.map((d) => {
                       const wd = new Date(`${d}T00:00:00`).getDay()
-                      const holiday = (holidays.data ?? []).some((h) => h.holiday_date === d)
+                      const holiday = (holidays.data ?? []).some((h) => h.date_ferie === d)
                       return (
                         <th
                           key={d}
@@ -203,27 +203,27 @@ export default function Leave() {
                     <tr key={e.id}>
                       <td className="sticky left-0 bg-white px-3 py-1.5 text-sm text-ink-body">
                         <Link to={`/employes/${e.id}`} className="hover:text-action">
-                          {e.first_name} {e.last_name}
+                          {e.prenom} {e.nom}
                         </Link>
                       </td>
                       {days.map((d) => {
                         const a = (absences.data ?? []).find(
                           (x) =>
-                            x.employee_id === e.id && x.status !== 'refused' &&
-                            x.start_date <= d && x.end_date >= d,
+                            x.salarie_id === e.id && x.statut !== 'refused' &&
+                            x.date_debut <= d && x.date_fin >= d,
                         )
-                        const holiday = (holidays.data ?? []).some((h) => h.holiday_date === d)
+                        const holiday = (holidays.data ?? []).some((h) => h.date_ferie === d)
                         const style = a
-                          ? CATEGORY_STYLE[a.absence_types?.category ?? 'annual_leave']
+                          ? CATEGORY_STYLE[a.types_absence?.categorie ?? 'annual_leave']
                           : holiday
                             ? CATEGORY_STYLE.public_holiday
                             : ''
                         return (
                           <td key={d} className="px-0.5 py-1.5">
                             <div
-                              title={a ? `${a.absence_types?.label} — ${ABSENCE_STATUS_LABEL[a.status]}` : undefined}
+                              title={a ? `${a.types_absence?.libelle} — ${ABSENCE_STATUS_LABEL[a.statut]}` : undefined}
                               className={`mx-auto h-5 w-5 rounded-sm ${style} ${
-                                a?.status === 'pending' ? 'opacity-50' : ''
+                                a?.statut === 'pending' ? 'opacity-50' : ''
                               } ${!a && !holiday ? 'bg-rule-rail' : ''}`}
                             />
                           </td>
@@ -238,11 +238,11 @@ export default function Leave() {
 
           <p className="text-xs text-ink-muted">
             Jour férié du mois :{' '}
-            {(holidays.data ?? []).filter((h) => h.holiday_date.startsWith(monthStart.slice(0, 7))).length === 0
-              ? `aucun. Prochain : ${nextHoliday ? `${date(nextHoliday.holiday_date)} (${nextHoliday.name})` : '—'}`
+            {(holidays.data ?? []).filter((h) => h.date_ferie.startsWith(monthStart.slice(0, 7))).length === 0
+              ? `aucun. Prochain : ${nextHoliday ? `${date(nextHoliday.date_ferie)} (${nextHoliday.nom})` : '—'}`
               : (holidays.data ?? [])
-                  .filter((h) => h.holiday_date.startsWith(monthStart.slice(0, 7)))
-                  .map((h) => `${date(h.holiday_date)} ${h.name}`)
+                  .filter((h) => h.date_ferie.startsWith(monthStart.slice(0, 7)))
+                  .map((h) => `${date(h.date_ferie)} ${h.nom}`)
                   .join(' · ')}
           </p>
         </div>
@@ -263,7 +263,7 @@ export default function Leave() {
           <Card dense title="Soldes de l’équipe">
             <ul className="divide-y divide-rule">
               {withContract.slice(0, 15).map((e) => (
-                <TeamBalance key={e.id} employeeId={e.id} name={`${e.first_name} ${e.last_name}`} />
+                <TeamBalance key={e.id} employeeId={e.id} name={`${e.prenom} ${e.nom}`} />
               ))}
             </ul>
           </Card>

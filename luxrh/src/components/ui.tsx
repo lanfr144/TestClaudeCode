@@ -54,8 +54,8 @@ export function Field({
   label, hint, error, children, required,
 }: { label: string; hint?: ReactNode; error?: string; children: ReactNode; required?: boolean }) {
   return (
-    <label className="block">
-      <span className="lux-label">
+    <label className="bloc">
+      <span className="lux-libelle">
         {label}
         {required && <span className="ml-1 text-danger">*</span>}
       </span>
@@ -194,7 +194,7 @@ export function LegalBasis({
   }
   return (
     <div className="rounded-md border border-rule bg-rule-rail/60 p-3">
-      <p className="lux-label">Base légale</p>
+      <p className="lux-libelle">Base légale</p>
       <p className="mt-1 font-mono text-xs text-violet">{reference}</p>
       {text && <p className="mt-1.5 text-sm leading-relaxed text-ink-body">{text}</p>}
       {(value || validity || source) && (
@@ -233,7 +233,7 @@ export function ArbitrationPanel({ arbitration, unit = '' }: { arbitration: Arbi
   ]
   return (
     <div>
-      <p className="lux-label">Hiérarchie des normes — {arbitration.label}</p>
+      <p className="lux-libelle">Hiérarchie des normes — {arbitration.libelle}</p>
       <div className="mt-2 grid gap-2 sm:grid-cols-3">
         {rows.map((r) => {
           const retained = r.src === arbitration.retained_source
@@ -320,7 +320,7 @@ export function StatTile({
   }[tone]
   return (
     <div className="lux-card p-3.5">
-      <p className="lux-label">{label}</p>
+      <p className="lux-libelle">{label}</p>
       <p className={`mt-1 text-2xl font-bold tracking-tight ${accent}`}>{value}</p>
       {hint && <p className="mt-0.5 text-xs text-ink-muted">{hint}</p>}
     </div>

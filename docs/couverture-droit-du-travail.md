@@ -19,7 +19,7 @@ une **valeur absente** (le moteur attend un chiffre et ne le trouve pas), une
 
 ### 1.1 Le barème d'impôt est vide
 
-`tax_brackets` contient **zéro ligne**. La table existe, avec exactement la forme
+`tranches_impot` contient **zéro ligne**. La table existe, avec exactement la forme
 demandée — classe d'impôt, période d'application, minimum et maximum de tranche,
 impôt initial, taux sur le dépassement — et `fn_income_tax` sait la lire. Elle
 n'a rien à lire.
@@ -76,7 +76,7 @@ conséquence, la plus lourde d'abord.
 
 ### 2.1 Le reclassement professionnel — Livre III
 
-Le handicap est modélisé (`employee_disabilities`, taux, congé supplémentaire).
+Le handicap est modélisé (`handicaps_salarie`, taux, congé supplémentaire).
 Le **reclassement**, interne ou externe, ne l'est pas — et c'est un régime
 distinct : décision de la Commission mixte, protection contre le licenciement,
 indemnité compensatoire, statut de salarié en reclassement externe.
@@ -86,7 +86,7 @@ absence est le manque le plus important de cette liste.
 
 ### 2.2 Des congés légaux hors catalogue
 
-`absence_types` en porte dix-sept : congé annuel, maladie, maternité, paternité,
+`types_absence` en porte dix-sept : congé annuel, maladie, maternité, paternité,
 parental, décès par degré, mariage, déménagement, accompagnement, raisons
 familiales, congé jeunesse, compensatoire, sans solde.
 
@@ -99,7 +99,7 @@ Manquent, alors qu'ils sont de droit :
 - congé pour mandat social ;
 - congé d'accueil (adoption).
 
-La formation figure bien dans `benefit_types`, mais comme **avantage en nature**
+La formation figure bien dans `types_avantage`, mais comme **avantage en nature**
 — c'est-à-dire comme quelque chose que l'employeur accorde, pas comme un droit
 que le salarié exerce. Les deux ne se calculent pas de la même façon.
 
@@ -129,8 +129,8 @@ Absent.
 
 ### 3.1 Ce que le modèle sait arbitrer
 
-Une CCT s'exprime en sept blocs (`cba_block`) : `salary_grid`, `worktime`,
-`leave`, `premiums`, `surcharges`, `notice_probation`, `custom_holidays`. Le
+Une CCT s'exprime en sept blocs (`bloc_convention`) : `salary_grid`, `worktime`,
+`leave`, `primes`, `surcharges`, `notice_probation`, `custom_holidays`. Le
 champ d'application est modélisé (portée, secteur, catégorie de personnel), les
 périodes de validité aussi, et une société comme un contrat peuvent en relever
 de plusieurs.
@@ -150,7 +150,7 @@ C'est le cœur calculable d'une CCT, et il est couvert.
   modélisé : `delegation_delegates_scale`, `released_delegate_threshold`).
 - **Clauses de sécurité d'emploi** et de restructuration.
 - **Procédure disciplinaire et de réclamation.**
-- **Treizième mois et gratification.** Rangeables dans `premiums`, mais sans
+- **Treizième mois et gratification.** Rangeables dans `primes`, mais sans
   règle propre : prorata d'entrée et de sortie, condition de présence à une date,
   exclusion pendant certaines absences — rien de tout cela n'est exprimable.
 - **Prime d'ancienneté** à progression automatique.
@@ -158,8 +158,8 @@ C'est le cœur calculable d'une CCT, et il est couvert.
 
 ### 3.3 Une limite à connaître
 
-`cba_rules.rules` est du JSON libre par bloc. Une clause que le moteur ne sait
-pas lire **est stockée sans être appliquée**. Le drapeau `is_complete` signale
+`regles_convention.rules` est du JSON libre par bloc. Une clause que le moteur ne sait
+pas lire **est stockée sans être appliquée**. Le drapeau `complet` signale
 un bloc incomplet, mais il est déclaratif : personne ne vérifie qu'il dit vrai.
 
 Autrement dit : le modèle accepte n'importe quelle CCT, il n'en applique que les

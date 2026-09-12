@@ -11,7 +11,7 @@ const FILTERS = [
   { key: 'contract', label: 'Contrats' },
   { key: 'worktime', label: 'Temps de travail' },
   { key: 'absence', label: 'Absences' },
-  { key: 'headcount', label: 'Effectif' },
+  { key: 'effectif', label: 'Effectif' },
   { key: 'document', label: 'Documents' },
   { key: 'protection', label: 'Protections' },
 ] as const
@@ -27,9 +27,9 @@ export default function Vigilance() {
 
   const s = data!
   const keep = (items: typeof s.items) =>
-    filter === 'all' ? items : items.filter((i) => i.category === filter)
+    filter === 'all' ? items : items.filter((i) => i.categorie === filter)
 
-  const hc = s.headcount
+  const hc = s.effectif
 
   return (
     <div className="space-y-4">
@@ -76,15 +76,15 @@ export default function Vigilance() {
         </div>
 
         <aside className="space-y-3">
-          <Card title="Seuils d’effectif" subtitle={`Effectif moyen ${num(hc.headcount.average, 2)} sur ${hc.headcount.reference_months} mois`}>
+          <Card title="Seuils d’effectif" subtitle={`Effectif moyen ${num(hc.effectif.average, 2)} sur ${hc.effectif.reference_months} mois`}>
             <ul className="space-y-2.5">
               {hc.thresholds.map((t) => (
                 <li key={t.threshold} className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
                     <p className="text-sm font-semibold text-ink">{num(t.threshold, 0)} salariés</p>
-                    <p className="text-xs text-ink-muted">{t.label}</p>
+                    <p className="text-xs text-ink-muted">{t.libelle}</p>
                   </div>
-                  <Badge tone={t.reached ? 'warning' : 'neutral'}>{t.status}</Badge>
+                  <Badge tone={t.reached ? 'warning' : 'neutral'}>{t.statut}</Badge>
                 </li>
               ))}
             </ul>

@@ -20,7 +20,7 @@ export default function CompanyDetail() {
 
   const [open, setOpen] = useState(false)
   const [form, setForm] = useState({
-    from: referenceDate, mutuality_class: '2', accident_factor: '1.00', activity_class: '', note: '',
+    from: referenceDate, classe_mutualite: '2', facteur_accident: '1.00', classe_activite: '', note: '',
   })
 
   if (isLoading) return <Card><Loading /></Card>
@@ -29,21 +29,21 @@ export default function CompanyDetail() {
 
   const r = rates.data
   const delegation = hc.data?.thresholds[0]
-  const periods = [...(c.company_rate_periods ?? [])].sort((a, b) =>
-    b.valid_from.localeCompare(a.valid_from),
+  const periods = [...(c.periodes_taux_societe ?? [])].sort((a, b) =>
+    b.debut_validite.localeCompare(a.debut_validite),
   )
-  const cbaLinks = c.company_collective_agreements ?? []
+  const cbaLinks = c.conventions_de_la_societe ?? []
   const activeCbas = cbaLinks.filter(
-    (l) => l.valid_from <= referenceDate && (!l.valid_to || l.valid_to > referenceDate),
+    (l) => l.debut_validite <= referenceDate && (!l.fin_validite || l.fin_validite > referenceDate),
   )
 
   return (
     <div className="space-y-4">
       <header>
-        <h1 className="text-xl font-bold tracking-tight text-ink">{c.legal_name}</h1>
+        <h1 className="text-xl font-bold tracking-tight text-ink">{c.raison_sociale}</h1>
         <p className="text-sm text-ink-muted">
-          {c.rcs_number && `RCS ${c.rcs_number} · `}
-          {c.address_line}, {c.postal_code} {c.city}
+          {c.numero_rcs && `RCS ${c.numero_rcs} · `}
+          {c.ligne}, {c.code_postal} {c.localite}
         </p>
       </header>
 
@@ -56,13 +56,13 @@ export default function CompanyDetail() {
           ) : (
             <dl className="space-y-2 text-sm">
               {[
-                ['Matricule CCSS', c.ccss_matricule ?? '—'],
-                ['Secteur NACE', c.nace_code ?? '—'],
-                ['Classe d’activité', r.activity_class ?? '—'],
-                ['Classe Mutualité', `${r.mutuality_class ?? '—'} · ${pct(r.mutuality_rate)}`],
-                ['Facteur accident', `${num(r.accident_factor, 2)} · ${pct(r.accident_rate)}`],
+                ['Matricule CCSS', c.matricule_ccss ?? '—'],
+                ['Secteur NACE', c.code_nace ?? '—'],
+                ['Classe d’activité', r.classe_activite ?? '—'],
+                ['Classe Mutualité', `${r.classe_mutualite ?? '—'} · ${pct(r.mutuality_rate)}`],
+                ['Facteur accident', `${num(r.facteur_accident, 2)} · ${pct(r.accident_rate)}`],
                 ['Total charges patronales', pct(r.employer_total_pct)],
-                ['Période de référence', `${c.reference_period_months} mois`],
+                ['Période de référence', `${c.periode_reference_mois} mois`],
               ].map(([k, v]) => (
                 <div key={k} className="flex justify-between gap-3 border-b border-rule pb-1.5">
                   <dt className="text-ink-muted">{k}</dt>
@@ -84,21 +84,21 @@ export default function CompanyDetail() {
           ) : (
             <ul className="space-y-2.5">
               {cbaLinks.map((l) => {
-                const active = l.valid_from <= referenceDate && (!l.valid_to || l.valid_to > referenceDate)
-                const ca = l.collective_agreements
-                const rules = (ca?.cba_rules ?? []) as { block: string; rules: Record<string, unknown> }[]
-                const leaveRules = rules.find((b) => b.block === 'leave')?.rules as
+                const active = l.debut_validite <= referenceDate && (!l.fin_validite || l.fin_validite > referenceDate)
+                const ca = l.conventions_collectives
+                const rules = (ca?.regles_convention ?? []) as { bloc: string; regles: Record<string, unknown> }[]
+                const leaveRules = rules.find((b) => b.bloc === 'leave')?.regles as
                   | Record<string, number> | undefined
-                const surcharges = rules.find((b) => b.block === 'surcharges')?.rules as
+                const surcharges = rules.find((b) => b.bloc === 'surcharges')?.regles as
                   | Record<string, number> | undefined
                 return (
                   <li key={l.id} className={`rounded border p-2.5 ${active ? 'border-violet bg-violet-veil' : 'border-rule'}`}>
                     <div className="flex items-start justify-between gap-2">
                       <div className="min-w-0">
-                        <p className="truncate text-sm font-semibold text-ink">{ca?.name}</p>
+                        <p className="truncate text-sm font-semibold text-ink">{ca?.nom}</p>
                         <p className="text-2xs text-ink-muted">
-                          {CBA_SCOPE_LABEL[ca?.scope ?? 'sector']} · {date(l.valid_from)} →{' '}
-                          {sansFin(l.valid_to) ? '…' : date(l.valid_to)}
+                          {CBA_SCOPE_LABEL[ca?.portee ?? 'secteur']} · {date(l.debut_validite)} →{' '}
+                          {sansFin(l.fin_validite) ? '…' : date(l.fin_validite)}
                         </p>
                       </div>
                       <Badge tone={active ? 'violet' : 'neutral'}>{active ? 'en vigueur' : 'échue'}</Badge>
@@ -124,16 +124,16 @@ export default function CompanyDetail() {
         </Card>
 
         <Card title="Services">
-          {(c.departments ?? []).length === 0 ? (
+          {(c.services ?? []).length === 0 ? (
             <p className="text-sm text-ink-muted">Aucun service déclaré.</p>
           ) : (
             <ul className="space-y-1.5 text-sm">
-              {(c.departments ?? []).map((d) => (
+              {(c.services ?? []).map((d) => (
                 <li key={d.id} className="flex justify-between gap-2 border-b border-rule pb-1.5">
-                  <span className="text-ink-body">{d.name}</span>
-                  {d.min_evening_coverage && (
+                  <span className="text-ink-body">{d.nom}</span>
+                  {d.couverture_soir_min && (
                     <span className="text-2xs text-ink-muted">
-                      couverture min. {d.min_evening_coverage}
+                      couverture min. {d.couverture_soir_min}
                     </span>
                   )}
                 </li>
@@ -162,22 +162,22 @@ export default function CompanyDetail() {
               </Field>
               <Field label="Classe Mutualité">
                 <Select
-                  value={form.mutuality_class}
-                  onChange={(e) => setForm({ ...form, mutuality_class: e.target.value })}
+                  value={form.classe_mutualite}
+                  onChange={(e) => setForm({ ...form, classe_mutualite: e.target.value })}
                 >
                   {[1, 2, 3, 4].map((k) => <option key={k} value={k}>Classe {k}</option>)}
                 </Select>
               </Field>
               <Field label="Facteur accident">
                 <Input
-                  type="number" step="0.01" value={form.accident_factor}
-                  onChange={(e) => setForm({ ...form, accident_factor: e.target.value })}
+                  type="number" step="0.01" value={form.facteur_accident}
+                  onChange={(e) => setForm({ ...form, facteur_accident: e.target.value })}
                 />
               </Field>
               <Field label="Classe d’activité">
                 <Input
-                  value={form.activity_class}
-                  onChange={(e) => setForm({ ...form, activity_class: e.target.value })}
+                  value={form.classe_activite}
+                  onChange={(e) => setForm({ ...form, classe_activite: e.target.value })}
                 />
               </Field>
               <div className="flex items-end">
@@ -187,9 +187,9 @@ export default function CompanyDetail() {
                     setRates.mutate(
                       {
                         companyId: c.id, from: form.from,
-                        mutualityClass: Number(form.mutuality_class),
-                        accidentFactor: Number(form.accident_factor),
-                        activityClass: form.activity_class || null,
+                        mutualityClass: Number(form.classe_mutualite),
+                        accidentFactor: Number(form.facteur_accident),
+                        activityClass: form.classe_activite || null,
                         note: form.note || null,
                       },
                       { onSuccess: () => setOpen(false) },
@@ -211,11 +211,11 @@ export default function CompanyDetail() {
         <Table head={['Du', 'Au', 'Classe d’activité', 'Mutualité', 'Facteur accident', 'Note']}>
           {periods.map((p) => (
             <tr key={p.id}>
-              <td className="lux-td font-mono">{date(p.valid_from)}</td>
-              <td className="lux-td font-mono">{sansFin(p.valid_to) ? '…' : date(p.valid_to)}</td>
-              <td className="lux-td">{p.activity_class ?? '—'}</td>
-              <td className="lux-td">{p.mutuality_class ? `Classe ${p.mutuality_class}` : '—'}</td>
-              <td className="lux-td font-mono">{num(p.accident_factor, 2)}</td>
+              <td className="lux-td font-mono">{date(p.debut_validite)}</td>
+              <td className="lux-td font-mono">{sansFin(p.fin_validite) ? '…' : date(p.fin_validite)}</td>
+              <td className="lux-td">{p.classe_activite ?? '—'}</td>
+              <td className="lux-td">{p.classe_mutualite ? `Classe ${p.classe_mutualite}` : '—'}</td>
+              <td className="lux-td font-mono">{num(p.facteur_accident, 2)}</td>
               <td className="lux-td text-2xs text-ink-muted">{p.note ?? '—'}</td>
             </tr>
           ))}
@@ -227,7 +227,7 @@ export default function CompanyDetail() {
           title="Effectif et obligations"
           subtitle={
             hc.data
-              ? `Période de référence : ${date(hc.data.headcount.period_start)} → ${date(hc.data.headcount.period_end)}`
+              ? `Période de référence : ${date(hc.data.effectif.debut_periode)} → ${date(hc.data.effectif.fin_periode)}`
               : undefined
           }
         >
@@ -238,22 +238,22 @@ export default function CompanyDetail() {
               <>
                 <div className="grid gap-3 sm:grid-cols-3">
                   <div>
-                    <p className="lux-label">Effectif moyen</p>
-                    <p className="text-3xl font-bold tracking-tight text-ink">{hc.data.headcount.rounded}</p>
+                    <p className="lux-libelle">Effectif moyen</p>
+                    <p className="text-3xl font-bold tracking-tight text-ink">{hc.data.effectif.rounded}</p>
                     <p className="text-2xs text-ink-muted">
-                      moyenne exacte {num(hc.data.headcount.average, 2)} · aujourd’hui{' '}
-                      {hc.data.headcount.current}
+                      moyenne exacte {num(hc.data.effectif.average, 2)} · aujourd’hui{' '}
+                      {hc.data.effectif.current}
                     </p>
                   </div>
                   <div>
-                    <p className="lux-label">Seuil de délégation</p>
+                    <p className="lux-libelle">Seuil de délégation</p>
                     <p className="text-3xl font-bold tracking-tight text-ink">
                       {num(delegation?.threshold, 0)}
                     </p>
-                    <p className="text-2xs text-ink-muted">{delegation?.status}</p>
+                    <p className="text-2xs text-ink-muted">{delegation?.statut}</p>
                   </div>
                   <div>
-                    <p className="lux-label">Mode de scrutin</p>
+                    <p className="lux-libelle">Mode de scrutin</p>
                     <p className="text-3xl font-bold capitalize tracking-tight text-ink">
                       {hc.data.vote_mode}
                     </p>
@@ -274,7 +274,7 @@ export default function CompanyDetail() {
                           : `À ${delegation.gap} salarié(s) du seuil de la délégation du personnel. ${delegation.consequence}`}
                       </p>
                       <div className="mt-2">
-                        <LegalBasis compact reference={delegation.legal_ref} />
+                        <LegalBasis compact reference={delegation.reference_legale} />
                       </div>
                     </div>
                   </div>

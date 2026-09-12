@@ -19,9 +19,9 @@ export function VigilanceRow({
 }: { item: VigilanceItem; compact?: boolean; actions?: ReactNode }) {
   return (
     <li className="flex items-start gap-3 px-4 py-3">
-      <SeverityMark severity={item.severity} />
+      <SeverityMark severity={item.severite} />
       <div className="min-w-0 flex-1">
-        <p className="text-sm font-semibold text-ink">{item.title}</p>
+        <p className="text-sm font-semibold text-ink">{item.titre}</p>
         <p className="mt-0.5 text-xs leading-relaxed text-ink-muted">
           {item.detail}
           {!compact && item.consequence && (
@@ -31,22 +31,22 @@ export function VigilanceRow({
             </>
           )}
         </p>
-        {!compact && (item.legal_ref || actions) && (
+        {!compact && (item.reference_legale || actions) && (
           <div className="mt-2 flex flex-wrap items-center gap-2">
-            <LegalBasis compact reference={item.legal_ref} />
+            <LegalBasis compact reference={item.reference_legale} />
             {actions}
           </div>
         )}
-        {compact && item.legal_ref && (
-          <span className="mt-1 inline-block font-mono text-2xs text-ink-faint">{item.legal_ref}</span>
+        {compact && item.reference_legale && (
+          <span className="mt-1 inline-bloc font-mono text-2xs text-ink-faint">{item.reference_legale}</span>
         )}
       </div>
       <div className="shrink-0 text-right">
         <p className="text-xs font-semibold text-ink-body">{deadlineLabel(item)}</p>
-        {item.due_date && <p className="text-2xs text-ink-faint">{date(item.due_date)}</p>}
+        {item.date_echeance && <p className="text-2xs text-ink-faint">{date(item.date_echeance)}</p>}
         <div className="mt-1">
-          <Badge tone={severityTone(item.severity)}>
-            {item.severity === 'blocking' ? 'Bloquant' : item.severity === 'warning' ? 'Échéance' : 'Seuil'}
+          <Badge tone={severityTone(item.severite)}>
+            {item.severite === 'blocking' ? 'Bloquant' : item.severite === 'warning' ? 'Échéance' : 'Seuil'}
           </Badge>
         </div>
       </div>
@@ -77,7 +77,7 @@ export function VigilanceBlock({
         <ul className="divide-y divide-rule">
           {items.map((i) => (
             <VigilanceRow
-              key={`${i.rule_code}-${i.employee_id ?? i.schedule_id ?? 'x'}`}
+              key={`${i.code_regle}-${i.salarie_id ?? i.planning_id ?? 'x'}`}
               item={i}
               compact={compact}
               actions={renderActions?.(i)}

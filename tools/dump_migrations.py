@@ -153,7 +153,8 @@ def main() -> int:
                       {"p_version": version}) or ""
 
     for m in migrations:
-        version, nom = m["version"], m["name"]
+        # `fn_migrations_list` nomme sa colonne « nom » depuis le renommage français.
+        version, nom = m["version"], m["nom"]
         chemin = par_version.get(version) or par_nom.get(nom.lower())
         if chemin is None:
             manquantes.append((version, nom, source(version)))
@@ -177,9 +178,9 @@ def main() -> int:
     # sur la version que la base a enregistrée.
     mal_datees = []
     for m in migrations:
-        chemin = par_nom.get(m["name"].lower())
+        chemin = par_nom.get(m["nom"].lower())
         if chemin and not chemin.name.startswith(m["version"]):
-            mal_datees.append((m["version"], m["name"], chemin))
+            mal_datees.append((m["version"], m["nom"], chemin))
 
     print(f"{len(migrations)} migration(s) appliquée(s)")
     print(f"  alignées avec le dépôt : {alignees}")

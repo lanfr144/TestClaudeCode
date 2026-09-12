@@ -14,7 +14,7 @@ CATEGORIES = {
     "contract": "Contrats",
     "worktime": "Temps de travail",
     "absence": "Absences",
-    "headcount": "Effectif",
+    "effectif": "Effectif",
     "document": "Documents",
     "protection": "Protections",
 }
@@ -22,26 +22,26 @@ CATEGORIES = {
 
 # =================================================================== contrats
 
-def contracts() -> None:
+def contrats() -> None:
     company = db.active_company()
     if not company:
         st.info("Aucun dossier sélectionné.")
         return
 
-    rows = db.rows("contracts", "*, employees(first_name, last_name)",
-                   company_id=company["id"], _order="start_date", _desc=True)
+    rows = db.rows("contrats", "*, salaries(prenom, nom)",
+                   societe_id=company["id"], _order="date_debut", _desc=True)
     ds.section("Contrats", f"{len(rows)} contrat(s) dans ce dossier")
     st.dataframe(
         pd.DataFrame([{
-            "Salarié": f"{(c.get('employees') or {}).get('first_name','')} "
-                       f"{(c.get('employees') or {}).get('last_name','')}".strip(),
-            "Type": c["kind"].upper(),
-            "Temps partiel": "oui" if c.get("is_part_time") else "",
-            "Poste": c["job_title"],
-            "Début": ds.fmt_date(c["start_date"]),
-            "Fin": ds.fmt_date(c["end_date"]) if c["end_date"] else "—",
-            "Brut": ds.fmt_eur(c["monthly_gross"]),
-            "Statut": c["status"],
+            "Salarié": f"{(c.get('salaries') or {}).get('prenom','')} "
+                       f"{(c.get('salaries') or {}).get('nom','')}".strip(),
+            "Type": c["genre"].upper(),
+            "Temps partiel": "oui" if c.get("est_temps_partiel") else "",
+            "Poste": c["intitule_poste"],
+            "Début": ds.fmt_date(c["date_debut"]),
+            "Fin": ds.fmt_date(c["date_fin"]) if c["date_fin"] else "—",
+            "Brut": ds.fmt_eur(c["brut_mensuel"]),
+            "Statut": c["statut"],
         } for c in rows]),
         use_container_width=True, hide_index=True, height=340)
 
@@ -49,16 +49,16 @@ def contracts() -> None:
         return
 
     labels = {
-        f"{(c.get('employees') or {}).get('last_name','')} — {c['job_title']} ({c['kind'].upper()})": c["id"]
+        f"{(c.get('salaries') or {}).get('nom','')} — {c['intitule_poste']} ({c['genre'].upper()})": c["id"]
         for c in rows
     }
     chosen = st.selectbox("Analyser un contrat", list(labels))
     _contract_compliance(labels[chosen])
 
 
-def _contract_compliance(contract_id: str) -> None:
+def _contract_compliance(contrat_id: str) -> None:
     on = db.reference_date()
-    compliance = db.call("fn_contract_compliance", p_contract=contract_id, p_on=on)
+    compliance = db.call("fn_contract_compliance", p_contract=contrat_id, p_on=on)
     salary = compliance["salary"]
 
     left, right = st.columns([2, 1])
@@ -75,7 +75,7 @@ def _contract_compliance(contract_id: str) -> None:
 
         ds.section("Mentions obligatoires")
         for mention in compliance["mandatory_mentions"]:
-            st.markdown(f"{'✓' if mention['ok'] else '○'} {mention['label']}")
+            st.markdown(f"{'✓' if mention['ok'] else '○'} {mention['libelle']}")
 
     with right:
         ds.section("Salaire minimum applicable")
@@ -110,10 +110,10 @@ def _contract_compliance(contract_id: str) -> None:
             )
 
     ds.section("Conventions applicables")
-    for agreement in compliance["collective_agreements"]:
+    for agreement in compliance["conventions_collectives"]:
         st.markdown(
-            f"{ds.badge(agreement['origin'], 'violet')} **{ds.esc(agreement['name'])}** "
-            f"<span class='lux-muted'>({ds.esc(agreement['scope'])})</span>",
+            f"{ds.badge(agreement['origine'], 'violet')} **{ds.esc(agreement['nom'])}** "
+            f"<span class='lux-muted'>({ds.esc(agreement['portee'])})</span>",
             unsafe_allow_html=True)
     ds.arbitration(compliance["annual_leave"], "j")
 
@@ -134,7 +134,7 @@ def vigilance() -> None:
                       format_func=lambda k: CATEGORIES[k], label_visibility="collapsed")
 
     def keep(items: list[dict]) -> list[dict]:
-        return items if chosen == "all" else [i for i in items if i.get("category") == chosen]
+        return items if chosen == "all" else [i for i in items if i.get("categorie") == chosen]
 
     left, right = st.columns([2, 1])
     with left:
@@ -143,27 +143,27 @@ def vigilance() -> None:
             (f"Dans les {scan['horizon_days']} jours", keep(scan["due_soon"])),
             ("À surveiller", keep(scan["watch"])),
         ):
-            st.markdown(f"**{title} · {len(items)}**")
+            st.markdown(f"**{titre} · {len(items)}**")
             if not items:
                 st.caption("Rien à signaler.")
             for item in items:
                 days = item.get("days_left")
                 right_text = (
                     "à surveiller" if days is None
-                    else (f"échu depuis {abs(days)} j" if days < 0 else f"J-{days}")
+                    else (f"échu depuis {abs(jours)} j" if days < 0 else f"J-{jours}")
                 )
-                ds.alert_card(item["severity"], item["title"], item["detail"],
-                              item.get("consequence"), item.get("legal_ref"), right_text)
+                ds.alert_card(item["severite"], item["titre"], item["detail"],
+                              item.get("consequence"), item.get("reference_legale"), right_text)
 
     with right:
-        obligations = scan["headcount"]
+        obligations = scan["effectif"]
         ds.section("Seuils d’effectif",
-                   f"Effectif moyen {ds.fmt_num(obligations['headcount']['average'])} "
-                   f"sur {obligations['headcount']['reference_months']} mois")
+                   f"Effectif moyen {ds.fmt_num(obligations['effectif']['average'])} "
+                   f"sur {obligations['effectif']['reference_months']} mois")
         for threshold in obligations["thresholds"]:
             st.markdown(
-                f"{ds.badge(threshold['status'], 'warning' if threshold['reached'] else 'neutral')} "
-                f"**{ds.fmt_num(threshold['threshold'], 0)}** — {threshold['label']}",
+                f"{ds.badge(threshold['statut'], 'warning' if threshold['reached'] else 'neutral')} "
+                f"**{ds.fmt_num(threshold['threshold'], 0)}** — {threshold['libelle']}",
                 unsafe_allow_html=True)
         if obligations.get("delegates_due"):
             due = obligations["delegates_due"]
@@ -200,7 +200,7 @@ def dismissal_simulator() -> None:
         ds.section(f"Compteurs glissants au {ds.fmt_date(on)}")
         for label, window in (("30 jours", counters["window_30"]), ("90 jours", counters["window_90"])):
             st.markdown(
-                f"<div class='lux-card'><div class='lux-label'>{label}</div>"
+                f"<div class='lux-card'><div class='lux-libelle'>{libelle}</div>"
                 f"<div style='font-size:22px;font-weight:700'>{window['count']} / "
                 f"{ds.fmt_num(window['threshold'], 0)}</div>"
                 f"<div class='lux-muted'>encore {window['remaining']} possible(s) · se libère le "
@@ -229,14 +229,14 @@ def dismissal_simulator() -> None:
                 None, ", ".join(result.get("legal_refs", [])))
 
             for alternative in result.get("alternatives", []):
-                st.markdown(f"· **Alternative** — {alternative['label']}")
+                st.markdown(f"· **Alternative** — {alternative['libelle']}")
 
             if result.get("timeline"):
                 ds.section("Chronologie de la procédure")
                 for step in result["timeline"]:
                     st.markdown(
                         f"<div class='lux-card'><span class='lux-mono'>{ds.esc(step['when'])}</span>"
-                        f"<div style='font-weight:600'>{ds.esc(step['title'])}</div>"
+                        f"<div style='font-weight:600'>{ds.esc(step['titre'])}</div>"
                         f"<div class='lux-muted'>{ds.esc(step['detail'])}</div></div>",
                         unsafe_allow_html=True)
                 st.warning("Aucune notification ne peut intervenir avant l’issue de la procédure.")
@@ -245,7 +245,7 @@ def dismissal_simulator() -> None:
 
 # ==================================================================== primes
 
-def premiums() -> None:
+def primes() -> None:
     company = db.active_company()
     if not company:
         st.info("Aucun dossier sélectionné.")
@@ -265,7 +265,7 @@ def premiums() -> None:
                     "du brut annuel")
         with columns[1]:
             ds.stat("Plafond entreprise", f"{ds.fmt_num(caps['company_cap_pct'])} %",
-                    f"du bénéfice {int(year) - 1}")
+                    f"du bénéfice {int(annee) - 1}")
         with columns[2]:
             ds.stat("Enveloppe",
                     ds.fmt_eur(caps["envelope"]) if caps["envelope"] is not None else "—",
@@ -276,7 +276,7 @@ def premiums() -> None:
                     "blocking" if caps["envelope_exceeded"] else "ok")
         st.caption(caps.get("message", ""))
 
-        if caps["employees"]:
+        if caps["salaries"]:
             st.dataframe(
                 pd.DataFrame([{
                     "Salarié": e["employee_name"],
@@ -285,9 +285,9 @@ def premiums() -> None:
                     "Attribué": ds.fmt_eur(e["granted"]),
                     "Dans le plafond": "oui" if e["within_cap"] else "NON",
                     "Excédent": ds.fmt_eur(e["excess"]) if e["excess"] else "—",
-                } for e in caps["employees"]]),
+                } for e in caps["salaries"]]),
                 use_container_width=True, hide_index=True)
-        ds.legal_basis(caps.get("legal_ref"),
+        ds.legal_basis(caps.get("reference_legale"),
                        "La prime individuelle ne peut excéder le pourcentage du brut annuel, et "
                        "l’enveloppe distribuée le pourcentage du bénéfice de l’exercice précédent.",
                        source="ACD")
@@ -297,12 +297,12 @@ def premiums() -> None:
             profit = st.number_input("Bénéfice", value=0.0, step=1000.0, format="%.2f")
             if st.form_submit_button("Enregistrer", type="primary"):
                 try:
-                    db.client().table("company_financials").upsert({
-                        "company_id": company["id"],
-                        "fiscal_year": int(year) - 1,
-                        "profit": profit,
+                    db.client().table("donnees_financieres_societe").upsert({
+                        "societe_id": company["id"],
+                        "exercice": int(year) - 1,
+                        "resultat": profit,
                         "source": "saisie manuelle",
-                    }, on_conflict="company_id,fiscal_year").execute()
+                    }, on_conflict="societe_id,exercice").execute()
                     db.invalidate()
                     st.rerun()
                 except Exception as error:
@@ -313,7 +313,7 @@ def premiums() -> None:
 
 def referential() -> None:
     on = db.reference_date()
-    parameters = db.rows("legal_parameters", "*", _order="param_key")
+    parameters = db.rows("parametres_legaux", "*", _order="cle_parametre")
     gaps = db.call("fn_referential_gaps", p_since="2019-12-31")
     holes = db.call("fn_referential_holes")
     inconsistencies = db.call("fn_referential_inconsistencies", p_on=on)
@@ -323,9 +323,9 @@ def referential() -> None:
 
     columns = st.columns(3)
     with columns[0]:
-        ds.stat("Couvrent 2019", sum(1 for g in gaps if g["covers_since"]), tone="ok")
+        ds.stat("Couvrent 2019", sum(1 for g in gaps if g["couvre_depuis"]), tone="ok")
     with columns[1]:
-        ds.stat("À compléter", sum(1 for g in gaps if not g["covers_since"]),
+        ds.stat("À compléter", sum(1 for g in gaps if not g["couvre_depuis"]),
                 "historique manquant", "warning")
     with columns[2]:
         ds.stat("Trous internes", len(holes), "périodes non couvertes",
@@ -334,9 +334,9 @@ def referential() -> None:
     if inconsistencies:
         for item in inconsistencies:
             ds.alert_card(
-                "warning", item["label"],
-                f"Valeur publiée {ds.fmt_num(item['published'])}, dérivée de {item['source_key']} "
-                f"{ds.fmt_num(item['derived'])} — écart de {ds.fmt_num(item['difference'])}.",
+                "warning", item["libelle"],
+                f"Valeur publiée {ds.fmt_num(item['publie'])}, dérivée de {item['cle_source']} "
+                f"{ds.fmt_num(item['derive'])} — écart de {ds.fmt_num(item['ecart'])}.",
                 "Une indexation a peut-être été saisie à moitié.")
 
     st.caption(
@@ -344,36 +344,36 @@ def referential() -> None:
         "la source officielle avant tout recalcul portant sur une période antérieure."
     )
 
-    families = sorted({p["family"] for p in parameters})
+    families = sorted({p["famille"] for p in parameters})
     family = st.selectbox("Famille", families,
                           index=families.index("ccss") if "ccss" in families else 0)
     in_force = [
         p for p in parameters
-        if p["family"] == family and p["valid_from"] <= on.isoformat()
-        and (not p["valid_to"] or p["valid_to"] > on.isoformat())
+        if p["famille"] == family and p["debut_validite"] <= on.isoformat()
+        and (not p["fin_validite"] or p["fin_validite"] > on.isoformat())
     ]
     st.dataframe(
         pd.DataFrame([{
-            "Paramètre": p["label"],
-            "Clé": p["param_key"],
+            "Paramètre": p["libelle"],
+            "Clé": p["cle_parametre"],
             "Valeur": _value(p),
-            "En vigueur": ds.fmt_date(p["valid_from"]),
-            "Indice": p["index_ref"],
+            "En vigueur": ds.fmt_date(p["debut_validite"]),
+            "Indice": p["indice_reference"],
             "Source": p["source"],
-            "Base légale": p["legal_ref"] or "—",
+            "Base légale": p["reference_legale"] or "—",
         } for p in in_force]),
         use_container_width=True, hide_index=True, height=400)
 
-    keys = sorted({p["param_key"] for p in parameters if p["family"] == family})
+    keys = sorted({p["cle_parametre"] for p in parameters if p["famille"] == family})
     if not keys:
         return
     key = st.selectbox("Historique d’un paramètre", keys)
-    history = [p for p in parameters if p["param_key"] == key]
-    history.sort(key=lambda p: p["valid_from"], reverse=True)
+    history = [p for p in parameters if p["cle_parametre"] == key]
+    history.sort(key=lambda p: p["debut_validite"], reverse=True)
     st.dataframe(
         pd.DataFrame([{
-            "Du": ds.fmt_date(p["valid_from"]),
-            "Au": ds.fmt_date(p["valid_to"]) if not sans_fin(p["valid_to"]) else "…",
+            "Du": ds.fmt_date(p["debut_validite"]),
+            "Au": ds.fmt_date(p["fin_validite"]) if not sans_fin(p["fin_validite"]) else "…",
             "Valeur": _value(p),
             "Source": p["source"],
             "Note": p["note"] or "",
@@ -384,13 +384,13 @@ def referential() -> None:
 
 
 def _value(row: dict) -> str:
-    if row["value_num"] is not None:
-        return f"{ds.fmt_num(row['value_num'], 4)} {row['unit'] or ''}".strip()
-    if row["value_text"] is not None:
-        return row["value_text"]
-    if row.get("derived_from_key"):
-        return f"dérivé de {row['derived_from_key']} × {row.get('derived_factor')}"
-    return str(row["value_json"])
+    if row["valeur_num"] is not None:
+        return f"{ds.fmt_num(row['valeur_num'], 4)} {row['unite'] or ''}".strip()
+    if row["valeur_texte"] is not None:
+        return row["valeur_texte"]
+    if row.get("derive_de_cle"):
+        return f"dérivé de {row['derive_de_cle']} × {row.get('facteur_derive')}"
+    return str(row["valeur_json"])
 
 
 def _new_version_form(key: str, history: list[dict]) -> None:
@@ -401,17 +401,17 @@ def _new_version_form(key: str, history: list[dict]) -> None:
             "La date d’application et la date de chargement sont distinctes : si la nouvelle "
             "valeur s’applique à une période déjà traitée, les recalculs sont signalés."
         )
-        with st.form(f"version_{key}"):
+        with st.form(f"version_{cle}"):
             columns = st.columns(3)
-            valid_from = columns[0].date_input("Applicable à compter du", db.reference_date())
+            debut_validite = columns[0].date_input("Applicable à compter du", db.reference_date())
             value = columns[1].text_input("Nouvelle valeur")
             source = columns[2].text_input("Source", current["source"] if current else "CCSS")
             note = st.text_input("Note", "Chargement depuis la publication officielle.")
             if st.form_submit_button("Enregistrer la version", type="primary"):
                 try:
-                    numeric = current and current["value_num"] is not None
+                    numeric = current and current["valeur_num"] is not None
                     db.engine("fn_add_parameter_version",
-                              p_key=key, p_valid_from=valid_from,
+                              p_key=key, p_valid_from=debut_validite,
                               p_value_num=float(value.replace(",", ".")) if numeric else None,
                               p_value_text=None if numeric else value,
                               p_value_json=None, p_source=source,

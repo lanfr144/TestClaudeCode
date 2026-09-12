@@ -7,7 +7,7 @@
 export type Severity = 'blocking' | 'warning' | 'info' | 'ok'
 
 export interface Arbitration {
-  label: string
+  libelle: string
   law_value: number | null
   law_ref: string | null
   cba_value: number | null
@@ -20,14 +20,14 @@ export interface Arbitration {
 
 export interface ComplianceCheck {
   code: string
-  label: string
-  severity: Severity
+  libelle: string
+  severite: Severity
   detail: string
-  legal_ref: string | null
+  reference_legale: string | null
 }
 
 export interface MandatoryMention {
-  label: string
+  libelle: string
   ok: boolean
 }
 
@@ -54,15 +54,15 @@ export interface Probation {
   last_day_to_notify: string
   days_until_deadline: number
   is_running: boolean
-  legal_ref: string | null
+  reference_legale: string | null
 }
 
 export interface ContractCompliance {
-  contract_id: string
+  contrat_id: string
   evaluated_on: string
-  kind?: string
-  is_part_time?: boolean
-  collective_agreements: { name: string; code: string; scope: string; origin: string }[]
+  genre?: string
+  est_temps_partiel?: boolean
+  conventions_collectives: { name: string; code: string; scope: string; origin: string }[]
   checks: ComplianceCheck[]
   mandatory_mentions: MandatoryMention[]
   salary: MinSalaryDetail
@@ -74,46 +74,46 @@ export interface ContractCompliance {
 }
 
 export interface Violation {
-  severity: Exclude<Severity, 'ok'>
+  severite: Exclude<Severity, 'ok'>
   code: string
-  title: string
+  titre: string
   detail: string
-  legal_ref: string | null
-  employee_id: string | null
+  reference_legale: string | null
+  salarie_id: string | null
   employee_name: string | null
-  shift_date: string | null
+  date_creneau: string | null
 }
 
 export interface ScheduleEmployeeSummary {
-  employee_id: string
+  salarie_id: string
   employee_name: string
-  job_title: string | null
+  intitule_poste: string | null
   contract_weekly_hours: number | null
   total_hours: number
-  overtime_hours: number
+  heures_supplementaires: number
   sundays: number
   longest_rest_hours: number
 }
 
 export interface ScheduleValidation {
-  schedule_id: string
-  week_start: string
-  status: 'draft' | 'published'
+  planning_id: string
+  debut_semaine: string
+  statut: 'draft' | 'publie'
   violations: Violation[]
-  employees: ScheduleEmployeeSummary[]
+  salaries: ScheduleEmployeeSummary[]
   blocking_count: number
   warning_count: number
   can_publish: boolean
 }
 
 export interface LeaveLine {
-  label: string
+  libelle: string
   value: number
   sign: '+' | '-' | '='
 }
 
 export interface LeaveBalance {
-  employee_id: string
+  salarie_id: string
   evaluated_on: string
   entitlement_days: number
   entitlement_source: string
@@ -124,12 +124,12 @@ export interface LeaveBalance {
   months_counted: number
   prorata: number
   lines: LeaveLine[]
-  legal_ref: string | null
+  reference_legale: string | null
   no_contract?: boolean
 }
 
 export interface SickCounters {
-  employee_id: string
+  salarie_id: string
   window_months: number
   days_in_window: number
   limit_days: number
@@ -139,54 +139,54 @@ export interface SickCounters {
   protection_weeks: number
   mutuality_refund_pct: number
   certificate_deadline_days: number
-  missing_certificates: { absence_id: string; start_date: string; days_late: number }[]
-  legal_ref: string | null
+  missing_certificates: { absence_id: string; date_debut: string; days_late: number }[]
+  reference_legale: string | null
   protection_ref: string | null
 }
 
 export interface LeaveImpact {
   days_counted: number
   holidays_excluded: number
-  category: string
+  categorie: string
   balance_before?: number
   balance_after?: number
-  /** Droit applicable a la date de la demande, lu dans absence_entitlements. */
+  /** Droit applicable a la date de la demande, lu dans droits_absence. */
   entitlement_days?: number | null
-  career_cap_days?: number | null
-  block_days?: number | null
+  plafond_carriere_jours?: number | null
+  jours_bloc?: number | null
   used_career?: number
   used_in_period?: number
-  period_months?: number | null
-  requires_evidence?: boolean
+  duree_mois?: number | null
+  piece_exigee?: boolean
   is_valid: boolean
   message: string
-  legal_ref: string | null
+  reference_legale: string | null
 }
 
 export interface Headcount {
-  company_id: string
+  societe_id: string
   reference_months: number
-  period_start: string
-  period_end: string
+  debut_periode: string
+  fin_periode: string
   average: number
   rounded: number
   current: number
   monthly: { month: string; headcount: number }[]
-  legal_ref: string | null
+  reference_legale: string | null
 }
 
 export interface Threshold {
   threshold: number
-  label: string
+  libelle: string
   reached: boolean
   gap: number
-  status: string
+  statut: string
   consequence: string
-  legal_ref: string | null
+  reference_legale: string | null
 }
 
 export interface HeadcountObligations {
-  headcount: Headcount
+  effectif: Headcount
   thresholds: Threshold[]
   delegates_due: { from: number; to: number | null; effective: number; substitute: number } | null
   vote_mode: 'majoritaire' | 'proportionnel'
@@ -203,12 +203,12 @@ export interface DismissalCounters {
   evaluated_on: string
   window_30: DismissalWindow
   window_90: DismissalWindow
-  legal_ref: string | null
+  reference_legale: string | null
 }
 
 export interface TimelineStep {
   when: string
-  title: string
+  titre: string
   detail: string
   date: string
 }
@@ -228,43 +228,43 @@ export interface DismissalSimulation {
 }
 
 export interface VigilanceItem {
-  rule_code: string
-  employee_id?: string | null
+  code_regle: string
+  salarie_id?: string | null
   employee_name?: string | null
-  contract_id?: string | null
-  schedule_id?: string | null
-  title: string
+  contrat_id?: string | null
+  planning_id?: string | null
+  titre: string
   detail: string
   consequence: string | null
-  due_date: string | null
+  date_echeance: string | null
   days_left: number | null
-  severity: Exclude<Severity, 'ok'>
-  legal_ref: string | null
-  category?: 'contract' | 'absence' | 'headcount' | 'worktime'
+  severite: Exclude<Severity, 'ok'>
+  reference_legale: string | null
+  categorie?: 'contract' | 'absence' | 'effectif' | 'worktime'
 }
 
 export interface ComplianceScan {
-  company_id: string
+  societe_id: string
   evaluated_on: string
   horizon_days: number
   items: VigilanceItem[]
   overdue: VigilanceItem[]
   due_soon: VigilanceItem[]
   watch: VigilanceItem[]
-  headcount: HeadcountObligations
+  effectif: HeadcountObligations
   dismissal_counters: DismissalCounters
   disclaimer: string
 }
 
 export interface ReferencePeriodStatus {
-  label: string
+  libelle: string
   months: number
-  start_date: string
-  end_date: string
+  date_debut: string
+  date_fin: string
   average_weekly_hours: number
   target_weekly_hours: number
   margin_hours: number
-  legal_ref: string | null
+  reference_legale: string | null
 }
 
 /* ===================================================================== */
@@ -278,27 +278,27 @@ export interface CompanyRates {
   message?: string
   period_from?: string
   period_to?: string | null
-  activity_class?: string | null
-  accident_risk_class?: string | null
-  accident_factor?: number
+  classe_activite?: string | null
+  classe_risque_accident?: string | null
+  facteur_accident?: number
   accident_base_rate?: number
   accident_rate?: number
-  mutuality_class?: number | null
+  classe_mutualite?: number | null
   mutuality_rate?: number | null
   employer_total_pct?: number
-  legal_ref?: string | null
+  reference_legale?: string | null
 }
 
-export type CbaScope = 'sector' | 'harassment' | 'employee_category' | 'department' | 'company'
+export type CbaScope = 'secteur' | 'harassment' | 'categorie_professionnelle' | 'department' | 'company'
 
 export interface ApplicableCba {
-  collective_agreement_id: string
+  convention_id: string
   code: string
-  name: string
-  scope: CbaScope
-  origin: string
-  valid_from: string
-  valid_to: string | null
+  nom: string
+  portee: CbaScope
+  origine: string
+  debut_validite: string
+  fin_validite: string | null
 }
 
 export interface Qualification {
@@ -306,7 +306,7 @@ export interface Qualification {
   source: string
   career_years: number | null
   threshold_years: number
-  legal_ref: string | null
+  reference_legale: string | null
 }
 
 /** fn_min_salary enrichi : âge, qualification détaillée, grilles multiples. */
@@ -322,83 +322,83 @@ export interface MinSalaryDetail extends Omit<MinSalary, 'qualification'> {
 }
 
 export interface Protection {
-  kind: string
-  label: string
+  genre: string
+  libelle: string
   until: string | null
   days_left: number | null
   consequence: string
-  legal_ref: string | null
-  declared_on?: string
-  expected_birth_date?: string | null
-  actual_birth_date?: string | null
+  reference_legale: string | null
+  declare_le?: string
+  date_naissance_prevue?: string | null
+  date_naissance_reelle?: string | null
 }
 
 export interface DismissalProtections {
-  employee_id: string
+  salarie_id: string
   evaluated_on: string
   protected: boolean
   protections: Protection[]
 }
 
 export interface OvertimeEligibility {
-  employee_id: string
+  salarie_id: string
   evaluated_on: string
   allowed: boolean
-  reasons: { code: string; label: string; detail: string; legal_ref: string | null }[]
+  reasons: { code: string; label: string; detail: string; reference_legale: string | null }[]
 }
 
 export interface DelegationEligibility {
-  employee_id: string
+  salarie_id: string
   evaluated_on: string
   eligible: boolean
   seniority_months: number | null
   required_months: number
   reasons: { code: string; detail: string }[]
-  legal_ref: string | null
+  reference_legale: string | null
 }
 
 export interface EndOfContractDocument {
   code: string
-  label: string
+  libelle: string
   delivered: boolean
-  delivered_at: string | null
+  remis_le: string | null
   document_id: string | null
-  legal_ref: string | null
+  reference_legale: string | null
   note: string | null
 }
 
 export interface EndOfContractDocuments {
-  contract_id: string
+  contrat_id: string
   terminated: boolean
-  notice_end: string | null
+  fin_preavis: string | null
   documents: EndOfContractDocument[]
   outstanding: number
 }
 
 export interface ReferentialGap {
   family: string
-  param_key: string
-  label: string
-  earliest_covered: string
-  latest_covered: string
+  cle_parametre: string
+  libelle: string
+  couvert_depuis: string
+  couvert_jusqua: string
   versions: number
-  covers_since: boolean
-  gap_days: number
+  couvre_depuis: boolean
+  jours_manquants: number
 }
 
 export interface ReferentialInconsistency {
-  param_key: string
-  label: string
-  published: number
+  cle_parametre: string
+  libelle: string
+  publie: number
   derived: number
   difference: number
   tolerance: number
-  source_key: string
+  cle_source: string
 }
 
 export interface Absenteeism {
-  company_id: string
-  year: number
+  societe_id: string
+  annee: number
   sick_days: number
   average_headcount: number
   theoretical_working_days: number
@@ -412,13 +412,13 @@ export interface IncomeTax {
   taxable: number
   tax: number | null
   message?: string
-  tax_class?: string
+  classe_impot?: string
   periodicity?: string
-  bracket_min?: number
-  bracket_max?: number | null
-  base_tax?: number
-  rate_over_min?: number
-  valid_from?: string
+  tranche_min?: number
+  tranche_max?: number | null
+  impot_base?: number
+  taux_au_dessus_minimum?: number
+  debut_validite?: string
   source?: string
-  legal_ref?: string | null
+  reference_legale?: string | null
 }
