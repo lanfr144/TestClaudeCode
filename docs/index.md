@@ -82,3 +82,5 @@ jamais estimés.
 - [presentation.md](presentation.md) — ce que fait l'application
 - [demarrage.md](demarrage.md) — la faire tourner
 - [architecture.md](architecture.md) — comment elle est construite
+
+- [`donnees-de-reference.md`](donnees-de-reference.md) — où trouver les valeurs légales, quand et comment les charger, comment tester
