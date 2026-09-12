@@ -21,22 +21,27 @@ from pathlib import Path
 # --------------------------------------------------------------------- types
 
 NUMERIC = re.compile(r'^numeric\((\d+),(\d+)\)$')
+CARACTERES = re.compile(r'^(character|character varying)\((\d+)\)$')
 
 
 def oracle_type(col: dict, enums: dict, indexed: bool) -> str:
     t, udt = col['type'], col['udt']
     if t == 'uuid':
-        return 'VARCHAR2(36)'
+        return 'VARCHAR2(36 CHAR)'
     if t == 'text':
-        return 'VARCHAR2(4000)'
+        return 'VARCHAR2(4000 CHAR)'
     if t == 'boolean':
-        return 'NUMBER(1)'
+        # Type natif depuis Oracle 23ai. La cible étant 26ai, plus besoin du
+        # NUMBER(1) + contrainte de l'ancienne version : un booléen se déclare.
+        return 'BOOLEAN'
     if t == 'date':
         return 'DATE'
     if t == 'time without time zone':
-        # Oracle n'a pas de type TIME. L'heure est stockée en 'HH24:MI:SS' :
-        # les comparaisons lexicographiques restent justes sur ce format.
-        return 'VARCHAR2(8)'
+        # Une heure du jour n'est pas une DATE : la stocker en DATE traîne une
+        # date fantôme au 1er janvier de l'an zéro, et la stocker en VARCHAR2
+        # interdit toute arithmétique. INTERVAL DAY TO SECOND dit exactement ce
+        # qu'on veut — une durée depuis minuit — et s'additionne.
+        return 'INTERVAL DAY(0) TO SECOND(0)'
     if t == 'timestamp with time zone':
         return 'TIMESTAMP(6) WITH TIME ZONE'
     if t == 'jsonb' or t.endswith('[]'):
@@ -54,9 +59,15 @@ def oracle_type(col: dict, enums: dict, indexed: bool) -> str:
     m = NUMERIC.match(t)
     if m:
         return f'NUMBER({m.group(1)},{m.group(2)})'
+    m = CARACTERES.match(t)
+    if m:
+        # `character(n)` est à longueur fixe et complété par des espaces : CHAR
+        # se comporte de même sur Oracle, la sémantique est préservée.
+        return (f'CHAR({m.group(2)} CHAR)' if m.group(1) == 'character'
+                else f'VARCHAR2({m.group(2)})')
     if udt in enums:
         longest = max(len(v) for v in enums[udt])
-        return f'VARCHAR2({max(longest, 8)})'
+        return f'VARCHAR2({max(longest, 8)} CHAR)'
     raise SystemExit(f'Type non traduit vers Oracle : {t} ({col["name"]})')
 
 
@@ -93,9 +104,15 @@ def mysql_type(col: dict, enums: dict, indexed: bool) -> str:
     m = NUMERIC.match(t)
     if m:
         return f'DECIMAL({m.group(1)},{m.group(2)})'
+    m = CARACTERES.match(t)
+    if m:
+        return (f'CHAR({m.group(2)})' if m.group(1) == 'character'
+                else f'VARCHAR({m.group(2)})')
     if udt in enums:
-        valeurs = ', '.join(f"'{v}'" for v in enums[udt])
-        return f'ENUM({valeurs})'
+        # Pas de type ENUM : une colonne ENUM ne peut pas porter de clé
+        # étrangère vers sa table de référence, et c'est cette clé qui remplace
+        # désormais la liste de valeurs figée.
+        return 'VARCHAR(64)'
     raise SystemExit(f'Type non traduit vers MySQL : {t} ({col["name"]})')
 
 
@@ -153,12 +170,47 @@ def emit(cat: dict, dialect: str) -> str:
     out.append("-- la base PostgreSQL fait foi, ce fichier la suit.")
     out.append("--")
     if dialect == 'oracle':
-        out.append("-- Écarts assumés : pas de type TIME (heures en VARCHAR2 'HH24:MI:SS'),")
-        out.append("-- booléens en NUMBER(1), énumérations en VARCHAR2 + CHECK, tableaux en JSON.")
+        out.append("-- Cible : Oracle 26ai. VARCHAR2 en sémantique CHAR (un « é » compte pour")
+        out.append("-- un caractère, non pour deux octets). BOOLEAN natif, heures en INTERVAL DAY TO")
+        out.append("-- SECOND, énumérations en tables de référence, tableaux et jsonb en CLOB.")
+        out.append("-- Les clés étrangères d'auteur pointent vers APP_USERS.")
     else:
         out.append("-- Écarts assumés : DATETIME ne conserve pas le fuseau (tout est écrit en UTC),")
-        out.append("-- booléens en TINYINT(1), tableaux en JSON.")
+        out.append("-- booléens en TINYINT(1), énumérations en tables de référence,")
+        out.append("-- tableaux et jsonb en JSON. Les clés d'auteur pointent vers app_users.")
     out.append("")
+
+    # ------------------------------------------------- tables de référence
+    # Les énumérations PostgreSQL deviennent des tables : un ensemble de valeurs
+    # se maintient alors par DML, sans migration ni indisponibilité, et porte ses
+    # propres dates de validité. Une valeur retirée du catalogue reste lisible
+    # dans les lignes qui la référencent — ce qu'un `check` ne permet pas.
+    if enums:
+        out.append("-- ------------------------------------------------------------------")
+        out.append("-- TABLES DE RÉFÉRENCE — à la place des types énumérés de PostgreSQL.")
+        out.append("-- Chaque valeur porte sa période d'usage : on retire une valeur en la")
+        out.append("-- datant, jamais en la supprimant, sinon l'historique devient illisible.")
+        out.append("-- ------------------------------------------------------------------")
+        out.append("")
+        for nom_enum in sorted(enums):
+            tref = f"ref_{nom_enum}"
+            out.append(f"create table {q(tref)} (")
+            code_type = 'VARCHAR2(64 CHAR)' if dialect == 'oracle' else 'VARCHAR(64)'
+            texte = 'VARCHAR2(200 CHAR)' if dialect == 'oracle' else 'VARCHAR(200)'
+            out.append(f"  {q('code')} {code_type} not null,")
+            out.append(f"  {q('label')} {texte},")
+            out.append(f"  {q('sort_order')} NUMBER(5)," if dialect == 'oracle'
+                       else f"  {q('sort_order')} SMALLINT,")
+            out.append(f"  {q('valid_from')} DATE default "
+                       + ("date '1900-01-01'," if dialect == 'oracle' else "'1900-01-01',"))
+            out.append(f"  {q('valid_to')} DATE,")
+            out.append(f"  constraint {tref[:24]}_pk primary key ({q('code')})")
+            out.append(f"){' engine=InnoDB default charset=utf8mb4' if dialect == 'mysql' else ''}{fin}")
+            for rang, valeur in enumerate(enums[nom_enum], start=1):
+                out.append(f"insert into {q(tref)} ({q('code')}, {q('label')}, {q('sort_order')}) "
+                           f"values ('{valeur}', '{valeur.replace(chr(39), chr(39) * 2)}', {rang}){fin}")
+            out.append("")
+        out.append("")
 
     # Les tables sont créées avant les clés étrangères : l'ordre de création
     # n'a alors plus d'importance, et un cycle de références ne bloque rien.
@@ -182,13 +234,13 @@ def emit(cat: dict, dialect: str) -> str:
                 morceau += f" default {d}"
             if col['notnull']:
                 morceau += " not null"
-            if dialect == 'oracle' and col['udt'] in enums:
-                valeurs = ', '.join(f"'{v}'" for v in enums[col['udt']])
-                morceau += f"\n    constraint {nom[:20]}_{col['name'][:20]}_enum".lower()
-                morceau += f" check ({q(col['name'])} in ({valeurs}))"
-            if dialect == 'oracle' and col['type'] == 'boolean':
-                morceau += f" constraint {nom[:20]}_{col['name'][:18]}_bool".lower()
-                morceau += f" check ({q(col['name'])} in (0, 1))"
+            # Plus de contrainte `check` sur une énumération : la valeur est
+            # contrôlée par une clé étrangère vers sa table de référence, posée
+            # plus bas. Un ensemble de valeurs se maintient par DML, pas par
+            # migration — c'est tout l'intérêt.
+            #
+            # Plus de contrainte sur un booléen non plus : le type BOOLEAN natif
+            # d'Oracle 23ai s'en charge.
             if dialect == 'oracle' and col['type'] == 'jsonb':
                 morceau += f" constraint {nom[:20]}_{col['name'][:18]}_json".lower()
                 morceau += f" check ({q(col['name'])} is json)"
@@ -212,6 +264,20 @@ def emit(cat: dict, dialect: str) -> str:
 
     # ------------------------------------------------------- clés étrangères
     out.append("-- Clés étrangères, posées après toutes les tables.")
+
+    # Chaque colonne qui portait une énumération pointe vers sa table de
+    # référence. C'est ce qui remplace la contrainte `check` : même garantie,
+    # mais l'ensemble des valeurs se modifie par DML.
+    for table in cat['tables']:
+        for col in table['columns']:
+            if col['udt'] not in enums:
+                continue
+            contrainte = f"{table['name'][:18]}_{col['name'][:16]}_ref".lower()
+            out.append(f"alter table {q(table['name'])} add constraint {contrainte[:28]} "
+                       f"foreign key ({q(col['name'])}) "
+                       f"references {q('ref_' + col['udt'])} ({q('code')}){fin}")
+    out.append("")
+
     for table in cat['tables']:
         for co in table['constraints'] or []:
             if co['type'] != 'f':
@@ -223,12 +289,18 @@ def emit(cat: dict, dialect: str) -> str:
                 continue
             source, cible, colonnes, suite = m.groups()
             if '.' in cible and not cible.startswith('public'):
-                # auth.users n'existe pas hors Supabase : la référence est notée,
-                # pas inventée.
-                reportes.append(
-                    f"{table['name']}.{co['name']} : référence {cible}, propre à Supabase Auth. "
-                    f"À rattacher à la table des comptes de la cible.")
-                continue
+                # `auth.users` n'existe pas hors Supabase. Signaler la référence
+                # sans la rebrancher revenait à livrer un schéma sans intégrité
+                # sur « qui a fait quoi » : quatorze clés étrangères d'auteur
+                # étaient purement abandonnées. Elles pointent désormais vers
+                # `app_users`, qui porte les mêmes UUID d'un moteur à l'autre.
+                if cible.split('.')[-1].strip('"').lower() == 'users':
+                    cible = 'app_users'
+                else:
+                    reportes.append(
+                        f"{table['name']}.{co['name']} : référence {cible}, hors du schéma "
+                        f"applicatif. À rattacher à la table correspondante de la cible.")
+                    continue
             cible = cible.split('.')[-1].strip('"')
             action = ''
             if 'ON DELETE CASCADE' in suite:
@@ -254,6 +326,51 @@ def emit(cat: dict, dialect: str) -> str:
             else:
                 reportes.append(f"{table['name']}.{co['name']} : {motif} — {co['def']}")
     out.append("")
+
+    # ------------------------------------------------------------ commentaires
+    # Le catalogue ne les portait pas et l'émetteur ne les écrivait pas : les
+    # commentaires posés côté PostgreSQL ne sont jamais arrivés dans les schémas
+    # dérivés. Un schéma sans commentaire oblige chaque lecteur à redécouvrir ce
+    # que la colonne signifie — et c'est ce que la documentation coûte le plus
+    # cher à refaire.
+    def litteral(texte: str) -> str:
+        return "'" + texte.replace("'", "''") + "'"
+
+    commentes_t = commentes_c = 0
+    lignes_com: list[str] = []
+    for table in cat['tables']:
+        if table.get('comment'):
+            commentes_t += 1
+            lignes_com.append(
+                f"comment on table {q(table['name'])} is {litteral(table['comment'])}{fin}")
+        for col in table['columns']:
+            if col.get('comment'):
+                commentes_c += 1
+                lignes_com.append(
+                    f"comment on column {q(table['name'])}.{q(col['name'])} "
+                    f"is {litteral(col['comment'])}{fin}")
+    for nom_enum in sorted(enums):
+        lignes_com.append(
+            f"comment on table {q('ref_' + nom_enum)} is "
+            f"{litteral('Table de référence issue du type énuméré PostgreSQL ' + nom_enum + '.')}{fin}")
+
+    if lignes_com:
+        out.append("-- ------------------------------------------------------------------")
+        out.append(f"-- COMMENTAIRES — {commentes_t} table(s) et {commentes_c} colonne(s).")
+        out.append("-- Repris tels quels du schéma PostgreSQL, qui fait foi.")
+        out.append("-- ------------------------------------------------------------------")
+        out.extend(lignes_com)
+        out.append("")
+
+    # Les colonnes sans commentaire sont dites, pas tues : c'est une dette
+    # visible, et elle se comble une colonne à la fois.
+    sans = [f"{t['name']}.{c['name']}" for t in cat['tables']
+            for c in t['columns'] if not c.get('comment')]
+    if sans:
+        reportes.append(
+            f"{len(sans)} colonne(s) sans commentaire dans le schéma PostgreSQL source — "
+            f"elles en manquent donc ici aussi. À commenter côté PostgreSQL, "
+            f"jamais directement ici. Premières : " + ', '.join(sans[:6]) + '…')
 
     # ------------------------------------------------- contraintes d'exclusion
     exclusions = [(t['name'], co) for t in cat['tables']
@@ -285,11 +402,29 @@ def emit(cat: dict, dialect: str) -> str:
 def exclusion_trigger(table: str, co: dict, dialect: str, q, enums) -> list[str]:
     """Reproduit une contrainte d'exclusion de p\u00e9riodes par un d\u00e9clencheur.
 
-    C\u00f4t\u00e9 Oracle, le d\u00e9clencheur est de niveau instruction et non ligne : un
-    d\u00e9clencheur ligne qui interroge sa propre table l\u00e8ve ORA-04091 (mutating
-    table). Il rev\u00e9rifie donc toute la table \u00e0 chaque \u00e9criture -- co\u00fbteux, mais
-    ces tables de r\u00e9f\u00e9rentiel sont petites et rarement \u00e9crites, et une garantie
-    approximative sur l'unicit\u00e9 d'un taux \u00e0 une date ne vaut rien.
+    Ne v\u00e9rifie que les lignes \u00e9crites
+    ---------------------------------
+    La premi\u00e8re version de ce g\u00e9n\u00e9rateur rev\u00e9rifiait **toute la table** \u00e0 chaque
+    \u00e9criture : un `count(*)` sur l'auto-jointure compl\u00e8te `a join b on a.id <> b.id`.
+    Correct, mais quadratique -- et faux comme principe : un d\u00e9clencheur n'a pas
+    \u00e0 contr\u00f4ler des lignes que personne n'a touch\u00e9es.
+
+    Il ne compare d\u00e9sormais que les lignes ins\u00e9r\u00e9es ou modifi\u00e9es aux seules
+    lignes avec lesquelles elles peuvent entrer en conflit -- celles qui
+    partagent leurs cl\u00e9s d'\u00e9galit\u00e9 et dont la p\u00e9riode recoupe la leur.
+
+    `exists` plut\u00f4t que `count(*)`
+    ------------------------------
+    Un `count(*)` compte tous les conflits avant de conclure qu'il y en a au
+    moins un. `exists` s'arr\u00eate au premier. Sur Oracle, cela rend `rownum <= 1`
+    superflu : la condition d'arr\u00eat est dans l'op\u00e9rateur lui-m\u00eame.
+
+    Oracle : d\u00e9clencheur compos\u00e9
+    ----------------------------
+    Un d\u00e9clencheur ligne qui interroge sa propre table l\u00e8ve ORA-04091 (mutating
+    table). Le d\u00e9clencheur compos\u00e9 l\u00e8ve l'obstacle proprement : la section
+    `after each row` **collecte** les identifiants \u00e9crits, la section
+    `after statement` les v\u00e9rifie -- la table n'est alors plus en mutation.
     """
     d = co['def']
     egalites = re.findall(r'(\w+)\s+WITH\s+=', d)
@@ -303,42 +438,73 @@ def exclusion_trigger(table: str, co: dict, dialect: str, q, enums) -> list[str]
     # Les cl\u00e9s d'\u00e9galit\u00e9 peuvent \u00eatre nulles : deux lignes sans CCT partagent
     # bien la m\u00eame port\u00e9e, et doivent donc \u00eatre compar\u00e9es entre elles.
     if dialect == 'oracle':
+        # Les clés d'égalité peuvent être nulles : deux lignes sans CCT partagent
+        # bien la même portée, et doivent donc être comparées entre elles.
         cles = ' and '.join(
             f'(a.{q(c)} = b.{q(c)} or (a.{q(c)} is null and b.{q(c)} is null))'
             for c in egalites) or '1=1'
         return [
             f"create or replace trigger {nom}",
-            f"  after insert or update on {q(table)}",
-            "declare",
-            "  n number;",
-            "begin",
-            "  select count(*) into n",
-            f"    from {q(table)} a join {q(table)} b on a.{q('id')} <> b.{q('id')}",
-            f"   where {cles}",
-            f"     and a.{q(debut)} < nvl(b.{q(fin_col)}, {INFINI})",
-            f"     and nvl(a.{q(fin_col)}, {INFINI}) > b.{q(debut)};",
-            "  if n > 0 then",
-            f"    raise_application_error(-20001,",
-            f"      'Deux periodes se recouvrent sur {table} : une date ne peut avoir qu''une valeur');",
-            "  end if;",
-            "end;",
+            f"  for insert or update on {q(table)}",
+            "  compound trigger",
+            "",
+            "  -- Les identifiants écrits par l'instruction en cours, et eux seuls.",
+            f"  type t_ids is table of {q(table)}.{q('id')}%type index by pls_integer;",
+            "  g_ids t_ids;",
+            "",
+            "  after each row is",
+            "  begin",
+            f"    g_ids(g_ids.count + 1) := :new.{q('id')};",
+            "  end after each row;",
+            "",
+            "  after statement is",
+            "    v_conflit number;",
+            "  begin",
+            "    -- La table n'est plus en mutation ici : on peut l'interroger.",
+            "    for i in 1 .. g_ids.count loop",
+            "      begin",
+            "        -- `exists` s'arrête au premier conflit trouvé ; inutile d'en",
+            "        -- compter davantage pour savoir qu'il y en a un.",
+            "        select 1 into v_conflit from dual",
+            "         where exists (",
+            "           select 1",
+            f"             from {q(table)} a",
+            f"             join {q(table)} b on b.{q('id')} <> a.{q('id')}",
+            f"            where a.{q('id')} = g_ids(i)",
+            f"              and {cles}",
+            f"              and a.{q(debut)} < nvl(b.{q(fin_col)}, {INFINI})",
+            f"              and nvl(a.{q(fin_col)}, {INFINI}) > b.{q(debut)});",
+            "        raise_application_error(-20001,",
+            f"          'Deux periodes se recouvrent sur {table} : une date ne peut avoir qu''une valeur');",
+            "      exception",
+            "        when no_data_found then null;   -- aucun conflit sur cette ligne",
+            "      end;",
+            "    end loop;",
+            "  end after statement;",
+            "",
+            f"end {nom};",
             "/",
             "",
         ]
 
-    cles = ' and '.join(f'a.{q(c)} <=> b.{q(c)}' for c in egalites) or '1=1'
+    # MySQL : déclencheur ligne. `new` est la ligne écrite -- on ne compare
+    # qu'elle, jamais la table à elle-même. `<=>` est l'égalité sûre aux nuls.
+    cles = ' and '.join(f'new.{q(c)} <=> b.{q(c)}' for c in egalites) or '1=1'
     lignes = ["delimiter $$"]
     for moment in ('insert', 'update'):
         lignes += [
             f"create trigger {nom}_{moment} after {moment} on {q(table)}",
             "for each row begin",
-            "  declare n int;",
-            "  select count(*) into n",
-            f"    from {q(table)} a join {q(table)} b on a.{q('id')} <> b.{q('id')}",
-            f"   where {cles}",
-            f"     and a.{q(debut)} < ifnull(b.{q(fin_col)}, {INFINI})",
-            f"     and ifnull(a.{q(fin_col)}, {INFINI}) > b.{q(debut)};",
-            "  if n > 0 then",
+            "  declare v_conflit int;",
+            "  select exists (",
+            "    select 1",
+            f"      from {q(table)} b",
+            f"     where b.{q('id')} <> new.{q('id')}",
+            f"       and {cles}",
+            f"       and new.{q(debut)} < ifnull(b.{q(fin_col)}, {INFINI})",
+            f"       and ifnull(new.{q(fin_col)}, {INFINI}) > b.{q(debut)}",
+            "  ) into v_conflit;",
+            "  if v_conflit then",
             "    signal sqlstate '45000'",
             f"      set message_text = 'Deux periodes se recouvrent sur {table}';",
             "  end if;",
