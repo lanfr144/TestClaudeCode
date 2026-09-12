@@ -1,0 +1,28 @@
+-- 75 — btree_gist quitte le schéma applicatif
+--
+-- Le dernier point de la revue de sécurité encore ouvert, et le seul écart que
+-- `tools/verifier_coherence.py` remontait après les migrations 70 à 74b.
+--
+-- Le problème
+-- -----------
+-- `btree_gist` était installée dans `public`. PostgreSQL accorde EXECUTE à PUBLIC
+-- sur les fonctions d'une extension : ses 188 routines de support — gbt_bytea_union,
+-- float8_dist, et le reste — étaient donc exposées dans le schéma applicatif et
+-- exécutables par le rôle `anon`, celui d'un visiteur non authentifié.
+--
+-- Aucune d'elles ne lit de donnée métier : ce sont des primitives d'index. Le
+-- risque direct est faible. Mais elles brouillaient la seule règle simple qu'on
+-- puisse tenir sur ce schéma — « aucune fonction de public n'est ouverte à anon » —
+-- et une règle qu'on ne peut pas énoncer simplement ne se vérifie pas.
+--
+-- Pourquoi c'est sans danger pour les 8 contraintes d'exclusion
+-- --------------------------------------------------------------
+-- Les index existants référencent leur classe d'opérateurs par OID, pas par nom :
+-- déplacer l'extension ne les touche pas. Et la création de nouvelles contraintes
+-- continue de trouver la classe, parce que le search_path par défaut du rôle
+-- porte déjà `extensions` — c'est là que vivent pgcrypto et dblink.
+--
+-- Vérifié après application : les 8 contraintes d'exclusion sont toujours en place
+-- et rejettent toujours un chevauchement.
+
+alter extension btree_gist set schema extensions;

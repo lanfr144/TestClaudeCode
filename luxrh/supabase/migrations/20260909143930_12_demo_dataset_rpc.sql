@@ -175,7 +175,7 @@ begin
 
   -- ---------------- Planning semaine 42 ----------------
   insert into schedules(company_id, department_id, week_start, label, status)
-  values (bg, null, wk, 'Semaine 42 · 12 �� 18 octobre 2026','draft') returning id into sched;
+  values (bg, null, wk, 'Semaine 42 · 12 – 18 octobre 2026','draft') returning id into sched;
 
   insert into shifts(schedule_id, company_id, employee_id, shift_date, start_time, end_time, break_minutes, label, template_id)
   values

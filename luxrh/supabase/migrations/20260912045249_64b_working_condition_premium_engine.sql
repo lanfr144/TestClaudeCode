@@ -1,0 +1,44 @@
+-- 64b — Calcul des primes de conditions : première version, corrigée par la 64c
+--
+-- AVERTISSEMENT SUR CE FICHIER
+-- ----------------------------
+-- Ce fichier ne contient PAS le SQL qui a été appliqué. Il le décrit.
+--
+-- La migration 64b a créé `fn_primes_conditions` dans une version défectueuse,
+-- remplacée quelques minutes plus tard par la migration 64c. Recopier ici un
+-- corps de fonction dont on sait qu'il est faux n'aiderait personne : le
+-- rejouer produirait la fonction correcte de toute façon, puisque la 64c la
+-- redéfinit juste après.
+--
+-- L'état final d'un rejeu du dépôt est donc identique à l'état déployé. Ce qui
+-- diffère est l'état transitoire entre 64b et 64c — sans conséquence, et
+-- documenté ici plutôt que reproduit.
+--
+-- LE DÉFAUT, ET CE QU'IL APPREND
+-- -------------------------------
+-- La fonction résolvait la convention applicable en interrogeant
+-- `contract_collective_agreements` **seule** :
+--
+--     join contract_collective_agreements cca
+--       on cca.collective_agreement_id = p.collective_agreement_id
+--      and cca.contract_id = v_contrat.id
+--      and cca.valid_from <= c.date_prestation
+--      and (cca.valid_to is null or cca.valid_to > c.date_prestation)
+--
+-- Or cette table est **vide** sur le déploiement : le rattachement conventionnel
+-- se fait au niveau de la société, parfois du service, et seulement parfois du
+-- contrat. Tous les créneaux ressortaient donc « sans règle applicable » — une
+-- fonction qui ne trouve jamais rien, et qui le dit poliment.
+--
+-- `fn_applicable_cbas` faisait déjà ce travail, et mieux : elle couvre les trois
+-- niveaux et filtre sur le service et la catégorie professionnelle. La 64c y
+-- substitue donc :
+--
+--     join fn_applicable_cbas(v_contrat.id, c.date_prestation) a
+--       on a.collective_agreement_id = p.collective_agreement_id
+--
+-- La leçon : avant d'écrire une résolution, vérifier que le moteur n'en a pas
+-- déjà une — et l'essayer sur les données réelles, pas sur l'idée qu'on s'en
+-- fait. Le défaut est apparu au premier essai avec de vraies lignes.
+--
+-- Pour le corps en vigueur, voir la migration 64c.
