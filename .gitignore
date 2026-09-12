@@ -8,10 +8,40 @@ __pycache__/
 dist/
 .vite/
 
+# Documentation compilée — les sources Markdown de docs/ font foi,
+# les PDF se régénèrent avec .claude/skills/pdf-writer/render_pdf.py
+/docs/pdf/
+
 # Secrets et configuration locale — ce dépôt est public
+#
+# La règle est prise par la négative : toute variante de `.env` est exclue, et
+# seul le fichier modèle est réadmis explicitement. Un `.env.production` ou un
+# `.env.oracle` créé plus tard est donc couvert sans qu'il faille y penser.
 .env
-.env.local
+.env.*
+!.env.example
 *.local
+
+# Matériel cryptographique et identifiants, quelle qu'en soit la forme
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+id_rsa
+id_ed25519
+credentials.json
+service-account*.json
+secrets/
+
+# Jeux de données téléchargés — volumineux, et reconstituables depuis leur source
+# publique par `tools/telecharger_donnees.py`. Le dépôt garde la référence et la
+# licence, pas les octets.
+/data/brut/
+
+# Volumes et états des conteneurs Docker
+/docker/volumes/
+/docker/.env
 
 # Artefacts de l'outil de conception
 .thumbnail

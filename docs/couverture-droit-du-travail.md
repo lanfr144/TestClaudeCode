@@ -1,7 +1,7 @@
 # Ce que LuxRH couvre, et ce qu'il ne couvre pas
 
 État au 10 septembre 2026, établi en interrogeant la base plutôt qu'en relisant
-le cahier des charges : 47 tables, 272 fonctions de moteur, 100 paramètres
+le cahier des charges : 53 tables, 111 fonctions de moteur, 100 paramètres
 légaux suivis, 128 vérifications automatiques plus 26 sur la portabilité.
 
 La question posée était : *la partie RH a-t-elle toutes les informations pour
@@ -213,3 +213,13 @@ Pour ne pas donner une image faussement sombre, voici ce qui l'est.
 
 Aucun de ces points ne demande de reprendre l'architecture : le référentiel daté
 et l'arbitrage des normes les accueillent tels quels.
+
+---
+
+## Voir aussi
+
+- [index.md](index.md) — sommaire de la documentation
+- [presentation.md](presentation.md) — le résumé des limites, en une page
+- [moteur-de-regles.md](moteur-de-regles.md) — le référentiel daté et la règle « aucune valeur inventée »
+- [modele-de-donnees.md](modele-de-donnees.md) — les tables citées ici, en contexte
+- [api-serveur.md](api-serveur.md) — `fn_referential_gaps`, `fn_income_tax` et les autres fonctions mentionnées

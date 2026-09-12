@@ -7,6 +7,10 @@ espace salarié.
 > **L'application ne se contente pas de calculer, elle avertit et explique.**
 > Chaque alerte, chaque blocage et chaque valeur retenue porte sa base légale.
 
+📚 **Documentation complète du projet : [`../docs/index.md`](../docs/index.md)** — présentation,
+architecture, moteur de règles, inventaire des fonctions RPC, guide utilisateur, modèle de données,
+tests, conventions. Ce README ne couvre que l'application React.
+
 ---
 
 ## Démarrer
@@ -17,8 +21,10 @@ npm run dev      # http://localhost:5173
 npm run build    # tsc --noEmit && vite build — 0 erreur
 ```
 
-Node 20+ requis. Une **seconde application, en Python avec Streamlit**, couvre les mêmes écrans
-et le même moteur : voir [`../luxrh-py`](../luxrh-py/README.md).
+Node 20+ requis. Une **seconde application, en Python avec Streamlit**, s'appuie sur le même moteur
+et couvre l'essentiel des mêmes écrans — 16 vues face aux 22 écrans de ce front, avec quelques
+fonctions présentes d'un seul côté : voir [`../luxrh-py`](../luxrh-py/README.md) et le tableau des
+écarts en fin de [`../docs/api-serveur.md`](../docs/api-serveur.md).
 
 `.env.local` contient déjà l'URL et la clé publiable du projet Supabase. Pour un autre projet,
 copiez `.env.example` et renseignez `VITE_SUPABASE_URL` et `VITE_SUPABASE_ANON_KEY`.
@@ -92,16 +98,22 @@ serait une erreur silencieuse.
 npm test
 ```
 
-128 vérifications sans dépendance de test, exécutées contre l'API réelle :
+**154 vérifications** sans dépendance de test, réparties en cinq suites exécutées contre l'API
+réelle :
 
-| Suite | Couvre |
-|---|---|
-| `tests/api.test.mjs` | Chaque requête et chaque RPC utilisées par le front, avec leurs jointures |
-| `tests/rls.test.mjs` | Cloisonnement entre espaces, espace salarié, fonctions internes non exposées |
-| `tests/publication.test.mjs` | Refus de publication sur violation bloquante, puis publication après correction |
-| `tests/domain.test.mjs` | Handicap, confidentialité des enfants, accord préalable sur les heures supplémentaires, chèques-repas, protections de fin de contrat, plafonds de primes |
+| Suite | Vérif. | Couvre |
+|---|---|---|
+| `tests/api.test.mjs` | 80 | Chaque requête et chaque RPC utilisées par le front, avec leurs jointures |
+| `tests/rls.test.mjs` | 22 | Cloisonnement entre espaces, espace salarié, fonctions internes non exposées |
+| `tests/publication.test.mjs` | 10 | Refus de publication sur violation bloquante, puis publication après correction |
+| `tests/domain.test.mjs` | 16 | Handicap, confidentialité des enfants, accord préalable sur les heures supplémentaires, chèques-repas, protections de fin de contrat, plafonds de primes |
+| `tests/portability.test.mjs` | 26 | Export RGPD, refus d'export hors périmètre, aller-retour du référentiel |
 
-La suite `publication` modifie puis **restaure** le jeu de démonstration.
+Les suites `publication` et `domain` modifient puis **restaurent** le jeu de démonstration.
+
+Ce que les suites ne couvrent **pas** — composants React, vues Streamlit, backends Oracle et MySQL,
+Edge Function, charge, intégration continue — est détaillé dans
+[`../docs/tests-et-qualite.md`](../docs/tests-et-qualite.md).
 
 ## Ce qui reste à faire
 
@@ -309,12 +321,16 @@ src/
   lib/          supabase.ts · queries.ts · engine.ts · format.ts · database.types.ts
   components/   ui.tsx (design system) · AppShell.tsx · VigilanceItem.tsx
   context/      AppContext.tsx (session, dossier actif, date de référence)
-  pages/        20 écrans, dont SelfService.tsx pour l'espace salarié mobile
+  pages/        22 écrans, dont SelfService.tsx pour l'espace salarié mobile
 supabase/
-  migrations/   42 migrations, du socle au moteur de règles
+  migrations/   44 migrations, du socle au moteur de règles — 92 fonctions
   functions/    contract-pdf (génération PDF + dépôt dans le dossier du salarié)
-tests/          3 suites exécutées contre l'API réelle, sans dépendance
+tests/          5 suites exécutées contre l'API réelle, sans dépendance
 ```
+
+Le détail de chaque couche est dans [`../docs/architecture.md`](../docs/architecture.md), et
+l'inventaire complet des fonctions RPC — signature, retour, appelants, migration d'origine — dans
+[`../docs/api-serveur.md`](../docs/api-serveur.md).
 
 Les migrations sont déjà appliquées sur le projet. Pour repartir d'une base neuve :
 
