@@ -454,7 +454,7 @@ create table `contrats` (
   `lieu_travail` TEXT,
   `categorie` TEXT,
   `date_debut` DATE not null,
-  `date_fin` DATE,
+  `date_fin` DATE default '2037-12-31' not null,
   `motif_cdd` TEXT,
   `nombre_renouvellements` SMALLINT default 0 not null,
   `contrat_precedent_id` CHAR(36),
@@ -1339,7 +1339,7 @@ create table `statuts_salarie` (
   `genre` VARCHAR(64) not null,
   `declare_le` DATE default CURRENT_DATE not null,
   `date_debut` DATE not null,
-  `date_fin` DATE,
+  `date_fin` DATE default '2037-12-31' not null,
   `date_naissance_prevue` DATE,
   `date_naissance_reelle` DATE,
   `piece_justificative_id` CHAR(36),
@@ -1611,6 +1611,7 @@ alter table `contrats` add constraint cdd_needs_reason CHECK (((genre <> 'cdd'::
 alter table `contrats` add constraint contract_dates_order CHECK (((date_fin IS NULL) OR (date_fin >= date_debut)));
 alter table `contrats` add constraint contract_not_its_own_predece CHECK (((contrat_precedent_id IS NULL) OR (contrat_precedent_id <> id)));
 alter table `contrats` add constraint contract_quantities_positive CHECK (((heures_hebdomadaires > (0)::numeric) AND (jours_par_semaine > (0)::numeric) AND (jours_par_semaine <= (7)::numeric) AND (brut_mensuel >= (0)::numeric) AND (nombre_renouvellements >= 0) AND ((pause_minutes IS NULL) OR (pause_minutes >= 0)) AND ((jours_conge_annuel IS NULL) OR (jours_conge_annuel >= (0)::numeric)) AND ((duree_essai IS NULL) OR (duree_essai > 0)) AND ((annee_apprentissage IS NULL) OR (annee_apprentissage > 0))));
+alter table `contrats` add constraint contrats_periode_coherente CHECK ((date_fin >= date_debut));
 alter table `contrats` add constraint fixed_term_needs_end CHECK (((genre <> ALL (ARRAY['cdd'::genre_contrat, 'seasonal'::genre_contrat, 'interim'::genre_contrat, 'apprenticeship'::genre_contrat])) OR (date_fin IS NOT NULL)));
 alter table `contrats` add constraint interim_needs_user_company CHECK (((genre <> 'interim'::genre_contrat) OR (nom_societe_utilisateur IS NOT NULL)));
 alter table `contrats` add constraint probation_length_and_unit_to CHECK (((duree_essai IS NULL) = (unite_essai IS NULL)));
@@ -1699,6 +1700,7 @@ alter table `sites_client` add constraint client_site_has_an_address CHECK (((li
 alter table `societes` add constraint ccss_matricule_format CHECK (((matricule_ccss IS NULL) OR (matricule_ccss ~ '^[0-9]{13}$'::text)));
 alter table `societes` add constraint societes_reference_period_po CHECK ((periode_reference_mois >= 1));
 alter table `statuts_salarie` add constraint status_range CHECK (((date_fin IS NULL) OR (date_fin >= date_debut)));
+alter table `statuts_salarie` add constraint statuts_salarie_periode_cohe CHECK ((date_fin >= date_debut));
 alter table `tranches_impot` add constraint bracket_range CHECK (((tranche_max IS NULL) OR (tranche_max > tranche_min)));
 alter table `tranches_impot` add constraint bracket_validity CHECK (((fin_validite IS NULL) OR (fin_validite > debut_validite)));
 alter table `tranches_impot` add constraint tranches_impot_periode_valid CHECK ((fin_validite > debut_validite));
@@ -1852,7 +1854,7 @@ comment on column `contrats`.`description_poste` is 'Description des fonctions. 
 comment on column `contrats`.`lieu_travail` is 'Lieu d''exécution convenu. Mention obligatoire au contrat.';
 comment on column `contrats`.`categorie` is 'Catégorie professionnelle, clé d''entrée dans la grille salariale conventionnelle.';
 comment on column `contrats`.`date_debut` is 'Prise d''effet du contrat, jour inclus. Point de départ de l''ancienneté, de la période d''essai et du droit à congé.';
-comment on column `contrats`.`date_fin` is 'Dernier jour du contrat, INCLUS. Nulle pour un contrat à durée indéterminée en cours. Un avenant clôt le contrat précédent la veille de sa prise d''effet.';
+comment on column `contrats`.`date_fin` is 'Dernier jour du contrat, borne haute INCLUSE : le contrat est en cours le jour J si date_fin >= J. Jamais nulle — un contrat à durée indéterminée porte la sentinelle 2037-12-31, qui se lit « fin inconnue » et non « fin en 2037 ». Le caractère déterminé ou non de la durée se lit sur genre, pas sur cette date.';
 comment on column `contrats`.`motif_cdd` is 'Motif de recours au CDD. Un CDD sans motif licite est requalifiable.';
 comment on column `contrats`.`nombre_renouvellements` is 'Nombre de renouvellements déjà consommés, borné par la loi.';
 comment on column `contrats`.`contrat_precedent_id` is 'Contrat que celui-ci renouvelle, pour reconstituer la chaîne et l''ancienneté.';
@@ -2546,7 +2548,7 @@ comment on column `statuts_salarie`.`salarie_id` is 'Salarié concerné. La lign
 comment on column `statuts_salarie`.`genre` is 'Nature du statut, qui commande la protection applicable.';
 comment on column `statuts_salarie`.`declare_le` is 'Date à laquelle l''employeur a été informé. C''est elle, et non le fait lui-même, qui déclenche la protection.';
 comment on column `statuts_salarie`.`date_debut` is 'Premier jour du statut, inclus. Un statut protégé — grossesse, délégation, congé parental — ouvre des protections qui commencent ce jour-là.';
-comment on column `statuts_salarie`.`date_fin` is 'Dernier jour du statut, INCLUS. Nulle tant que le statut court.';
+comment on column `statuts_salarie`.`date_fin` is 'Dernier jour du statut, borne haute INCLUSE. Jamais nulle : un statut toujours actif porte la sentinelle 2037-12-31.';
 comment on column `statuts_salarie`.`date_naissance_prevue` is 'Date présumée de l''accouchement, qui borne la période protégée.';
 comment on column `statuts_salarie`.`date_naissance_reelle` is 'Date réelle, qui rectifie la borne une fois connue.';
 comment on column `statuts_salarie`.`piece_justificative_id` is 'Pièce justifiant le statut : certificat, procès-verbal d''élection. Une protection invoquée sans pièce ne tient pas devant l''ITM.';
@@ -2658,7 +2660,7 @@ for each row begin
     select 1
       from `adresses_salarie` b
      where b.`id` <> new.`id`
-       and new.`salarie_id` <=> b.`salarie_id` and new.`type_adresse` <=> b.`type_adresse`
+       and new.`salarie_id` = b.`salarie_id` and new.`type_adresse` = b.`type_adresse`
        and new.`debut_validite` < b.`fin_validite`
        and new.`fin_validite` > b.`debut_validite`
   ) into v_conflit;
@@ -2674,7 +2676,7 @@ for each row begin
     select 1
       from `adresses_salarie` b
      where b.`id` <> new.`id`
-       and new.`salarie_id` <=> b.`salarie_id` and new.`type_adresse` <=> b.`type_adresse`
+       and new.`salarie_id` = b.`salarie_id` and new.`type_adresse` = b.`type_adresse`
        and new.`debut_validite` < b.`fin_validite`
        and new.`fin_validite` > b.`debut_validite`
   ) into v_conflit;
@@ -2693,7 +2695,7 @@ for each row begin
     select 1
       from `attributions_titres_repas` b
      where b.`id` <> new.`id`
-       and new.`salarie_id` <=> b.`salarie_id`
+       and new.`salarie_id` = b.`salarie_id`
        and new.`debut_periode` < b.`fin_periode`
        and new.`fin_periode` > b.`debut_periode`
   ) into v_conflit;
@@ -2709,7 +2711,7 @@ for each row begin
     select 1
       from `attributions_titres_repas` b
      where b.`id` <> new.`id`
-       and new.`salarie_id` <=> b.`salarie_id`
+       and new.`salarie_id` = b.`salarie_id`
        and new.`debut_periode` < b.`fin_periode`
        and new.`fin_periode` > b.`debut_periode`
   ) into v_conflit;
@@ -2728,9 +2730,9 @@ for each row begin
     select 1
       from `contrats` b
      where b.`id` <> new.`id`
-       and new.`salarie_id` <=> b.`salarie_id`
-       and new.`date_debut` < ifnull(b.`date_fin`, '2037-12-31')
-       and ifnull(new.`date_fin`, '2037-12-31') > b.`date_debut`
+       and new.`salarie_id` = b.`salarie_id`
+       and new.`date_debut` < b.`date_fin`
+       and new.`date_fin` > b.`date_debut`
   ) into v_conflit;
   if v_conflit then
     signal sqlstate '45000'
@@ -2744,9 +2746,9 @@ for each row begin
     select 1
       from `contrats` b
      where b.`id` <> new.`id`
-       and new.`salarie_id` <=> b.`salarie_id`
-       and new.`date_debut` < ifnull(b.`date_fin`, '2037-12-31')
-       and ifnull(new.`date_fin`, '2037-12-31') > b.`date_debut`
+       and new.`salarie_id` = b.`salarie_id`
+       and new.`date_debut` < b.`date_fin`
+       and new.`date_fin` > b.`date_debut`
   ) into v_conflit;
   if v_conflit then
     signal sqlstate '45000'
@@ -2763,7 +2765,7 @@ for each row begin
     select 1
       from `droits_absence` b
      where b.`id` <> new.`id`
-       and new.`type_absence_id` <=> b.`type_absence_id`
+       and new.`type_absence_id` = b.`type_absence_id`
        and new.`debut_validite` < b.`fin_validite`
        and new.`fin_validite` > b.`debut_validite`
   ) into v_conflit;
@@ -2779,7 +2781,7 @@ for each row begin
     select 1
       from `droits_absence` b
      where b.`id` <> new.`id`
-       and new.`type_absence_id` <=> b.`type_absence_id`
+       and new.`type_absence_id` = b.`type_absence_id`
        and new.`debut_validite` < b.`fin_validite`
        and new.`fin_validite` > b.`debut_validite`
   ) into v_conflit;
@@ -2798,7 +2800,7 @@ for each row begin
     select 1
       from `fiches_retenue_impot` b
      where b.`id` <> new.`id`
-       and new.`salarie_id` <=> b.`salarie_id`
+       and new.`salarie_id` = b.`salarie_id`
        and new.`debut_validite` < b.`fin_validite`
        and new.`fin_validite` > b.`debut_validite`
   ) into v_conflit;
@@ -2814,7 +2816,7 @@ for each row begin
     select 1
       from `fiches_retenue_impot` b
      where b.`id` <> new.`id`
-       and new.`salarie_id` <=> b.`salarie_id`
+       and new.`salarie_id` = b.`salarie_id`
        and new.`debut_validite` < b.`fin_validite`
        and new.`fin_validite` > b.`debut_validite`
   ) into v_conflit;
@@ -2833,7 +2835,7 @@ for each row begin
     select 1
       from `handicaps_salarie` b
      where b.`id` <> new.`id`
-       and new.`salarie_id` <=> b.`salarie_id`
+       and new.`salarie_id` = b.`salarie_id`
        and new.`debut_validite` < b.`fin_validite`
        and new.`fin_validite` > b.`debut_validite`
   ) into v_conflit;
@@ -2849,7 +2851,7 @@ for each row begin
     select 1
       from `handicaps_salarie` b
      where b.`id` <> new.`id`
-       and new.`salarie_id` <=> b.`salarie_id`
+       and new.`salarie_id` = b.`salarie_id`
        and new.`debut_validite` < b.`fin_validite`
        and new.`fin_validite` > b.`debut_validite`
   ) into v_conflit;
@@ -2868,7 +2870,7 @@ for each row begin
     select 1
       from `parametres_legaux` b
      where b.`id` <> new.`id`
-       and new.`cle_parametre` <=> b.`cle_parametre`
+       and new.`cle_parametre` = b.`cle_parametre`
        and new.`debut_validite` < b.`fin_validite`
        and new.`fin_validite` > b.`debut_validite`
   ) into v_conflit;
@@ -2884,7 +2886,7 @@ for each row begin
     select 1
       from `parametres_legaux` b
      where b.`id` <> new.`id`
-       and new.`cle_parametre` <=> b.`cle_parametre`
+       and new.`cle_parametre` = b.`cle_parametre`
        and new.`debut_validite` < b.`fin_validite`
        and new.`fin_validite` > b.`debut_validite`
   ) into v_conflit;
@@ -2903,7 +2905,7 @@ for each row begin
     select 1
       from `periodes_taux_societe` b
      where b.`id` <> new.`id`
-       and new.`societe_id` <=> b.`societe_id`
+       and new.`societe_id` = b.`societe_id`
        and new.`debut_validite` < b.`fin_validite`
        and new.`fin_validite` > b.`debut_validite`
   ) into v_conflit;
@@ -2919,7 +2921,7 @@ for each row begin
     select 1
       from `periodes_taux_societe` b
      where b.`id` <> new.`id`
-       and new.`societe_id` <=> b.`societe_id`
+       and new.`societe_id` = b.`societe_id`
        and new.`debut_validite` < b.`fin_validite`
        and new.`fin_validite` > b.`debut_validite`
   ) into v_conflit;

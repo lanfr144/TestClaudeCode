@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { useApp } from '@/context/AppContext'
 import { useContracts, useVigilance } from '@/lib/queries'
 import { Badge, Button, Card, EmptyState, ErrorNote, Input, Loading, Select, Table } from '@/components/ui'
-import { date, eur } from '@/lib/format'
+import { date, eur, sansFin } from '@/lib/format'
 
 type Filter = 'all' | 'active' | 'draft' | 'ended'
 
@@ -68,7 +68,7 @@ export default function Contracts() {
                   </td>
                   <td className="lux-td">{c.intitule_poste}</td>
                   <td className="lux-td">{date(c.date_debut)}</td>
-                  <td className="lux-td">{c.date_fin ? date(c.date_fin) : '—'}</td>
+                  <td className="lux-td">{sansFin(c.date_fin) ? '—' : date(c.date_fin)}</td>
                   <td className="lux-td font-mono">{eur(c.brut_mensuel)}</td>
                   <td className="lux-td">
                     <Badge tone={c.statut === 'active' ? 'ok' : c.statut === 'draft' ? 'info' : 'neutral'}>

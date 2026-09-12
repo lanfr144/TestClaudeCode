@@ -602,7 +602,7 @@ export type Database = {
           contrat_precedent_id: string | null
           cree_le: string
           date_debut: string
-          date_fin: string | null
+          date_fin: string
           description_poste: string | null
           duree_essai: number | null
           est_temps_partiel: boolean
@@ -641,7 +641,7 @@ export type Database = {
           contrat_precedent_id?: string | null
           cree_le?: string
           date_debut: string
-          date_fin?: string | null
+          date_fin?: string
           description_poste?: string | null
           duree_essai?: number | null
           est_temps_partiel?: boolean
@@ -680,7 +680,7 @@ export type Database = {
           contrat_precedent_id?: string | null
           cree_le?: string
           date_debut?: string
-          date_fin?: string | null
+          date_fin?: string
           description_poste?: string | null
           duree_essai?: number | null
           est_temps_partiel?: boolean
@@ -3677,7 +3677,7 @@ export type Database = {
           credit_heures_mensuel: number | null
           cree_le: string
           date_debut: string
-          date_fin: string | null
+          date_fin: string
           date_naissance_prevue: string | null
           date_naissance_reelle: string | null
           declare_le: string
@@ -3692,7 +3692,7 @@ export type Database = {
           credit_heures_mensuel?: number | null
           cree_le?: string
           date_debut: string
-          date_fin?: string | null
+          date_fin?: string
           date_naissance_prevue?: string | null
           date_naissance_reelle?: string | null
           declare_le?: string
@@ -3707,7 +3707,7 @@ export type Database = {
           credit_heures_mensuel?: number | null
           cree_le?: string
           date_debut?: string
-          date_fin?: string | null
+          date_fin?: string
           date_naissance_prevue?: string | null
           date_naissance_reelle?: string | null
           declare_le?: string
@@ -4508,10 +4508,10 @@ export type Database = {
         Returns: {
           cle_parametre: string
           couvert_depuis: string
+          couvert_jusqua: string
           couvre_depuis: boolean
           famille: Database["public"]["Enums"]["famille_parametre"]
           jours_manquants: number
-          latest_covered: string
           libelle: string
           lu_par: string
           versions: number
@@ -4545,6 +4545,10 @@ export type Database = {
           p_nouveau_debut: string
           p_nouveau_fin: string
         }
+        Returns: Json
+      }
+      fn_renommer_cles_json: {
+        Args: { p_map: Json; p_valeur: Json }
         Returns: Json
       }
       fn_repondre_contre_proposition: {

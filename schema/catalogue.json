@@ -134,7 +134,7 @@
    "publie"
   ]
  },
- "generated_at": "2026-09-12T12:26:47.4121+00:00",
+ "generated_at": "2026-09-12T12:38:56.857341+00:00",
  "source": "fn_schema_catalogue",
  "tables": [
   {
@@ -1702,10 +1702,10 @@
      "udt": "date"
     },
     {
-     "commentaire": "Dernier jour du contrat, INCLUS. Nulle pour un contrat à durée indéterminée en cours. Un avenant clôt le contrat précédent la veille de sa prise d'effet.",
-     "default": null,
+     "commentaire": "Dernier jour du contrat, borne haute INCLUSE : le contrat est en cours le jour J si date_fin >= J. Jamais nulle — un contrat à durée indéterminée porte la sentinelle 2037-12-31, qui se lit « fin inconnue » et non « fin en 2037 ». Le caractère déterminé ou non de la durée se lit sur genre, pas sur cette date.",
+     "default": "'2037-12-31'::date",
      "nom": "date_fin",
-     "notnull": false,
+     "notnull": true,
      "type": "date",
      "udt": "date"
     },
@@ -1942,6 +1942,12 @@
      "commentaire": null,
      "def": "CHECK (((heures_hebdomadaires > (0)::numeric) AND (jours_par_semaine > (0)::numeric) AND (jours_par_semaine <= (7)::numeric) AND (brut_mensuel >= (0)::numeric) AND (nombre_renouvellements >= 0) AND ((pause_minutes IS NULL) OR (pause_minutes >= 0)) AND ((jours_conge_annuel IS NULL) OR (jours_conge_annuel >= (0)::numeric)) AND ((duree_essai IS NULL) OR (duree_essai > 0)) AND ((annee_apprentissage IS NULL) OR (annee_apprentissage > 0))))",
      "nom": "contract_quantities_positive",
+     "type": "c"
+    },
+    {
+     "commentaire": null,
+     "def": "CHECK ((date_fin >= date_debut))",
+     "nom": "contrats_periode_coherente",
      "type": "c"
     },
     {
@@ -9578,10 +9584,10 @@
      "udt": "date"
     },
     {
-     "commentaire": "Dernier jour du statut, INCLUS. Nulle tant que le statut court.",
-     "default": null,
+     "commentaire": "Dernier jour du statut, borne haute INCLUSE. Jamais nulle : un statut toujours actif porte la sentinelle 2037-12-31.",
+     "default": "'2037-12-31'::date",
      "nom": "date_fin",
-     "notnull": false,
+     "notnull": true,
      "type": "date",
      "udt": "date"
     },
@@ -9640,6 +9646,12 @@
      "commentaire": null,
      "def": "CHECK (((date_fin IS NULL) OR (date_fin >= date_debut)))",
      "nom": "status_range",
+     "type": "c"
+    },
+    {
+     "commentaire": null,
+     "def": "CHECK ((date_fin >= date_debut))",
+     "nom": "statuts_salarie_periode_coherente",
      "type": "c"
     },
     {

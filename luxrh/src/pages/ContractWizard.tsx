@@ -9,7 +9,7 @@ import {
 import {
   Badge, Button, Card, ErrorNote, Field, Input, LegalBasis, Loading, Select, SeverityMark,
 } from '@/components/ui'
-import { currentCbas, date, estEnVigueur, eur, num } from '@/lib/format'
+import { currentCbas, date, estEnVigueur, eur, num, FIN_OUVERTE } from '@/lib/format'
 
 const STEPS = ['Employé', 'Poste & rémunération', 'Temps de travail', 'Essai & durée', 'Relecture'] as const
 
@@ -100,7 +100,7 @@ export default function ContractWizard() {
       lieu_travail: d.lieu_travail || null,
       categorie: d.categorie || null,
       date_debut: d.date_debut || referenceDate,
-      date_fin: d.genre === 'cdd' ? d.date_fin || null : null,
+      date_fin: d.genre === 'cdd' && d.date_fin ? d.date_fin : FIN_OUVERTE,
       motif_cdd: d.genre === 'cdd' ? d.motif_cdd || null : null,
       brut_mensuel: Number(d.brut_mensuel || 0),
       heures_hebdomadaires: Number(d.heures_hebdomadaires || 40),
@@ -483,7 +483,7 @@ export default function ContractWizard() {
                   ['Type', d.genre.toUpperCase()],
                   ['Poste', d.intitule_poste],
                   ['Début', date(d.date_debut)],
-                  ['Fin', d.genre === 'cdd' ? date(d.date_fin) : '—'],
+                  ['Fin', d.genre === 'cdd' && d.date_fin ? date(d.date_fin) : '—'],
                   ['Brut mensuel', eur(d.brut_mensuel)],
                   ['Durée hebdomadaire', `${d.heures_hebdomadaires} h`],
                   ['Congé annuel', `${d.jours_conge_annuel || '—'} j`],

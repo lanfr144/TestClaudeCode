@@ -455,7 +455,7 @@ create table "CONTRATS" (
   "LIEU_TRAVAIL" VARCHAR2(4000 CHAR),
   "CATEGORIE" VARCHAR2(4000 CHAR),
   "DATE_DEBUT" DATE not null,
-  "DATE_FIN" DATE,
+  "DATE_FIN" DATE default '2037-12-31' not null,
   "MOTIF_CDD" VARCHAR2(4000 CHAR),
   "NOMBRE_RENOUVELLEMENTS" NUMBER(5) default 0 not null,
   "CONTRAT_PRECEDENT_ID" VARCHAR2(36 CHAR),
@@ -1340,7 +1340,7 @@ create table "STATUTS_SALARIE" (
   "GENRE" VARCHAR2(18 CHAR) not null,
   "DECLARE_LE" DATE default CURRENT_DATE not null,
   "DATE_DEBUT" DATE not null,
-  "DATE_FIN" DATE,
+  "DATE_FIN" DATE default '2037-12-31' not null,
   "DATE_NAISSANCE_PREVUE" DATE,
   "DATE_NAISSANCE_REELLE" DATE,
   "PIECE_JUSTIFICATIVE_ID" VARCHAR2(36 CHAR),
@@ -1612,6 +1612,7 @@ alter table "CONTRATS" add constraint cdd_needs_reason CHECK (((genre <> 'cdd'::
 alter table "CONTRATS" add constraint contract_dates_order CHECK (((date_fin IS NULL) OR (date_fin >= date_debut)));
 alter table "CONTRATS" add constraint contract_not_its_own_predece CHECK (((contrat_precedent_id IS NULL) OR (contrat_precedent_id <> id)));
 alter table "CONTRATS" add constraint contract_quantities_positive CHECK (((heures_hebdomadaires > (0)::numeric) AND (jours_par_semaine > (0)::numeric) AND (jours_par_semaine <= (7)::numeric) AND (brut_mensuel >= (0)::numeric) AND (nombre_renouvellements >= 0) AND ((pause_minutes IS NULL) OR (pause_minutes >= 0)) AND ((jours_conge_annuel IS NULL) OR (jours_conge_annuel >= (0)::numeric)) AND ((duree_essai IS NULL) OR (duree_essai > 0)) AND ((annee_apprentissage IS NULL) OR (annee_apprentissage > 0))));
+alter table "CONTRATS" add constraint contrats_periode_coherente CHECK ((date_fin >= date_debut));
 alter table "CONTRATS" add constraint fixed_term_needs_end CHECK (((genre <> ALL (ARRAY['cdd'::genre_contrat, 'seasonal'::genre_contrat, 'interim'::genre_contrat, 'apprenticeship'::genre_contrat])) OR (date_fin IS NOT NULL)));
 alter table "CONTRATS" add constraint interim_needs_user_company CHECK (((genre <> 'interim'::genre_contrat) OR (nom_societe_utilisateur IS NOT NULL)));
 alter table "CONTRATS" add constraint probation_length_and_unit_to CHECK (((duree_essai IS NULL) = (unite_essai IS NULL)));
@@ -1700,6 +1701,7 @@ alter table "SITES_CLIENT" add constraint client_site_has_an_address CHECK (((li
 alter table "SOCIETES" add constraint ccss_matricule_format CHECK (((matricule_ccss IS NULL) OR (matricule_ccss ~ '^[0-9]{13}$'::text)));
 alter table "SOCIETES" add constraint societes_reference_period_po CHECK ((periode_reference_mois >= 1));
 alter table "STATUTS_SALARIE" add constraint status_range CHECK (((date_fin IS NULL) OR (date_fin >= date_debut)));
+alter table "STATUTS_SALARIE" add constraint statuts_salarie_periode_cohe CHECK ((date_fin >= date_debut));
 alter table "TRANCHES_IMPOT" add constraint bracket_range CHECK (((tranche_max IS NULL) OR (tranche_max > tranche_min)));
 alter table "TRANCHES_IMPOT" add constraint bracket_validity CHECK (((fin_validite IS NULL) OR (fin_validite > debut_validite)));
 alter table "TRANCHES_IMPOT" add constraint tranches_impot_periode_valid CHECK ((fin_validite > debut_validite));
@@ -1853,7 +1855,7 @@ comment on column "CONTRATS"."DESCRIPTION_POSTE" is 'Description des fonctions. 
 comment on column "CONTRATS"."LIEU_TRAVAIL" is 'Lieu d''exécution convenu. Mention obligatoire au contrat.';
 comment on column "CONTRATS"."CATEGORIE" is 'Catégorie professionnelle, clé d''entrée dans la grille salariale conventionnelle.';
 comment on column "CONTRATS"."DATE_DEBUT" is 'Prise d''effet du contrat, jour inclus. Point de départ de l''ancienneté, de la période d''essai et du droit à congé.';
-comment on column "CONTRATS"."DATE_FIN" is 'Dernier jour du contrat, INCLUS. Nulle pour un contrat à durée indéterminée en cours. Un avenant clôt le contrat précédent la veille de sa prise d''effet.';
+comment on column "CONTRATS"."DATE_FIN" is 'Dernier jour du contrat, borne haute INCLUSE : le contrat est en cours le jour J si date_fin >= J. Jamais nulle — un contrat à durée indéterminée porte la sentinelle 2037-12-31, qui se lit « fin inconnue » et non « fin en 2037 ». Le caractère déterminé ou non de la durée se lit sur genre, pas sur cette date.';
 comment on column "CONTRATS"."MOTIF_CDD" is 'Motif de recours au CDD. Un CDD sans motif licite est requalifiable.';
 comment on column "CONTRATS"."NOMBRE_RENOUVELLEMENTS" is 'Nombre de renouvellements déjà consommés, borné par la loi.';
 comment on column "CONTRATS"."CONTRAT_PRECEDENT_ID" is 'Contrat que celui-ci renouvelle, pour reconstituer la chaîne et l''ancienneté.';
@@ -2547,7 +2549,7 @@ comment on column "STATUTS_SALARIE"."SALARIE_ID" is 'Salarié concerné. La lign
 comment on column "STATUTS_SALARIE"."GENRE" is 'Nature du statut, qui commande la protection applicable.';
 comment on column "STATUTS_SALARIE"."DECLARE_LE" is 'Date à laquelle l''employeur a été informé. C''est elle, et non le fait lui-même, qui déclenche la protection.';
 comment on column "STATUTS_SALARIE"."DATE_DEBUT" is 'Premier jour du statut, inclus. Un statut protégé — grossesse, délégation, congé parental — ouvre des protections qui commencent ce jour-là.';
-comment on column "STATUTS_SALARIE"."DATE_FIN" is 'Dernier jour du statut, INCLUS. Nulle tant que le statut court.';
+comment on column "STATUTS_SALARIE"."DATE_FIN" is 'Dernier jour du statut, borne haute INCLUSE. Jamais nulle : un statut toujours actif porte la sentinelle 2037-12-31.';
 comment on column "STATUTS_SALARIE"."DATE_NAISSANCE_PREVUE" is 'Date présumée de l''accouchement, qui borne la période protégée.';
 comment on column "STATUTS_SALARIE"."DATE_NAISSANCE_REELLE" is 'Date réelle, qui rectifie la borne une fois connue.';
 comment on column "STATUTS_SALARIE"."PIECE_JUSTIFICATIVE_ID" is 'Pièce justifiant le statut : certificat, procès-verbal d''élection. Une protection invoquée sans pièce ne tient pas devant l''ITM.';
@@ -2678,7 +2680,7 @@ create or replace trigger adresses_salarie_no_overlap
              from "ADRESSES_SALARIE" a
              join "ADRESSES_SALARIE" b on b."ID" <> a."ID"
             where a."ID" = g_ids(i)
-              and (a."SALARIE_ID" = b."SALARIE_ID" or (a."SALARIE_ID" is null and b."SALARIE_ID" is null)) and (a."TYPE_ADRESSE" = b."TYPE_ADRESSE" or (a."TYPE_ADRESSE" is null and b."TYPE_ADRESSE" is null))
+              and a."SALARIE_ID" = b."SALARIE_ID" and a."TYPE_ADRESSE" = b."TYPE_ADRESSE"
               and a."DEBUT_VALIDITE" < b."FIN_VALIDITE"
               and a."FIN_VALIDITE" > b."DEBUT_VALIDITE");
         raise_application_error(-20001,
@@ -2719,7 +2721,7 @@ create or replace trigger attributions_titres_repa_no_overlap
              from "ATTRIBUTIONS_TITRES_REPAS" a
              join "ATTRIBUTIONS_TITRES_REPAS" b on b."ID" <> a."ID"
             where a."ID" = g_ids(i)
-              and (a."SALARIE_ID" = b."SALARIE_ID" or (a."SALARIE_ID" is null and b."SALARIE_ID" is null))
+              and a."SALARIE_ID" = b."SALARIE_ID"
               and a."DEBUT_PERIODE" < b."FIN_PERIODE"
               and a."FIN_PERIODE" > b."DEBUT_PERIODE");
         raise_application_error(-20001,
@@ -2760,9 +2762,9 @@ create or replace trigger contrats_no_overlap
              from "CONTRATS" a
              join "CONTRATS" b on b."ID" <> a."ID"
             where a."ID" = g_ids(i)
-              and (a."SALARIE_ID" = b."SALARIE_ID" or (a."SALARIE_ID" is null and b."SALARIE_ID" is null))
-              and a."DATE_DEBUT" < nvl(b."DATE_FIN", date '2037-12-31')
-              and nvl(a."DATE_FIN", date '2037-12-31') > b."DATE_DEBUT");
+              and a."SALARIE_ID" = b."SALARIE_ID"
+              and a."DATE_DEBUT" < b."DATE_FIN"
+              and a."DATE_FIN" > b."DATE_DEBUT");
         raise_application_error(-20001,
           'Deux periodes se recouvrent sur contrats : une date ne peut avoir qu''une valeur');
       exception
@@ -2801,7 +2803,7 @@ create or replace trigger droits_absence_no_overlap
              from "DROITS_ABSENCE" a
              join "DROITS_ABSENCE" b on b."ID" <> a."ID"
             where a."ID" = g_ids(i)
-              and (a."TYPE_ABSENCE_ID" = b."TYPE_ABSENCE_ID" or (a."TYPE_ABSENCE_ID" is null and b."TYPE_ABSENCE_ID" is null))
+              and a."TYPE_ABSENCE_ID" = b."TYPE_ABSENCE_ID"
               and a."DEBUT_VALIDITE" < b."FIN_VALIDITE"
               and a."FIN_VALIDITE" > b."DEBUT_VALIDITE");
         raise_application_error(-20001,
@@ -2842,7 +2844,7 @@ create or replace trigger fiches_retenue_impot_no_overlap
              from "FICHES_RETENUE_IMPOT" a
              join "FICHES_RETENUE_IMPOT" b on b."ID" <> a."ID"
             where a."ID" = g_ids(i)
-              and (a."SALARIE_ID" = b."SALARIE_ID" or (a."SALARIE_ID" is null and b."SALARIE_ID" is null))
+              and a."SALARIE_ID" = b."SALARIE_ID"
               and a."DEBUT_VALIDITE" < b."FIN_VALIDITE"
               and a."FIN_VALIDITE" > b."DEBUT_VALIDITE");
         raise_application_error(-20001,
@@ -2883,7 +2885,7 @@ create or replace trigger handicaps_salarie_no_overlap
              from "HANDICAPS_SALARIE" a
              join "HANDICAPS_SALARIE" b on b."ID" <> a."ID"
             where a."ID" = g_ids(i)
-              and (a."SALARIE_ID" = b."SALARIE_ID" or (a."SALARIE_ID" is null and b."SALARIE_ID" is null))
+              and a."SALARIE_ID" = b."SALARIE_ID"
               and a."DEBUT_VALIDITE" < b."FIN_VALIDITE"
               and a."FIN_VALIDITE" > b."DEBUT_VALIDITE");
         raise_application_error(-20001,
@@ -2924,7 +2926,7 @@ create or replace trigger parametres_legaux_no_overlap
              from "PARAMETRES_LEGAUX" a
              join "PARAMETRES_LEGAUX" b on b."ID" <> a."ID"
             where a."ID" = g_ids(i)
-              and (a."CLE_PARAMETRE" = b."CLE_PARAMETRE" or (a."CLE_PARAMETRE" is null and b."CLE_PARAMETRE" is null))
+              and a."CLE_PARAMETRE" = b."CLE_PARAMETRE"
               and a."DEBUT_VALIDITE" < b."FIN_VALIDITE"
               and a."FIN_VALIDITE" > b."DEBUT_VALIDITE");
         raise_application_error(-20001,
@@ -2965,7 +2967,7 @@ create or replace trigger periodes_taux_societe_no_overlap
              from "PERIODES_TAUX_SOCIETE" a
              join "PERIODES_TAUX_SOCIETE" b on b."ID" <> a."ID"
             where a."ID" = g_ids(i)
-              and (a."SOCIETE_ID" = b."SOCIETE_ID" or (a."SOCIETE_ID" is null and b."SOCIETE_ID" is null))
+              and a."SOCIETE_ID" = b."SOCIETE_ID"
               and a."DEBUT_VALIDITE" < b."FIN_VALIDITE"
               and a."FIN_VALIDITE" > b."DEBUT_VALIDITE");
         raise_application_error(-20001,

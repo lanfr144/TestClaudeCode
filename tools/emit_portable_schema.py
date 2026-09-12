@@ -464,8 +464,17 @@ def exclusion_trigger(table_def: dict, co: dict, dialect: str, q, enums) -> list
     if dialect == 'oracle':
         # Les clés d'égalité peuvent être nulles : deux lignes sans CCT partagent
         # bien la même portée, et doivent donc être comparées entre elles.
+        # L'égalité sûre aux nuls ne se justifie que sur une clé **nullable**.
+        # `parametres_legaux.societe_id` l'est — un paramètre partagé n'appartient
+        # à aucune société, et deux lignes partagées doivent bien se comparer
+        # entre elles. `contrats.salarie_id` ne l'est pas : y poser le test
+        # produisait « or (a."SALARIE_ID" is null and b."SALARIE_ID" is null) »,
+        # une condition qui ne peut jamais être vraie et qui laisse croire au
+        # lecteur que la colonne admet des nuls.
         cles = ' and '.join(
-            f'(a.{q(c)} = b.{q(c)} or (a.{q(c)} is null and b.{q(c)} is null))'
+            (f'(a.{q(c)} = b.{q(c)} or (a.{q(c)} is null and b.{q(c)} is null))'
+             if not colonnes.get(c, {}).get('notnull', False)
+             else f'a.{q(c)} = b.{q(c)}')
             for c in egalites) or '1=1'
         return [
             f"create or replace trigger {nom}",
@@ -513,7 +522,12 @@ def exclusion_trigger(table_def: dict, co: dict, dialect: str, q, enums) -> list
 
     # MySQL : déclencheur ligne. `new` est la ligne écrite -- on ne compare
     # qu'elle, jamais la table à elle-même. `<=>` est l'égalité sûre aux nuls.
-    cles = ' and '.join(f'new.{q(c)} <=> b.{q(c)}' for c in egalites) or '1=1'
+    # `<=>` est l'égalité sûre aux nuls de MySQL. Sur une clé non nulle, `=`
+    # dit la même chose et n'égare pas le lecteur.
+    cles = ' and '.join(
+        (f'new.{q(c)} <=> b.{q(c)}' if not colonnes.get(c, {}).get('notnull', False)
+         else f'new.{q(c)} = b.{q(c)}')
+        for c in egalites) or '1=1'
     lignes = ["delimiter $$"]
     for moment in ('insert', 'update'):
         lignes += [

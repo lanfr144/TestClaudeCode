@@ -269,12 +269,12 @@ export default function EmployeeDetail() {
                       <span className="text-sm font-medium text-ink">{STATUS_KIND_LABEL[s.genre]}</span>
                       <Badge
                         tone={
-                          s.date_debut <= referenceDate && (!s.date_fin || s.date_fin >= referenceDate)
+                          s.date_debut <= referenceDate && s.date_fin >= referenceDate
                             ? 'violet'
                             : 'neutral'
                         }
                       >
-                        {s.date_debut <= referenceDate && (!s.date_fin || s.date_fin >= referenceDate)
+                        {s.date_debut <= referenceDate && s.date_fin >= referenceDate
                           ? 'en cours'
                           : 'échu'}
                       </Badge>
