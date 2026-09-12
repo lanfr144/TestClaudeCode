@@ -46,7 +46,7 @@ export function VigilanceRow({
         {item.date_echeance && <p className="text-2xs text-ink-faint">{date(item.date_echeance)}</p>}
         <div className="mt-1">
           <Badge tone={severityTone(item.severite)}>
-            {item.severite === 'blocking' ? 'Bloquant' : item.severite === 'warning' ? 'Échéance' : 'Seuil'}
+            {item.severite === 'bloquant' ? 'Bloquant' : item.severite === 'avertissement' ? 'Échéance' : 'Seuil'}
           </Badge>
         </div>
       </div>
@@ -58,12 +58,12 @@ export function VigilanceBlock({
   title, tone, items, compact, renderActions,
 }: {
   title: string
-  tone: 'blocking' | 'warning' | 'info'
+  tone: 'bloquant' | 'avertissement' | 'info'
   items: VigilanceItem[]
   compact?: boolean
   renderActions?: (item: VigilanceItem) => ReactNode
 }) {
-  const bar = { blocking: 'bg-danger', warning: 'bg-warn', info: 'bg-action' }[tone]
+  const bar = { bloquant: 'bg-danger', avertissement: 'bg-warn', info: 'bg-action' }[tone]
   return (
     <section className="lux-card overflow-hidden">
       <header className="flex items-center gap-2 border-b border-rule px-4 py-2.5">

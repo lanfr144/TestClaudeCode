@@ -23,10 +23,10 @@ export default function Dashboard() {
   const s = scan.data!
   const firstName = profile?.nom_complet?.split(' ')[0] ?? ''
   const attention = s.overdue.length + s.due_soon.length
-  const draftSchedules = (plannings.data ?? []).filter((x) => x.statut === 'draft')
+  const draftSchedules = (plannings.data ?? []).filter((x) => x.statut === 'brouillon')
   const blockingSchedules = s.items.filter((i) => i.code_regle === 'schedule_blocking').length
   const ongoing = (absences.data ?? []).filter(
-    (a) => a.statut === 'approved' && a.date_debut <= referenceDate && a.date_fin >= referenceDate,
+    (a) => a.statut === 'valide' && a.date_debut <= referenceDate && a.date_fin >= referenceDate,
   )
   const index = params.data?.find(
     (p) => p.cle_parametre === 'wage_index' && estEnVigueur(p, referenceDate),
@@ -82,8 +82,8 @@ export default function Dashboard() {
               Ouvrir le centre de vigilance →
             </Link>
           </div>
-          <VigilanceBlock title="En retard" tone="blocking" items={s.overdue} compact />
-          <VigilanceBlock title={`Dans les ${s.horizon_days} jours`} tone="warning" items={s.due_soon} compact />
+          <VigilanceBlock title="En retard" tone="bloquant" items={s.overdue} compact />
+          <VigilanceBlock title={`Dans les ${s.horizon_days} jours`} tone="avertissement" items={s.due_soon} compact />
           <VigilanceBlock title="À surveiller" tone="info" items={s.watch} compact />
         </div>
 
@@ -133,7 +133,7 @@ export default function Dashboard() {
                     >
                       {a.salaries?.prenom} {a.salaries?.nom}
                     </Link>
-                    <Badge tone={a.types_absence?.categorie === 'sick' ? 'warning' : 'info'}>
+                    <Badge tone={a.types_absence?.categorie === 'maladie' ? 'warning' : 'info'}>
                       {a.types_absence?.libelle}
                     </Badge>
                   </li>

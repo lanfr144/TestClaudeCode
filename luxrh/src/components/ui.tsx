@@ -140,21 +140,21 @@ export function Badge({ tone = 'neutral', children }: { tone?: BadgeTone; childr
 }
 
 export const SEVERITY_LABEL: Record<Severity, string> = {
-  blocking: 'Bloquant',
-  warning: 'Avertissement',
+  bloquant: 'Bloquant',
+  avertissement: 'Avertissement',
   info: 'À surveiller',
   ok: 'Conforme',
 }
 
 export const SEVERITY_GLYPH: Record<Severity, string> = {
-  blocking: '✕',
-  warning: '▲',
+  bloquant: '✕',
+  avertissement: '▲',
   info: 'i',
   ok: '✓',
 }
 
 export const severityTone = (s: Severity): BadgeTone =>
-  s === 'blocking' ? 'blocking' : s === 'warning' ? 'warning' : s === 'ok' ? 'ok' : 'info'
+  s === 'bloquant' ? 'blocking' : s === 'avertissement' ? 'warning' : s === 'ok' ? 'ok' : 'info'
 
 export function SeverityMark({ severity }: { severity: Severity }) {
   const tone = severityTone(severity)

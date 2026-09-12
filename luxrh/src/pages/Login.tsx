@@ -10,7 +10,7 @@ export default function Login() {
   const [password, setPassword] = useState('')
   const [fullName, setFullName] = useState('')
   const [orgName, setOrgName] = useState('')
-  const [orgKind, setOrgKind] = useState<'fiduciary' | 'company'>('fiduciary')
+  const [orgKind, setOrgKind] = useState<'fiduciaire' | 'societe'>('fiduciaire')
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [notice, setNotice] = useState<string | null>(null)
@@ -119,7 +119,7 @@ export default function Login() {
               </Field>
               <Field label="Type d’espace">
                 <div className="flex gap-2">
-                  {(['fiduciary', 'company'] as const).map((k) => (
+                  {(['fiduciaire', 'societe'] as const).map((k) => (
                     <button
                       key={k}
                       type="button"
@@ -130,7 +130,7 @@ export default function Login() {
                           : 'border-rule-strong text-ink-body hover:bg-rule-rail'
                       }`}
                     >
-                      {k === 'fiduciary' ? 'Fiduciaire' : 'Entreprise'}
+                      {k === 'fiduciaire' ? 'Fiduciaire' : 'Entreprise'}
                     </button>
                   ))}
                 </div>

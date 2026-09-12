@@ -34,7 +34,7 @@ def dashboard() -> None:
                 f"demande{'nt' if attention > 1 else ''} votre attention")
     )
     st.caption(
-        f"{on.strftime('%A %d %B %Y')} · {company['raison_sociale']} · "
+        f"{on.strftime('%A %d %B %Y')} · {societe['raison_sociale']} · "
         f"{effectif['current']} salariés"
     )
 
@@ -42,10 +42,10 @@ def dashboard() -> None:
     with columns[0]:
         ds.stat("En retard", len(scan["overdue"]),
                 scan["overdue"][0]["titre"].split("—")[0] if scan["overdue"] else "Rien en retard",
-                "blocking" if scan["overdue"] else "ok")
+                "bloquant" if scan["overdue"] else "ok")
     with columns[1]:
         ds.stat(f"Dans les {scan['horizon_days']} jours", len(scan["due_soon"]),
-                "Essai, CDD, documents", "warning" if scan["due_soon"] else "ok")
+                "Essai, CDD, documents", "avertissement" if scan["due_soon"] else "ok")
     with columns[2]:
         threshold = scan["effectif"]["thresholds"][0]
         ds.stat(f"Effectif · {effectif['reference_months']} mois",
@@ -63,8 +63,8 @@ def dashboard() -> None:
     with left:
         ds.section("Obligations en cours")
         for title, tone, items in (
-            ("En retard", "blocking", scan["overdue"]),
-            (f"Dans les {scan['horizon_days']} jours", "warning", scan["due_soon"]),
+            ("En retard", "bloquant", scan["overdue"]),
+            (f"Dans les {scan['horizon_days']} jours", "avertissement", scan["due_soon"]),
             ("À surveiller", "info", scan["watch"]),
         ):
             st.markdown(f"**{titre} · {len(items)}**")
@@ -225,11 +225,11 @@ def company_detail() -> None:
         return
     on = db.reference_date()
 
-    st.markdown(f"## {company['raison_sociale']}")
+    st.markdown(f"## {societe['raison_sociale']}")
     st.caption(
-        f"{('RCS ' + company['numero_rcs'] + ' · ') if company.get('numero_rcs') else ''}"
-        f"{company.get('ligne') or ''}, {company.get('code_postal') or ''} "
-        f"{company.get('localite') or ''}"
+        f"{('RCS ' + societe['numero_rcs'] + ' · ') if societe.get('numero_rcs') else ''}"
+        f"{societe.get('ligne') or ''}, {societe.get('code_postal') or ''} "
+        f"{societe.get('localite') or ''}"
     )
 
     rates = db.call("fn_company_rates", p_company=company["id"], p_on=on)
@@ -342,18 +342,18 @@ def employees_view() -> None:
 
     table_rows = []
     for employee in salaries:
-        contract = next((c for c in employee.get("contrats", []) if c["statut"] == "active"), None)
+        contract = next((c for c in employee.get("contrats", []) if c["statut"] == "en_cours"), None)
         if only_active and not contract:
             continue
-        haystack = f"{employee['prenom']} {employee['nom']} {contract['intitule_poste'] if contract else ''}"
+        haystack = f"{salarie['prenom']} {salarie['nom']} {contrat['intitule_poste'] if contrat else ''}"
         if search and search.lower() not in haystack.lower():
             continue
         alert = alerts.get(employee["id"])
         table_rows.append({
-            "Salarié": f"{employee['prenom']} {employee['nom']}",
+            "Salarié": f"{salarie['prenom']} {salarie['nom']}",
             "Poste": contract["intitule_poste"] if contract else "—",
             "Contrat": contract["genre"].upper() if contract else "—",
-            "Temps": f"{contract['heures_hebdomadaires']} h" if contract else "—",
+            "Temps": f"{contrat['heures_hebdomadaires']} h" if contract else "—",
             "Résidence": employee["residence"],
             "Conformité": alert["titre"].split("—")[0].strip() if alert else "Conforme",
         })
@@ -380,12 +380,12 @@ def employee_detail() -> None:
     employee = db.client().table("salaries").select(
         "*, services(nom), fiches_retenue_impot(*), contrats(*)"
     ).eq("id", salarie_id).single().execute().data
-    contract = next((c for c in employee.get("contrats", []) if c["statut"] == "active"), None)
+    contract = next((c for c in employee.get("contrats", []) if c["statut"] == "en_cours"), None)
 
-    st.markdown(f"## {employee['prenom']} {employee['nom']}")
+    st.markdown(f"## {salarie['prenom']} {salarie['nom']}")
     st.caption(
-        f"{contract['intitule_poste'] if contract else 'Sans contrat actif'}"
-        f"{' · entrée le ' + ds.fmt_date(contract['date_debut']) if contract else ''}"
+        f"{contrat['intitule_poste'] if contrat else 'Sans contrat actif'}"
+        f"{' · entrée le ' + ds.fmt_date(contrat['date_debut']) if contrat else ''}"
     )
 
     qualification = db.call("fn_is_qualified", p_employee=salarie_id, p_on=on)
@@ -400,15 +400,15 @@ def employee_detail() -> None:
     columns = st.columns(4)
     columns[0].markdown(
         f"<span class='lux-libelle'>Matricule</span><br>"
-        f"<span class='lux-mono'>•••• {employee.get('matricule_national_indice') or '••••'}</span>",
+        f"<span class='lux-mono'>•••• {salarie.get('matricule_national_indice') or '••••'}</span>",
         unsafe_allow_html=True)
-    columns[1].markdown(f"<span class='lux-libelle'>Résidence</span><br>{employee['residence']}",
+    columns[1].markdown(f"<span class='lux-libelle'>Résidence</span><br>{salarie['residence']}",
                         unsafe_allow_html=True)
-    columns[2].markdown(f"<span class='lux-libelle'>Sexe</span><br>{employee['sexe']}",
+    columns[2].markdown(f"<span class='lux-libelle'>Sexe</span><br>{salarie['sexe']}",
                         unsafe_allow_html=True)
     columns[3].markdown(
         f"<span class='lux-libelle'>Qualification</span><br>"
-        f"{'Qualifié(e)' if qualification['qualified'] else 'Non qualifié(e)'}",
+        f"{'Qualifié(e)' if qualification['qualifie'] else 'Non qualifié(e)'}",
         unsafe_allow_html=True)
 
     if protections.get("protected"):
@@ -436,8 +436,8 @@ def employee_detail() -> None:
                     f"acquis {ds.fmt_num(balance.get('accrued'))} · pris {ds.fmt_num(balance.get('taken'))}")
         with columns[1]:
             ds.stat("Incapacité / période",
-                    f"{ds.fmt_num(sick.get('days_in_window'), 0)} / {ds.fmt_num(sick.get('limit_days'), 0)} j",
-                    f"sur {sick.get('window_months')} mois",
+                    f"{ds.fmt_num(maladie.get('days_in_window'), 0)} / {ds.fmt_num(maladie.get('limit_days'), 0)} j",
+                    f"sur {maladie.get('window_months')} mois",
                     "warning" if sick.get("continuation_end") else "neutral")
         with columns[2]:
             ds.stat("Congé handicap",
@@ -459,7 +459,7 @@ def employee_detail() -> None:
             if overtime["allowed"]:
                 st.success("Aucune interdiction en vigueur.")
             for reason in overtime["reasons"]:
-                ds.alert_card("blocking", reason["libelle"], reason["detail"],
+                ds.alert_card("bloquant", reason["libelle"], reason["detail"],
                               None, reason.get("reference_legale"))
             statuses = db.rows("statuts_salarie", "*", salarie_id=salarie_id,
                                _order="date_debut", _desc=True)
@@ -518,7 +518,7 @@ def employee_detail() -> None:
 
 def _child_form(employee: dict) -> None:
     with st.expander("Ajouter un enfant"):
-        with st.form(f"child_{employee['id']}"):
+        with st.form(f"child_{salarie['id']}"):
             privacy = st.checkbox(
                 "Le salarié refuse les attentions de la société",
                 help="Seule la date de naissance est alors conservée, pour établir les droits à congé.",
@@ -526,9 +526,9 @@ def _child_form(employee: dict) -> None:
             columns = st.columns(4)
             prenom = columns[0].text_input("Prénom", disabled=privacy)
             nom = columns[1].text_input("Nom", disabled=privacy)
-            sex = columns[2].selectbox("Sexe", ["unspecified", "female", "male"], disabled=privacy)
+            sex = columns[2].selectbox("Sexe", ["non_precise", "feminin", "masculin"], disabled=privacy)
             birth = columns[3].date_input("Date de naissance")
-            relationship = st.selectbox("Lien", ["child", "adopted", "foster", "stepchild"])
+            relationship = st.selectbox("Lien", ["enfant", "adopte", "recueilli", "enfant_conjoint"])
             if st.form_submit_button("Enregistrer", type="primary"):
                 try:
                     db.client().table("enfants_salarie").insert({

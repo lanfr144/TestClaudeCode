@@ -103,7 +103,7 @@ export default function Settings() {
       <Card
         dense
         title="Journal d’audit"
-        subtitle={`Contrats, temps de travail et absences de ${activeCompany?.raison_sociale ?? 'la société active'} — inaltérable`}
+        subtitle={`Contrats, temps de travail et absences de ${activeCompany?.raison_sociale ?? 'la société en_cours'} — inaltérable`}
       >
         {audit.isLoading ? (
           <Loading />

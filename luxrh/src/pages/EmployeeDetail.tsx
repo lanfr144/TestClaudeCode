@@ -24,7 +24,7 @@ export default function EmployeeDetail() {
   const [showSensitive, setShowSensitive] = useState(false)
 
   const { data: e, isLoading, error } = useEmployee(id)
-  const activeContract = e?.contrats?.find((c) => c.statut === 'active') ?? e?.contrats?.[0]
+  const activeContract = e?.contrats?.find((c) => c.statut === 'en_cours') ?? e?.contrats?.[0]
   const compliance = useContractCompliance(activeContract?.id, referenceDate)
   const leave = useLeaveBalance(id, referenceDate)
   const sick = useSickCounters(id, referenceDate)
@@ -110,7 +110,7 @@ export default function EmployeeDetail() {
             <dt className="lux-libelle">Qualification</dt>
             <dd className="mt-0.5 text-sm text-ink">
               {qualification.data?.qualified ? 'Qualifié(e)' : 'Non qualifié(e)'}
-              {qualification.data && e.qualification === 'unqualified' && qualification.data.qualified && (
+              {qualification.data && e.qualification === 'non_qualifie' && qualification.data.qualified && (
                 <span className="ml-1 text-2xs text-warn-ink">par l’ancienneté</span>
               )}
             </dd>
@@ -361,7 +361,7 @@ export default function EmployeeDetail() {
                 <td className="lux-td">{c.date_fin ? date(c.date_fin) : '—'}</td>
                 <td className="lux-td font-mono">{eur(c.brut_mensuel)}</td>
                 <td className="lux-td">
-                  <Badge tone={c.statut === 'active' ? 'ok' : 'neutral'}>{c.statut}</Badge>
+                  <Badge tone={c.statut === 'en_cours' ? 'ok' : 'neutral'}>{c.statut}</Badge>
                 </td>
                 <td className="lux-td">
                   <Link to={`/contrats/${c.id}`} className="text-xs font-semibold text-action hover:underline">
@@ -384,7 +384,7 @@ export default function EmployeeDetail() {
                 <td className="lux-td">{date(a.date_fin)}</td>
                 <td className="lux-td font-mono">{num(a.nombre_jours, 2)}</td>
                 <td className="lux-td">
-                  <Badge tone={a.statut === 'approved' ? 'ok' : a.statut === 'pending' ? 'info' : 'neutral'}>
+                  <Badge tone={a.statut === 'valide' ? 'ok' : a.statut === 'en_attente' ? 'info' : 'neutral'}>
                     {ABSENCE_STATUS_LABEL[a.statut]}
                   </Badge>
                 </td>

@@ -4,7 +4,7 @@
  * avec la base légale que le serveur a citée.
  */
 
-export type Severity = 'blocking' | 'warning' | 'info' | 'ok'
+export type Severity = 'bloquant' | 'avertissement' | 'info' | 'ok'
 
 export interface Arbitration {
   libelle: string
@@ -36,7 +36,7 @@ export interface MinSalary {
   ssm_full: number
   ssm_ref: string | null
   ssm_index: number | null
-  qualification: 'qualified' | 'unqualified'
+  qualification: 'qualifie' | 'non_qualifie'
   prorata: number
   cba_grid: number | null
   cba_category: string | null
@@ -98,7 +98,7 @@ export interface ScheduleEmployeeSummary {
 export interface ScheduleValidation {
   planning_id: string
   debut_semaine: string
-  statut: 'draft' | 'publie'
+  statut: 'brouillon' | 'publie'
   violations: Violation[]
   salaries: ScheduleEmployeeSummary[]
   blocking_count: number
@@ -240,7 +240,7 @@ export interface VigilanceItem {
   days_left: number | null
   severite: Exclude<Severity, 'ok'>
   reference_legale: string | null
-  categorie?: 'contract' | 'absence' | 'effectif' | 'worktime'
+  categorie?: 'contrat' | 'absence' | 'effectif' | 'temps_travail'
 }
 
 export interface ComplianceScan {
@@ -289,7 +289,7 @@ export interface CompanyRates {
   reference_legale?: string | null
 }
 
-export type CbaScope = 'secteur' | 'harassment' | 'categorie_professionnelle' | 'department' | 'company'
+export type CbaScope = 'secteur' | 'harcelement' | 'categorie_professionnelle' | 'service' | 'societe'
 
 export interface ApplicableCba {
   convention_id: string

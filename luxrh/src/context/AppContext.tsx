@@ -45,7 +45,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   // Un salarié en self-service n'a qu'une société : on la sélectionne d'office.
   const isEmployeeOnly = !!profile?.selfEmployee && !profile?.est_admin_organisation &&
-    !profile?.roles?.some((r) => r.role !== 'employee')
+    !profile?.roles?.some((r) => r.role !== 'salarie')
 
   useEffect(() => {
     if (activeCompanyId && societes.some((c) => c.id === activeCompanyId)) return

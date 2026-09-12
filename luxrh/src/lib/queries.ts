@@ -122,7 +122,7 @@ export const useCompanies = () =>
 export const useCompany = (id?: string) =>
   useQuery({
     enabled: !!id,
-    queryKey: ['company', id],
+    queryKey: ['societe', id],
     queryFn: async () =>
       unwrap<CompanyDetailRow>(
         await supabase.from('societes')
@@ -150,7 +150,7 @@ export const useEmployees = (companyId?: string) =>
 export const useEmployee = (id?: string) =>
   useQuery({
     enabled: !!id,
-    queryKey: ['employee', id],
+    queryKey: ['salarie', id],
     queryFn: async () =>
       unwrap<EmployeeDetailRow>(
         await supabase.from('salaries')
@@ -164,7 +164,7 @@ export const useEmployeeSensitive = (id?: string) =>
   useQuery({
     enabled: !!id,
     retry: false,
-    queryKey: ['employee-sensitive', id],
+    queryKey: ['salarie-sensitive', id],
     queryFn: async () => {
       const rows = await callEngine<{ matricule_national: string | null; iban: string | null }[]>(
         'fn_employee_sensitive', { p_employee: id },
@@ -190,7 +190,7 @@ export const useContracts = (companyId?: string) =>
 export const useContract = (id?: string) =>
   useQuery({
     enabled: !!id,
-    queryKey: ['contract', id],
+    queryKey: ['contrat', id],
     queryFn: async () =>
       unwrap<ContractDetailRow>(
         await supabase.from('contrats')
@@ -202,7 +202,7 @@ export const useContract = (id?: string) =>
 export const useContractCompliance = (contractId?: string, on?: string) =>
   useQuery({
     enabled: !!contractId,
-    queryKey: ['contract-compliance', contractId, on],
+    queryKey: ['contrat-compliance', contractId, on],
     queryFn: () =>
       callEngine<ContractCompliance>('fn_contract_compliance', { p_contract: contractId, p_on: on }),
   })
@@ -225,9 +225,9 @@ export const useUpdateContract = () => {
     mutationFn: async ({ id, ...patch }: Tables['contrats']['Update'] & { id: string }) =>
       unwrap<Contract>(await supabase.from('contrats').update(patch).eq('id', id).select().single()),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['contract'] })
+      qc.invalidateQueries({ queryKey: ['contrat'] })
       qc.invalidateQueries({ queryKey: ['contrats'] })
-      qc.invalidateQueries({ queryKey: ['contract-compliance'] })
+      qc.invalidateQueries({ queryKey: ['contrat-compliance'] })
     },
   })
 }
@@ -375,21 +375,21 @@ export const useAbsences = (companyId?: string) =>
 export const useLeaveBalance = (employeeId?: string, on?: string) =>
   useQuery({
     enabled: !!employeeId,
-    queryKey: ['leave-balance', employeeId, on],
+    queryKey: ['conges-balance', employeeId, on],
     queryFn: () => callEngine<LeaveBalance>('fn_leave_balance', { p_employee: employeeId, p_on: on }),
   })
 
 export const useSickCounters = (employeeId?: string, on?: string) =>
   useQuery({
     enabled: !!employeeId,
-    queryKey: ['sick-counters', employeeId, on],
+    queryKey: ['maladie-counters', employeeId, on],
     queryFn: () => callEngine<SickCounters>('fn_sick_counters', { p_employee: employeeId, p_on: on }),
   })
 
 export const useLeaveImpact = (employeeId?: string, typeId?: string, start?: string, end?: string) =>
   useQuery({
     enabled: !!employeeId && !!typeId && !!start && !!end && start <= end,
-    queryKey: ['leave-impact', employeeId, typeId, start, end],
+    queryKey: ['conges-impact', employeeId, typeId, start, end],
     queryFn: () =>
       callEngine<LeaveImpact>('fn_leave_request_impact', {
         p_employee: employeeId, p_type: typeId, p_start: start, p_end: end,
@@ -399,7 +399,7 @@ export const useLeaveImpact = (employeeId?: string, typeId?: string, start?: str
 export const useDecideAbsence = () => {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: async (v: { id: string; status: 'approved' | 'refused'; note?: string }) => {
+    mutationFn: async (v: { id: string; status: 'valide' | 'refuse'; note?: string }) => {
       const { data: auth } = await supabase.auth.getUser()
       return unwrap(
         await supabase.from('absences')
@@ -414,7 +414,7 @@ export const useDecideAbsence = () => {
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['absences'] })
-      qc.invalidateQueries({ queryKey: ['leave-balance'] })
+      qc.invalidateQueries({ queryKey: ['conges-balance'] })
       qc.invalidateQueries({ queryKey: ['vigilance'] })
       qc.invalidateQueries({ queryKey: ['schedule-validation'] })
     },
@@ -428,7 +428,7 @@ export const useCreateAbsence = () => {
       unwrap<Absence>(await supabase.from('absences').insert(a).select().single()),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['absences'] })
-      qc.invalidateQueries({ queryKey: ['leave-balance'] })
+      qc.invalidateQueries({ queryKey: ['conges-balance'] })
       qc.invalidateQueries({ queryKey: ['self-absences'] })
     },
   })
@@ -445,7 +445,7 @@ export const useMarkCertificate = () => {
       ),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['absences'] })
-      qc.invalidateQueries({ queryKey: ['sick-counters'] })
+      qc.invalidateQueries({ queryKey: ['maladie-counters'] })
       qc.invalidateQueries({ queryKey: ['vigilance'] })
     },
   })
@@ -561,7 +561,7 @@ export const useAuditLog = (companyId?: string) =>
 export const useCompanyRates = (companyId?: string, on?: string) =>
   useQuery({
     enabled: !!companyId,
-    queryKey: ['company-rates', companyId, on],
+    queryKey: ['societe-rates', companyId, on],
     queryFn: () => callEngine<CompanyRates>('fn_company_rates', { p_company: companyId, p_on: on }),
   })
 
@@ -587,8 +587,8 @@ export const useSetCompanyRates = () => {
         p_note: v.note ?? null,
       }),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['company-rates'] })
-      qc.invalidateQueries({ queryKey: ['company'] })
+      qc.invalidateQueries({ queryKey: ['societe-rates'] })
+      qc.invalidateQueries({ queryKey: ['societe'] })
     },
   })
 }
@@ -614,7 +614,7 @@ export const useCompanyAbsenteeism = (companyId?: string, year?: number) =>
 export const useEmployeeStatuses = (employeeId?: string) =>
   useQuery({
     enabled: !!employeeId,
-    queryKey: ['employee-statuses', employeeId],
+    queryKey: ['salarie-statuses', employeeId],
     queryFn: async () =>
       unwrap(
         await supabase.from('statuts_salarie').select('*')
@@ -628,7 +628,7 @@ export const useCreateEmployeeStatus = () => {
     mutationFn: async (v: Tables['statuts_salarie']['Insert']) =>
       unwrap<EmployeeStatus>(await supabase.from('statuts_salarie').insert(v).select().single()),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['employee-statuses'] })
+      qc.invalidateQueries({ queryKey: ['salarie-statuses'] })
       qc.invalidateQueries({ queryKey: ['protections'] })
       qc.invalidateQueries({ queryKey: ['vigilance'] })
     },
@@ -687,20 +687,20 @@ export const useEndOfContractDocuments = (contractId?: string) =>
 
 export const useReferentialGaps = (since?: string) =>
   useQuery({
-    queryKey: ['referential-gaps', since],
+    queryKey: ['referentiel-gaps', since],
     queryFn: () => callEngine<ReferentialGap[]>('fn_referential_gaps', { p_since: since }),
   })
 
 export const useReferentialHoles = () =>
   useQuery({
-    queryKey: ['referential-holes'],
+    queryKey: ['referentiel-holes'],
     queryFn: () =>
       callEngine<{ cle_parametre: string; trou_du: string; trou_au: string }[]>('fn_referential_holes'),
   })
 
 export const useReferentialInconsistencies = (on?: string) =>
   useQuery({
-    queryKey: ['referential-inconsistencies', on],
+    queryKey: ['referentiel-inconsistencies', on],
     queryFn: () =>
       callEngine<ReferentialInconsistency[]>('fn_referential_inconsistencies', { p_on: on }),
   })

@@ -11,8 +11,8 @@ from .design import sans_fin
 
 CATEGORIES = {
     "all": "Toutes",
-    "contract": "Contrats",
-    "worktime": "Temps de travail",
+    "contrat": "Contrats",
+    "temps_travail": "Temps de travail",
     "absence": "Absences",
     "effectif": "Effectif",
     "document": "Documents",
@@ -69,7 +69,7 @@ def _contract_compliance(contrat_id: str) -> None:
         )
         st.markdown(
             ds.badge("Validable" if compliance["can_validate"] else "Blocage",
-                     "ok" if compliance["can_validate"] else "blocking"),
+                     "ok" if compliance["can_validate"] else "bloquant"),
             unsafe_allow_html=True)
         ds.checks_list(compliance["checks"])
 
@@ -115,7 +115,7 @@ def _contract_compliance(contrat_id: str) -> None:
             f"{ds.badge(agreement['origine'], 'violet')} **{ds.esc(agreement['nom'])}** "
             f"<span class='lux-muted'>({ds.esc(agreement['portee'])})</span>",
             unsafe_allow_html=True)
-    ds.arbitration(compliance["annual_leave"], "j")
+    ds.arbitration(compliance["conge_annuel"], "j")
 
 
 # ================================================================== vigilance
@@ -222,7 +222,7 @@ def dismissal_simulator() -> None:
         result = st.session_state.get("simulation")
         if result:
             ds.alert_card(
-                "blocking" if result["triggers"] else "ok",
+                "bloquant" if result["triggers"] else "ok",
                 "La procédure de licenciement collectif se déclenche" if result["triggers"]
                 else "La procédure ne se déclenche pas",
                 result["verdict"],
@@ -273,7 +273,7 @@ def primes() -> None:
         with columns[3]:
             ds.stat("Distribué", ds.fmt_eur(caps["envelope_used"]),
                     "dépassement" if caps["envelope_exceeded"] else "dans l’enveloppe",
-                    "blocking" if caps["envelope_exceeded"] else "ok")
+                    "bloquant" if caps["envelope_exceeded"] else "ok")
         st.caption(caps.get("message", ""))
 
         if caps["salaries"]:
@@ -326,15 +326,15 @@ def referential() -> None:
         ds.stat("Couvrent 2019", sum(1 for g in gaps if g["couvre_depuis"]), tone="ok")
     with columns[1]:
         ds.stat("À compléter", sum(1 for g in gaps if not g["couvre_depuis"]),
-                "historique manquant", "warning")
+                "historique manquant", "avertissement")
     with columns[2]:
         ds.stat("Trous internes", len(holes), "périodes non couvertes",
-                "blocking" if holes else "ok")
+                "bloquant" if holes else "ok")
 
     if inconsistencies:
         for item in inconsistencies:
             ds.alert_card(
-                "warning", item["libelle"],
+                "avertissement", item["libelle"],
                 f"Valeur publiée {ds.fmt_num(item['publie'])}, dérivée de {item['cle_source']} "
                 f"{ds.fmt_num(item['derive'])} — écart de {ds.fmt_num(item['ecart'])}.",
                 "Une indexation a peut-être été saisie à moitié.")

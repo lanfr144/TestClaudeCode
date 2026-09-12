@@ -3,11 +3,10 @@ import { Link } from 'react-router-dom'
 import { useApp } from '@/context/AppContext'
 import { useEmployees, useVigilance } from '@/lib/queries'
 import {
-  Avatar, Badge, Button, Card, EmptyState, ErrorNote, Input, Loading, Select, Table,
-} from '@/components/ui'
+  Avatar, Badge, Button, Card, EmptyState, ErrorNote, Input, Loading, Select, Table, severityTone } from '@/components/ui'
 import { RESIDENCY_LABEL, initials } from '@/lib/format'
 
-type StatusFilter = 'all' | 'active' | 'probation' | 'ended'
+type StatusFilter = 'all' | 'en_cours' | 'probation' | 'termine'
 
 const PAGE = 50
 
@@ -16,13 +15,13 @@ export default function Employees() {
   const { data, isLoading, error } = useEmployees(activeCompanyId ?? undefined)
   const scan = useVigilance(activeCompanyId ?? undefined, referenceDate)
   const [q, setQ] = useState('')
-  const [status, setStatus] = useState<StatusFilter>('active')
+  const [status, setStatus] = useState<StatusFilter>('en_cours')
   // Volume cible : 1 000 salaries. On affiche par pages plutot que tout d'un coup.
   const [shown, setShown] = useState(PAGE)
 
   // La conformité affichée vient du moteur, pas d'un calcul local.
   const alertsByEmployee = useMemo(() => {
-    const m = new Map<string, { label: string; tone: 'blocking' | 'warning' | 'info' }>()
+    const m = new Map<string, { label: string; tone: 'bloquant' | 'avertissement' | 'info' }>()
     for (const i of scan.data?.items ?? []) {
       if (!i.salarie_id) continue
       const label =
@@ -35,7 +34,7 @@ export default function Employees() {
               : i.titre
       const tone = i.severite
       const prev = m.get(i.salarie_id)
-      if (!prev || (prev.tone !== 'blocking' && tone === 'blocking')) m.set(i.salarie_id, { label, tone })
+      if (!prev || (prev.tone !== 'bloquant' && tone === 'bloquant')) m.set(i.salarie_id, { label, tone })
     }
     return m
   }, [scan.data])
@@ -45,10 +44,10 @@ export default function Employees() {
   if (error) return <ErrorNote error={error} />
 
   const salaries = (data ?? []).filter((e) => {
-    const active = e.contrats?.find((c) => c.statut === 'active')
-    if (status === 'active' && !active) return false
-    if (status === 'ended' && active) return false
-    if (status === 'probation' && !(active?.duree_essai && active.statut === 'active')) return false
+    const active = e.contrats?.find((c) => c.statut === 'en_cours')
+    if (status === 'en_cours' && !active) return false
+    if (status === 'termine' && active) return false
+    if (status === 'probation' && !(active?.duree_essai && active.statut === 'en_cours')) return false
     const hay = `${e.prenom} ${e.nom} ${active?.intitule_poste ?? ''}`.toLowerCase()
     return hay.includes(q.toLowerCase())
   })
@@ -84,9 +83,9 @@ export default function Employees() {
             }}
             className="max-w-[180px]"
           >
-            <option value="active">Contrat actif</option>
+            <option value="en_cours">Contrat actif</option>
             <option value="probation">En période d’essai</option>
-            <option value="ended">Sans contrat actif</option>
+            <option value="termine">Sans contrat actif</option>
             <option value="all">Tous</option>
           </Select>
         </div>
@@ -96,7 +95,7 @@ export default function Employees() {
         ) : (
           <Table head={['Salarié', 'Poste', 'Contrat', 'Temps', 'Résidence', 'Conformité']}>
             {salaries.slice(0, shown).map((e) => {
-              const c = e.contrats?.find((x) => x.statut === 'active') ?? e.contrats?.[0]
+              const c = e.contrats?.find((x) => x.statut === 'en_cours') ?? e.contrats?.[0]
               const alert = alertsByEmployee.get(e.id)
               return (
                 <tr key={e.id} className="hover:bg-rule-rail/50">
@@ -120,7 +119,7 @@ export default function Employees() {
                   <td className="lux-td">{RESIDENCY_LABEL[e.residence]}</td>
                   <td className="lux-td">
                     {alert ? (
-                      <Badge tone={alert.tone}>{alert.label}</Badge>
+                      <Badge tone={severityTone(alert.tone)}>{alert.label}</Badge>
                     ) : (
                       <Badge tone="ok">Conforme</Badge>
                     )}

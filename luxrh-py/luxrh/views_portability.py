@@ -17,10 +17,10 @@ from . import client as db
 from . import design as ds
 
 NOM = {
-    "employee": "mes-donnees",
-    "company": "societe",
-    "organization": "fiduciaire",
-    "referential": "referentiel",
+    "salarie": "mes-donnees",
+    "societe": "societe",
+    "organisation": "fiduciaire",
+    "referentiel": "referentiel",
 }
 
 
@@ -78,7 +78,7 @@ def portability() -> None:
         colonnes = st.columns(2)
         if company:
             with colonnes[0]:
-                if st.button(f"Exporter {company['raison_sociale']}", use_container_width=True):
+                if st.button(f"Exporter {societe['raison_sociale']}", use_container_width=True):
                     try:
                         _offer(db.engine("fn_export_company", p_company=company["id"]),
                                company["raison_sociale"][:24])
@@ -128,7 +128,7 @@ def portability() -> None:
             st.error(f"« {fichier.nom} » ne porte pas le format luxrh.export/1 : "
                      "ce n’est pas un export LuxRH.")
             return
-        if document.get("genre") != "referential":
+        if document.get("genre") != "referentiel":
             st.error(f"Ce fichier est un export « {document.get('genre')} », pas un référentiel.")
             return
 
@@ -136,7 +136,7 @@ def portability() -> None:
             rapport = db.engine("fn_import_referential", p_document=document, p_mode=mode)
             db.invalidate()
             st.success(rapport["message"])
-            for rejet in rapport.get("rejected") or []:
+            for rejet in rapport.get("refuse") or []:
                 st.warning(rejet)
         except Exception as error:
             st.error(str(error))

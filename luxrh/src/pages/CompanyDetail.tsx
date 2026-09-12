@@ -87,9 +87,9 @@ export default function CompanyDetail() {
                 const active = l.debut_validite <= referenceDate && l.fin_validite > referenceDate
                 const ca = l.conventions_collectives
                 const rules = (ca?.regles_convention ?? []) as { bloc: string; regles: Record<string, unknown> }[]
-                const leaveRules = rules.find((b) => b.bloc === 'leave')?.regles as
+                const leaveRules = rules.find((b) => b.bloc === 'conges')?.regles as
                   | Record<string, number> | undefined
-                const surcharges = rules.find((b) => b.bloc === 'surcharges')?.regles as
+                const surcharges = rules.find((b) => b.bloc === 'majorations')?.regles as
                   | Record<string, number> | undefined
                 return (
                   <li key={l.id} className={`rounded border p-2.5 ${active ? 'border-violet bg-violet-veil' : 'border-rule'}`}>
@@ -266,7 +266,7 @@ export default function CompanyDetail() {
                       delegation.reached ? 'border-warn/30 bg-warn-veil' : 'border-rule bg-rule-rail/60'
                     }`}
                   >
-                    <SeverityMark severity={delegation.reached ? 'warning' : 'info'} />
+                    <SeverityMark severity={delegation.reached ? 'avertissement' : 'info'} />
                     <div>
                       <p className="text-sm text-ink-body">
                         {delegation.reached

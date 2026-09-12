@@ -41,10 +41,10 @@ function PendingRequest({ a }: { a: AbsenceRow }) {
             {num(a.nombre_jours, 2)} jour(s)
           </p>
         </div>
-        <Badge tone={insufficient ? 'blocking' : a.types_absence?.categorie === 'extraordinary' ? 'ok' : 'info'}>
+        <Badge tone={insufficient ? 'blocking' : a.types_absence?.categorie === 'conge_extraordinaire' ? 'ok' : 'info'}>
           {insufficient
             ? 'Solde insuffisant'
-            : a.types_absence?.categorie === 'extraordinary'
+            : a.types_absence?.categorie === 'conge_extraordinaire'
               ? 'Droit vérifié'
               : 'En attente'}
         </Badge>
@@ -95,11 +95,11 @@ function PendingRequest({ a }: { a: AbsenceRow }) {
       <div className="mt-2 flex gap-2">
         <Button
           size="sm" variant="primary" disabled={decide.isPending}
-          onClick={() => decide.mutate({ id: a.id, status: 'approved' })}
+          onClick={() => decide.mutate({ id: a.id, status: 'valide' })}
         >
           Valider
         </Button>
-        <Button size="sm" disabled={decide.isPending} onClick={() => decide.mutate({ id: a.id, status: 'refused' })}>
+        <Button size="sm" disabled={decide.isPending} onClick={() => decide.mutate({ id: a.id, status: 'refuse' })}>
           Refuser
         </Button>
       </div>
@@ -135,8 +135,8 @@ export default function Leave() {
     return Array.from({ length: count }, (_, i) => iso(addDays(first, i)))
   }, [monthStart])
 
-  const pending = (absences.data ?? []).filter((a) => a.statut === 'pending')
-  const withContract = (salaries.data ?? []).filter((e) => e.contrats?.some((c) => c.statut === 'active'))
+  const pending = (absences.data ?? []).filter((a) => a.statut === 'en_attente')
+  const withContract = (salaries.data ?? []).filter((e) => e.contrats?.some((c) => c.statut === 'en_cours'))
 
   const shiftMonth = (delta: number) => {
     const d = new Date(`${monthStart}T00:00:00`)
@@ -161,10 +161,10 @@ export default function Leave() {
         </div>
         <div className="flex flex-wrap items-center gap-3 text-2xs">
           {[
-            ['annual_leave', 'Congé validé'],
-            ['sick', 'Maladie'],
-            ['extraordinary', 'Extraordinaire'],
-            ['public_holiday', 'Férié'],
+            ['conge_annuel', 'Congé validé'],
+            ['maladie', 'Maladie'],
+            ['conge_extraordinaire', 'Extraordinaire'],
+            ['jour_ferie', 'Férié'],
           ].map(([k, l]) => (
             <span key={k} className="flex items-center gap-1.5">
               <span className={`h-3 w-3 rounded-sm ${CATEGORY_STYLE[k]}`} aria-hidden />
@@ -209,12 +209,12 @@ export default function Leave() {
                       {days.map((d) => {
                         const a = (absences.data ?? []).find(
                           (x) =>
-                            x.salarie_id === e.id && x.statut !== 'refused' &&
+                            x.salarie_id === e.id && x.statut !== 'refuse' &&
                             x.date_debut <= d && x.date_fin >= d,
                         )
                         const holiday = (holidays.data ?? []).some((h) => h.date_ferie === d)
                         const style = a
-                          ? CATEGORY_STYLE[a.types_absence?.categorie ?? 'annual_leave']
+                          ? CATEGORY_STYLE[a.types_absence?.categorie ?? 'conge_annuel']
                           : holiday
                             ? CATEGORY_STYLE.public_holiday
                             : ''
@@ -223,7 +223,7 @@ export default function Leave() {
                             <div
                               title={a ? `${a.types_absence?.libelle} — ${ABSENCE_STATUS_LABEL[a.statut]}` : undefined}
                               className={`mx-auto h-5 w-5 rounded-sm ${style} ${
-                                a?.statut === 'pending' ? 'opacity-50' : ''
+                                a?.statut === 'en_attente' ? 'opacity-50' : ''
                               } ${!a && !holiday ? 'bg-rule-rail' : ''}`}
                             />
                           </td>

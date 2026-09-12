@@ -140,7 +140,7 @@ export default function Referential() {
               <div className="mt-3 space-y-1.5 border-t border-rule pt-2.5">
                 {(inconsistencies.data ?? []).map((i) => (
                   <p key={i.cle_parametre} className="flex items-start gap-2 text-xs text-warn-ink">
-                    <SeverityMark severity="warning" />
+                    <SeverityMark severity="avertissement" />
                     <span>
                       {i.libelle} : valeur publiée {num(i.publie, 2)}, dérivée de {i.cle_source}{' '}
                       {num(i.derived, 2)} — écart de {num(i.difference, 2)}.

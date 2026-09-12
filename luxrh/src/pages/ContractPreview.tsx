@@ -31,7 +31,7 @@ export default function ContractPreview() {
     setExporting(true)
     setExportError(null)
     try {
-      const { data, error } = await supabase.functions.invoke('contract-pdf', {
+      const { data, error } = await supabase.functions.invoke('contrat-pdf', {
         body: { contrat_id: id },
       })
       if (error) throw error
@@ -58,18 +58,18 @@ export default function ContractPreview() {
             {emp?.nom}
           </h1>
           <p className="text-xs text-ink-muted">
-            Version {c.version} · {c.statut === 'draft' ? 'brouillon' : c.statut}
+            Version {c.version} · {c.statut === 'brouillon' ? 'brouillon' : c.statut}
           </p>
         </div>
         <div className="flex gap-2">
           <Button size="sm" onClick={exportPdf} disabled={exporting}>
             {exporting ? 'Génération…' : 'Exporter en PDF'}
           </Button>
-          {c.statut === 'draft' && (
+          {c.statut === 'brouillon' && (
             <Button
               size="sm" variant="primary"
               disabled={!comp?.can_validate || update.isPending}
-              onClick={() => update.mutate({ id: c.id, statut: 'active', signe_le: referenceDate })}
+              onClick={() => update.mutate({ id: c.id, statut: 'en_cours', signe_le: referenceDate })}
             >
               Valider et envoyer
             </Button>

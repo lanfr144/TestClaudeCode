@@ -20,7 +20,7 @@ type Draft = {
   nom: string
   date_naissance: string
   residence: 'resident' | 'frontalier_fr' | 'frontalier_be' | 'frontalier_de'
-  qualification: 'qualified' | 'unqualified'
+  qualification: 'qualifie' | 'non_qualifie'
   matricule_national: string
   iban: string
   genre: 'cdi' | 'cdd'
@@ -47,7 +47,7 @@ type Draft = {
 
 const EMPTY: Draft = {
   salarie_id: '', new_employee: true, prenom: '', nom: '', date_naissance: '',
-  residence: 'resident', qualification: 'qualified', matricule_national: '', iban: '',
+  residence: 'resident', qualification: 'qualifie', matricule_national: '', iban: '',
   genre: 'cdi', intitule_poste: '', description_poste: '', lieu_travail: '', categorie: '',
   brut_mensuel: '', date_debut: '', date_fin: '', motif_cdd: '',
   heures_hebdomadaires: '40', jours_par_semaine: '5', repartition_travail: '5 jours sur 7, horaires variables',
@@ -94,7 +94,7 @@ export default function ContractWizard() {
       societe_id: activeCompanyId!,
       salarie_id: d.salarie_id,
       genre: d.genre,
-      statut: 'draft' as const,
+      statut: 'brouillon' as const,
       intitule_poste: d.intitule_poste || 'Poste à préciser',
       description_poste: d.description_poste || null,
       lieu_travail: d.lieu_travail || null,
@@ -177,7 +177,7 @@ export default function ContractWizard() {
     setBusy(true)
     setErr(null)
     try {
-      await updateContract.mutateAsync({ id: contractId, statut: 'active', signe_le: referenceDate })
+      await updateContract.mutateAsync({ id: contractId, statut: 'en_cours', signe_le: referenceDate })
       navigate(`/contrats/${contractId}`)
     } catch (e) {
       setErr(e)
@@ -282,8 +282,8 @@ export default function ContractWizard() {
                       value={d.qualification}
                       onChange={(e) => set('qualification', e.target.value as Draft['qualification'])}
                     >
-                      <option value="qualified">Qualifié(e)</option>
-                      <option value="unqualified">Non qualifié(e)</option>
+                      <option value="qualifie">Qualifié(e)</option>
+                      <option value="non_qualifie">Non qualifié(e)</option>
                     </Select>
                   </Field>
                   <Field label="IBAN" hint="Chiffré au repos.">

@@ -4721,40 +4721,40 @@ export type Database = {
     }
     Enums: {
       bloc_convention:
-        | "salary_grid"
-        | "worktime"
-        | "leave"
-        | "premiums"
-        | "surcharges"
-        | "notice_probation"
-        | "custom_holidays"
+        | "grille_salaires"
+        | "temps_travail"
+        | "conges"
+        | "primes"
+        | "majorations"
+        | "preavis_essai"
+        | "feries_usage"
       categorie_absence:
-        | "annual_leave"
-        | "sick"
-        | "extraordinary"
-        | "public_holiday"
-        | "unpaid"
-        | "compensatory"
+        | "conge_annuel"
+        | "maladie"
+        | "conge_extraordinaire"
+        | "jour_ferie"
+        | "sans_solde"
+        | "recuperation"
       classe_impot: "1" | "1a" | "2"
-      etape_document: "pre_hire" | "during_contract" | "end_of_contract"
-      etat_alerte: "open" | "handled" | "dismissed"
+      etape_document: "avant_embauche" | "pendant_contrat" | "fin_contrat"
+      etat_alerte: "ouverte" | "traitee" | "ecartee"
       famille_parametre:
         | "social"
         | "fiscal"
-        | "worktime"
-        | "leave"
-        | "contract"
+        | "temps_travail"
+        | "conges"
+        | "contrat"
         | "effectif"
         | "ccss"
-      genre_contrat: "cdi" | "cdd" | "seasonal" | "apprenticeship" | "interim"
+      genre_contrat: "cdi" | "cdd" | "saisonnier" | "apprentissage" | "interim"
       genre_element_remuneration:
-        | "fixed"
+        | "fixe"
         | "variable"
-        | "benefit_in_kind"
-        | "premium"
-        | "expense"
-      genre_organisation: "fiduciary" | "company"
-      genre_qualification: "qualified" | "unqualified"
+        | "avantage_nature"
+        | "prime"
+        | "frais"
+      genre_organisation: "fiduciaire" | "societe"
+      genre_qualification: "qualifie" | "non_qualifie"
       genre_residence:
         | "resident"
         | "frontalier_fr"
@@ -4763,42 +4763,37 @@ export type Database = {
         | "frontalier_fra"
         | "frontalier_bel"
         | "frontalier_deu"
-      genre_severite: "blocking" | "warning" | "info" | "problem"
-      genre_sexe: "male" | "female" | "unspecified"
+      genre_severite: "bloquant" | "avertissement" | "info" | "probleme"
+      genre_sexe: "masculin" | "feminin" | "non_precise"
       genre_statut_salarie:
-        | "pregnancy"
-        | "maternity_leave"
-        | "breastfeeding"
-        | "parental_leave"
-        | "delegate"
-        | "safety_delegate"
-        | "equality_delegate"
-        | "reemployment_bonus"
-        | "company_manager"
-        | "protected_other"
-      periodicite_impot: "monthly" | "daily" | "annual"
+        | "grossesse"
+        | "conge_maternite"
+        | "allaitement"
+        | "conge_parental"
+        | "delegue_personnel"
+        | "delegue_securite"
+        | "delegue_egalite"
+        | "prime_reemploi"
+        | "gerant"
+        | "autre_protege"
+      periodicite_impot: "mensuel" | "journalier" | "annuel"
       portee_convention:
         | "secteur"
-        | "harassment"
-        | "employee_category"
-        | "department"
-        | "company"
+        | "harcelement"
+        | "categorie_professionnelle"
+        | "service"
+        | "societe"
       role_application:
-        | "fiduciary_admin"
-        | "manager"
-        | "service_manager"
-        | "employee"
+        | "admin_fiduciaire"
+        | "gestionnaire"
+        | "chef_service"
+        | "salarie"
         | "medecine_travail"
         | "rh_urgence"
         | "dispatching"
-      statut_absence:
-        | "pending"
-        | "approved"
-        | "refused"
-        | "cancelled"
-        | "proposed"
-      statut_contrat: "draft" | "active" | "ended" | "cancelled"
-      statut_planning: "draft" | "publie"
+      statut_absence: "en_attente" | "valide" | "refuse" | "annule" | "propose"
+      statut_contrat: "brouillon" | "en_cours" | "termine" | "annule"
+      statut_planning: "brouillon" | "publie"
     }
     CompositeTypes: {
       ligne_releve_temps: {
@@ -4957,44 +4952,44 @@ export const Constants = {
   public: {
     Enums: {
       bloc_convention: [
-        "salary_grid",
-        "worktime",
-        "leave",
-        "premiums",
-        "surcharges",
-        "notice_probation",
-        "custom_holidays",
+        "grille_salaires",
+        "temps_travail",
+        "conges",
+        "primes",
+        "majorations",
+        "preavis_essai",
+        "feries_usage",
       ],
       categorie_absence: [
-        "annual_leave",
-        "sick",
-        "extraordinary",
-        "public_holiday",
-        "unpaid",
-        "compensatory",
+        "conge_annuel",
+        "maladie",
+        "conge_extraordinaire",
+        "jour_ferie",
+        "sans_solde",
+        "recuperation",
       ],
       classe_impot: ["1", "1a", "2"],
-      etape_document: ["pre_hire", "during_contract", "end_of_contract"],
-      etat_alerte: ["open", "handled", "dismissed"],
+      etape_document: ["avant_embauche", "pendant_contrat", "fin_contrat"],
+      etat_alerte: ["ouverte", "traitee", "ecartee"],
       famille_parametre: [
         "social",
         "fiscal",
-        "worktime",
-        "leave",
-        "contract",
+        "temps_travail",
+        "conges",
+        "contrat",
         "effectif",
         "ccss",
       ],
-      genre_contrat: ["cdi", "cdd", "seasonal", "apprenticeship", "interim"],
+      genre_contrat: ["cdi", "cdd", "saisonnier", "apprentissage", "interim"],
       genre_element_remuneration: [
-        "fixed",
+        "fixe",
         "variable",
-        "benefit_in_kind",
-        "premium",
-        "expense",
+        "avantage_nature",
+        "prime",
+        "frais",
       ],
-      genre_organisation: ["fiduciary", "company"],
-      genre_qualification: ["qualified", "unqualified"],
+      genre_organisation: ["fiduciaire", "societe"],
+      genre_qualification: ["qualifie", "non_qualifie"],
       genre_residence: [
         "resident",
         "frontalier_fr",
@@ -5004,46 +4999,40 @@ export const Constants = {
         "frontalier_bel",
         "frontalier_deu",
       ],
-      genre_severite: ["blocking", "warning", "info", "problem"],
-      genre_sexe: ["male", "female", "unspecified"],
+      genre_severite: ["bloquant", "avertissement", "info", "probleme"],
+      genre_sexe: ["masculin", "feminin", "non_precise"],
       genre_statut_salarie: [
-        "pregnancy",
-        "maternity_leave",
-        "breastfeeding",
-        "parental_leave",
-        "delegate",
-        "safety_delegate",
-        "equality_delegate",
-        "reemployment_bonus",
-        "company_manager",
-        "protected_other",
+        "grossesse",
+        "conge_maternite",
+        "allaitement",
+        "conge_parental",
+        "delegue_personnel",
+        "delegue_securite",
+        "delegue_egalite",
+        "prime_reemploi",
+        "gerant",
+        "autre_protege",
       ],
-      periodicite_impot: ["monthly", "daily", "annual"],
+      periodicite_impot: ["mensuel", "journalier", "annuel"],
       portee_convention: [
         "secteur",
-        "harassment",
-        "employee_category",
-        "department",
-        "company",
+        "harcelement",
+        "categorie_professionnelle",
+        "service",
+        "societe",
       ],
       role_application: [
-        "fiduciary_admin",
-        "manager",
-        "service_manager",
-        "employee",
+        "admin_fiduciaire",
+        "gestionnaire",
+        "chef_service",
+        "salarie",
         "medecine_travail",
         "rh_urgence",
         "dispatching",
       ],
-      statut_absence: [
-        "pending",
-        "approved",
-        "refused",
-        "cancelled",
-        "proposed",
-      ],
-      statut_contrat: ["draft", "active", "ended", "cancelled"],
-      statut_planning: ["draft", "publie"],
+      statut_absence: ["en_attente", "valide", "refuse", "annule", "propose"],
+      statut_contrat: ["brouillon", "en_cours", "termine", "annule"],
+      statut_planning: ["brouillon", "publie"],
     },
   },
 } as const

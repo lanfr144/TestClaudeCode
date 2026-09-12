@@ -123,7 +123,7 @@ function MyLeave() {
 
   const impact = useLeaveImpact(employeeId, typeId, start, end)
   const requestable = (types.data ?? []).filter((t) =>
-    ['annual_leave', 'extraordinary', 'unpaid'].includes(t.categorie),
+    ['conge_annuel', 'conge_extraordinaire', 'sans_solde'].includes(t.categorie),
   )
 
   return (
@@ -197,7 +197,7 @@ function MyLeave() {
                 date_debut: start,
                 date_fin: end,
                 nombre_jours: impact.data!.days_counted,
-                statut: 'pending',
+                statut: 'en_attente',
                 commentaire: comment || null,
               },
               { onSuccess: () => navigate('/mon-espace') },
@@ -324,7 +324,7 @@ function MyRequests() {
                 {date(a.date_debut)} – {date(a.date_fin)}
               </span>
             </span>
-            <Badge tone={a.statut === 'approved' ? 'ok' : a.statut === 'pending' ? 'info' : 'neutral'}>
+            <Badge tone={a.statut === 'valide' ? 'ok' : a.statut === 'en_attente' ? 'info' : 'neutral'}>
               {ABSENCE_STATUS_LABEL[a.statut]}
             </Badge>
           </li>
@@ -375,7 +375,7 @@ export default function SelfService() {
 
       {/* Cibles tactiles de 56 px : au-delà du minimum de 44 px. */}
       <nav
-        className="fixed inset-x-0 bottom-0 mx-auto flex max-w-md border-t border-rule bg-white"
+        className="fixe inset-x-0 bottom-0 mx-auto flex max-w-md border-t border-rule bg-white"
         aria-label="Navigation de l’espace salarié"
       >
         {NAV.map((n) => (

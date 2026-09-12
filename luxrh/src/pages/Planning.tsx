@@ -63,7 +63,7 @@ export default function Planning() {
 
   const absenceOn = (employeeId: string, day: string) =>
     (absences.data ?? []).find(
-      (a) => a.salarie_id === employeeId && a.statut !== 'refused' && a.date_debut <= day && a.date_fin >= day,
+      (a) => a.salarie_id === employeeId && a.statut !== 'refuse' && a.date_debut <= day && a.date_fin >= day,
     )
 
   const isHoliday = (day: string) => (holidays.data ?? []).some((h) => h.date_ferie === day)
@@ -74,7 +74,7 @@ export default function Planning() {
       societe_id: activeCompanyId!,
       debut_semaine: weekStart,
       libelle: `Semaine ${isoWeek(new Date(`${weekStart}T00:00:00`))}`,
-      statut: 'draft',
+      statut: 'brouillon',
     })
     return created.id
   }
@@ -191,7 +191,7 @@ export default function Planning() {
                 key={t.id}
                 draggable
                 onDragStart={(e) => e.dataTransfer.setData('application/x-template', t.id)}
-                className="cursor-grab rounded border px-2 py-1 text-2xs font-semibold text-white active:cursor-grabbing"
+                className="cursor-grab rounded border px-2 py-1 text-2xs font-semibold text-white en_cours:cursor-grabbing"
                 style={{ background: t.couleur, borderColor: t.couleur }}
                 title={`${time(t.heure_debut)}–${time(t.heure_fin)}`}
               >
@@ -240,8 +240,8 @@ export default function Planning() {
                         const cellShifts = creneaux.filter((s) => s.salarie_id === emp.id && s.date_creneau === d)
                         const abs = absenceOn(emp.id, d)
                         const cellViolations = violationsByCell.get(`${emp.id}|${d}`) ?? []
-                        const worst = cellViolations.find((v) => v.severite === 'blocking')
-                          ?? cellViolations.find((v) => v.severite === 'warning')
+                        const worst = cellViolations.find((v) => v.severite === 'bloquant')
+                          ?? cellViolations.find((v) => v.severite === 'avertissement')
                         return (
                           <td
                             key={d}
@@ -260,9 +260,9 @@ export default function Planning() {
                               }
                             }}
                             className={`min-w-[110px] px-1.5 py-1.5 ${
-                              worst?.severite === 'blocking'
+                              worst?.severite === 'bloquant'
                                 ? 'bg-danger-veil'
-                                : worst?.severite === 'warning'
+                                : worst?.severite === 'avertissement'
                                   ? 'bg-warn-veil'
                                   : isHoliday(d)
                                     ? 'bg-violet-veil/50'
@@ -272,16 +272,16 @@ export default function Planning() {
                             {abs && (
                               <div
                                 className={`mb-1 rounded border px-1.5 py-1 text-2xs ${
-                                  abs.types_absence?.categorie === 'sick'
+                                  abs.types_absence?.categorie === 'maladie'
                                     ? 'border-warn/30 bg-warn-veil text-warn-ink'
-                                    : abs.statut === 'approved'
+                                    : abs.statut === 'valide'
                                       ? 'border-action/30 bg-action-veil text-action'
                                       : 'border-rule-strong bg-white text-ink-muted'
                                 }`}
                               >
                                 <span className="bloc font-semibold">{abs.types_absence?.libelle}</span>
                                 <span className="bloc">
-                                  {abs.statut === 'approved' ? 'validé' : 'en attente'}
+                                  {abs.statut === 'valide' ? 'validé' : 'en attente'}
                                 </span>
                               </div>
                             )}

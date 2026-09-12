@@ -20,13 +20,13 @@ create table `ref_bloc_convention` (
   `valid_to` DATE,
   constraint ref_bloc_convention_pk primary key (`code`)
 ) engine=InnoDB default charset=utf8mb4;
-insert into `ref_bloc_convention` (`code`, `label`, `sort_order`) values ('salary_grid', 'salary_grid', 1);
-insert into `ref_bloc_convention` (`code`, `label`, `sort_order`) values ('worktime', 'worktime', 2);
-insert into `ref_bloc_convention` (`code`, `label`, `sort_order`) values ('leave', 'leave', 3);
-insert into `ref_bloc_convention` (`code`, `label`, `sort_order`) values ('premiums', 'premiums', 4);
-insert into `ref_bloc_convention` (`code`, `label`, `sort_order`) values ('surcharges', 'surcharges', 5);
-insert into `ref_bloc_convention` (`code`, `label`, `sort_order`) values ('notice_probation', 'notice_probation', 6);
-insert into `ref_bloc_convention` (`code`, `label`, `sort_order`) values ('custom_holidays', 'custom_holidays', 7);
+insert into `ref_bloc_convention` (`code`, `label`, `sort_order`) values ('grille_salaires', 'grille_salaires', 1);
+insert into `ref_bloc_convention` (`code`, `label`, `sort_order`) values ('temps_travail', 'temps_travail', 2);
+insert into `ref_bloc_convention` (`code`, `label`, `sort_order`) values ('conges', 'conges', 3);
+insert into `ref_bloc_convention` (`code`, `label`, `sort_order`) values ('primes', 'primes', 4);
+insert into `ref_bloc_convention` (`code`, `label`, `sort_order`) values ('majorations', 'majorations', 5);
+insert into `ref_bloc_convention` (`code`, `label`, `sort_order`) values ('preavis_essai', 'preavis_essai', 6);
+insert into `ref_bloc_convention` (`code`, `label`, `sort_order`) values ('feries_usage', 'feries_usage', 7);
 
 create table `ref_categorie_absence` (
   `code` VARCHAR(64) not null,
@@ -36,12 +36,12 @@ create table `ref_categorie_absence` (
   `valid_to` DATE,
   constraint ref_categorie_absence_pk primary key (`code`)
 ) engine=InnoDB default charset=utf8mb4;
-insert into `ref_categorie_absence` (`code`, `label`, `sort_order`) values ('annual_leave', 'annual_leave', 1);
-insert into `ref_categorie_absence` (`code`, `label`, `sort_order`) values ('sick', 'sick', 2);
-insert into `ref_categorie_absence` (`code`, `label`, `sort_order`) values ('extraordinary', 'extraordinary', 3);
-insert into `ref_categorie_absence` (`code`, `label`, `sort_order`) values ('public_holiday', 'public_holiday', 4);
-insert into `ref_categorie_absence` (`code`, `label`, `sort_order`) values ('unpaid', 'unpaid', 5);
-insert into `ref_categorie_absence` (`code`, `label`, `sort_order`) values ('compensatory', 'compensatory', 6);
+insert into `ref_categorie_absence` (`code`, `label`, `sort_order`) values ('conge_annuel', 'conge_annuel', 1);
+insert into `ref_categorie_absence` (`code`, `label`, `sort_order`) values ('maladie', 'maladie', 2);
+insert into `ref_categorie_absence` (`code`, `label`, `sort_order`) values ('conge_extraordinaire', 'conge_extraordinaire', 3);
+insert into `ref_categorie_absence` (`code`, `label`, `sort_order`) values ('jour_ferie', 'jour_ferie', 4);
+insert into `ref_categorie_absence` (`code`, `label`, `sort_order`) values ('sans_solde', 'sans_solde', 5);
+insert into `ref_categorie_absence` (`code`, `label`, `sort_order`) values ('recuperation', 'recuperation', 6);
 
 create table `ref_classe_impot` (
   `code` VARCHAR(64) not null,
@@ -63,9 +63,9 @@ create table `ref_etape_document` (
   `valid_to` DATE,
   constraint ref_etape_document_pk primary key (`code`)
 ) engine=InnoDB default charset=utf8mb4;
-insert into `ref_etape_document` (`code`, `label`, `sort_order`) values ('pre_hire', 'pre_hire', 1);
-insert into `ref_etape_document` (`code`, `label`, `sort_order`) values ('during_contract', 'during_contract', 2);
-insert into `ref_etape_document` (`code`, `label`, `sort_order`) values ('end_of_contract', 'end_of_contract', 3);
+insert into `ref_etape_document` (`code`, `label`, `sort_order`) values ('avant_embauche', 'avant_embauche', 1);
+insert into `ref_etape_document` (`code`, `label`, `sort_order`) values ('pendant_contrat', 'pendant_contrat', 2);
+insert into `ref_etape_document` (`code`, `label`, `sort_order`) values ('fin_contrat', 'fin_contrat', 3);
 
 create table `ref_etat_alerte` (
   `code` VARCHAR(64) not null,
@@ -75,9 +75,9 @@ create table `ref_etat_alerte` (
   `valid_to` DATE,
   constraint ref_etat_alerte_pk primary key (`code`)
 ) engine=InnoDB default charset=utf8mb4;
-insert into `ref_etat_alerte` (`code`, `label`, `sort_order`) values ('open', 'open', 1);
-insert into `ref_etat_alerte` (`code`, `label`, `sort_order`) values ('handled', 'handled', 2);
-insert into `ref_etat_alerte` (`code`, `label`, `sort_order`) values ('dismissed', 'dismissed', 3);
+insert into `ref_etat_alerte` (`code`, `label`, `sort_order`) values ('ouverte', 'ouverte', 1);
+insert into `ref_etat_alerte` (`code`, `label`, `sort_order`) values ('traitee', 'traitee', 2);
+insert into `ref_etat_alerte` (`code`, `label`, `sort_order`) values ('ecartee', 'ecartee', 3);
 
 create table `ref_famille_parametre` (
   `code` VARCHAR(64) not null,
@@ -89,9 +89,9 @@ create table `ref_famille_parametre` (
 ) engine=InnoDB default charset=utf8mb4;
 insert into `ref_famille_parametre` (`code`, `label`, `sort_order`) values ('social', 'social', 1);
 insert into `ref_famille_parametre` (`code`, `label`, `sort_order`) values ('fiscal', 'fiscal', 2);
-insert into `ref_famille_parametre` (`code`, `label`, `sort_order`) values ('worktime', 'worktime', 3);
-insert into `ref_famille_parametre` (`code`, `label`, `sort_order`) values ('leave', 'leave', 4);
-insert into `ref_famille_parametre` (`code`, `label`, `sort_order`) values ('contract', 'contract', 5);
+insert into `ref_famille_parametre` (`code`, `label`, `sort_order`) values ('temps_travail', 'temps_travail', 3);
+insert into `ref_famille_parametre` (`code`, `label`, `sort_order`) values ('conges', 'conges', 4);
+insert into `ref_famille_parametre` (`code`, `label`, `sort_order`) values ('contrat', 'contrat', 5);
 insert into `ref_famille_parametre` (`code`, `label`, `sort_order`) values ('effectif', 'effectif', 6);
 insert into `ref_famille_parametre` (`code`, `label`, `sort_order`) values ('ccss', 'ccss', 7);
 
@@ -105,8 +105,8 @@ create table `ref_genre_contrat` (
 ) engine=InnoDB default charset=utf8mb4;
 insert into `ref_genre_contrat` (`code`, `label`, `sort_order`) values ('cdi', 'cdi', 1);
 insert into `ref_genre_contrat` (`code`, `label`, `sort_order`) values ('cdd', 'cdd', 2);
-insert into `ref_genre_contrat` (`code`, `label`, `sort_order`) values ('seasonal', 'seasonal', 3);
-insert into `ref_genre_contrat` (`code`, `label`, `sort_order`) values ('apprenticeship', 'apprenticeship', 4);
+insert into `ref_genre_contrat` (`code`, `label`, `sort_order`) values ('saisonnier', 'saisonnier', 3);
+insert into `ref_genre_contrat` (`code`, `label`, `sort_order`) values ('apprentissage', 'apprentissage', 4);
 insert into `ref_genre_contrat` (`code`, `label`, `sort_order`) values ('interim', 'interim', 5);
 
 create table `ref_genre_element_remuneration` (
@@ -117,11 +117,11 @@ create table `ref_genre_element_remuneration` (
   `valid_to` DATE,
   constraint ref_genre_element_remune_pk primary key (`code`)
 ) engine=InnoDB default charset=utf8mb4;
-insert into `ref_genre_element_remuneration` (`code`, `label`, `sort_order`) values ('fixed', 'fixed', 1);
+insert into `ref_genre_element_remuneration` (`code`, `label`, `sort_order`) values ('fixe', 'fixe', 1);
 insert into `ref_genre_element_remuneration` (`code`, `label`, `sort_order`) values ('variable', 'variable', 2);
-insert into `ref_genre_element_remuneration` (`code`, `label`, `sort_order`) values ('benefit_in_kind', 'benefit_in_kind', 3);
-insert into `ref_genre_element_remuneration` (`code`, `label`, `sort_order`) values ('premium', 'premium', 4);
-insert into `ref_genre_element_remuneration` (`code`, `label`, `sort_order`) values ('expense', 'expense', 5);
+insert into `ref_genre_element_remuneration` (`code`, `label`, `sort_order`) values ('avantage_nature', 'avantage_nature', 3);
+insert into `ref_genre_element_remuneration` (`code`, `label`, `sort_order`) values ('prime', 'prime', 4);
+insert into `ref_genre_element_remuneration` (`code`, `label`, `sort_order`) values ('frais', 'frais', 5);
 
 create table `ref_genre_organisation` (
   `code` VARCHAR(64) not null,
@@ -131,8 +131,8 @@ create table `ref_genre_organisation` (
   `valid_to` DATE,
   constraint ref_genre_organisation_pk primary key (`code`)
 ) engine=InnoDB default charset=utf8mb4;
-insert into `ref_genre_organisation` (`code`, `label`, `sort_order`) values ('fiduciary', 'fiduciary', 1);
-insert into `ref_genre_organisation` (`code`, `label`, `sort_order`) values ('company', 'company', 2);
+insert into `ref_genre_organisation` (`code`, `label`, `sort_order`) values ('fiduciaire', 'fiduciaire', 1);
+insert into `ref_genre_organisation` (`code`, `label`, `sort_order`) values ('societe', 'societe', 2);
 
 create table `ref_genre_qualification` (
   `code` VARCHAR(64) not null,
@@ -142,8 +142,8 @@ create table `ref_genre_qualification` (
   `valid_to` DATE,
   constraint ref_genre_qualification_pk primary key (`code`)
 ) engine=InnoDB default charset=utf8mb4;
-insert into `ref_genre_qualification` (`code`, `label`, `sort_order`) values ('qualified', 'qualified', 1);
-insert into `ref_genre_qualification` (`code`, `label`, `sort_order`) values ('unqualified', 'unqualified', 2);
+insert into `ref_genre_qualification` (`code`, `label`, `sort_order`) values ('qualifie', 'qualifie', 1);
+insert into `ref_genre_qualification` (`code`, `label`, `sort_order`) values ('non_qualifie', 'non_qualifie', 2);
 
 create table `ref_genre_residence` (
   `code` VARCHAR(64) not null,
@@ -169,10 +169,10 @@ create table `ref_genre_severite` (
   `valid_to` DATE,
   constraint ref_genre_severite_pk primary key (`code`)
 ) engine=InnoDB default charset=utf8mb4;
-insert into `ref_genre_severite` (`code`, `label`, `sort_order`) values ('blocking', 'blocking', 1);
-insert into `ref_genre_severite` (`code`, `label`, `sort_order`) values ('warning', 'warning', 2);
+insert into `ref_genre_severite` (`code`, `label`, `sort_order`) values ('bloquant', 'bloquant', 1);
+insert into `ref_genre_severite` (`code`, `label`, `sort_order`) values ('avertissement', 'avertissement', 2);
 insert into `ref_genre_severite` (`code`, `label`, `sort_order`) values ('info', 'info', 3);
-insert into `ref_genre_severite` (`code`, `label`, `sort_order`) values ('problem', 'problem', 4);
+insert into `ref_genre_severite` (`code`, `label`, `sort_order`) values ('probleme', 'probleme', 4);
 
 create table `ref_genre_sexe` (
   `code` VARCHAR(64) not null,
@@ -182,9 +182,9 @@ create table `ref_genre_sexe` (
   `valid_to` DATE,
   constraint ref_genre_sexe_pk primary key (`code`)
 ) engine=InnoDB default charset=utf8mb4;
-insert into `ref_genre_sexe` (`code`, `label`, `sort_order`) values ('male', 'male', 1);
-insert into `ref_genre_sexe` (`code`, `label`, `sort_order`) values ('female', 'female', 2);
-insert into `ref_genre_sexe` (`code`, `label`, `sort_order`) values ('unspecified', 'unspecified', 3);
+insert into `ref_genre_sexe` (`code`, `label`, `sort_order`) values ('masculin', 'masculin', 1);
+insert into `ref_genre_sexe` (`code`, `label`, `sort_order`) values ('feminin', 'feminin', 2);
+insert into `ref_genre_sexe` (`code`, `label`, `sort_order`) values ('non_precise', 'non_precise', 3);
 
 create table `ref_genre_statut_salarie` (
   `code` VARCHAR(64) not null,
@@ -194,16 +194,16 @@ create table `ref_genre_statut_salarie` (
   `valid_to` DATE,
   constraint ref_genre_statut_salarie_pk primary key (`code`)
 ) engine=InnoDB default charset=utf8mb4;
-insert into `ref_genre_statut_salarie` (`code`, `label`, `sort_order`) values ('pregnancy', 'pregnancy', 1);
-insert into `ref_genre_statut_salarie` (`code`, `label`, `sort_order`) values ('maternity_leave', 'maternity_leave', 2);
-insert into `ref_genre_statut_salarie` (`code`, `label`, `sort_order`) values ('breastfeeding', 'breastfeeding', 3);
-insert into `ref_genre_statut_salarie` (`code`, `label`, `sort_order`) values ('parental_leave', 'parental_leave', 4);
-insert into `ref_genre_statut_salarie` (`code`, `label`, `sort_order`) values ('delegate', 'delegate', 5);
-insert into `ref_genre_statut_salarie` (`code`, `label`, `sort_order`) values ('safety_delegate', 'safety_delegate', 6);
-insert into `ref_genre_statut_salarie` (`code`, `label`, `sort_order`) values ('equality_delegate', 'equality_delegate', 7);
-insert into `ref_genre_statut_salarie` (`code`, `label`, `sort_order`) values ('reemployment_bonus', 'reemployment_bonus', 8);
-insert into `ref_genre_statut_salarie` (`code`, `label`, `sort_order`) values ('company_manager', 'company_manager', 9);
-insert into `ref_genre_statut_salarie` (`code`, `label`, `sort_order`) values ('protected_other', 'protected_other', 10);
+insert into `ref_genre_statut_salarie` (`code`, `label`, `sort_order`) values ('grossesse', 'grossesse', 1);
+insert into `ref_genre_statut_salarie` (`code`, `label`, `sort_order`) values ('conge_maternite', 'conge_maternite', 2);
+insert into `ref_genre_statut_salarie` (`code`, `label`, `sort_order`) values ('allaitement', 'allaitement', 3);
+insert into `ref_genre_statut_salarie` (`code`, `label`, `sort_order`) values ('conge_parental', 'conge_parental', 4);
+insert into `ref_genre_statut_salarie` (`code`, `label`, `sort_order`) values ('delegue_personnel', 'delegue_personnel', 5);
+insert into `ref_genre_statut_salarie` (`code`, `label`, `sort_order`) values ('delegue_securite', 'delegue_securite', 6);
+insert into `ref_genre_statut_salarie` (`code`, `label`, `sort_order`) values ('delegue_egalite', 'delegue_egalite', 7);
+insert into `ref_genre_statut_salarie` (`code`, `label`, `sort_order`) values ('prime_reemploi', 'prime_reemploi', 8);
+insert into `ref_genre_statut_salarie` (`code`, `label`, `sort_order`) values ('gerant', 'gerant', 9);
+insert into `ref_genre_statut_salarie` (`code`, `label`, `sort_order`) values ('autre_protege', 'autre_protege', 10);
 
 create table `ref_periodicite_impot` (
   `code` VARCHAR(64) not null,
@@ -213,9 +213,9 @@ create table `ref_periodicite_impot` (
   `valid_to` DATE,
   constraint ref_periodicite_impot_pk primary key (`code`)
 ) engine=InnoDB default charset=utf8mb4;
-insert into `ref_periodicite_impot` (`code`, `label`, `sort_order`) values ('monthly', 'monthly', 1);
-insert into `ref_periodicite_impot` (`code`, `label`, `sort_order`) values ('daily', 'daily', 2);
-insert into `ref_periodicite_impot` (`code`, `label`, `sort_order`) values ('annual', 'annual', 3);
+insert into `ref_periodicite_impot` (`code`, `label`, `sort_order`) values ('mensuel', 'mensuel', 1);
+insert into `ref_periodicite_impot` (`code`, `label`, `sort_order`) values ('journalier', 'journalier', 2);
+insert into `ref_periodicite_impot` (`code`, `label`, `sort_order`) values ('annuel', 'annuel', 3);
 
 create table `ref_portee_convention` (
   `code` VARCHAR(64) not null,
@@ -226,10 +226,10 @@ create table `ref_portee_convention` (
   constraint ref_portee_convention_pk primary key (`code`)
 ) engine=InnoDB default charset=utf8mb4;
 insert into `ref_portee_convention` (`code`, `label`, `sort_order`) values ('secteur', 'secteur', 1);
-insert into `ref_portee_convention` (`code`, `label`, `sort_order`) values ('harassment', 'harassment', 2);
-insert into `ref_portee_convention` (`code`, `label`, `sort_order`) values ('employee_category', 'employee_category', 3);
-insert into `ref_portee_convention` (`code`, `label`, `sort_order`) values ('department', 'department', 4);
-insert into `ref_portee_convention` (`code`, `label`, `sort_order`) values ('company', 'company', 5);
+insert into `ref_portee_convention` (`code`, `label`, `sort_order`) values ('harcelement', 'harcelement', 2);
+insert into `ref_portee_convention` (`code`, `label`, `sort_order`) values ('categorie_professionnelle', 'categorie_professionnelle', 3);
+insert into `ref_portee_convention` (`code`, `label`, `sort_order`) values ('service', 'service', 4);
+insert into `ref_portee_convention` (`code`, `label`, `sort_order`) values ('societe', 'societe', 5);
 
 create table `ref_role_application` (
   `code` VARCHAR(64) not null,
@@ -239,10 +239,10 @@ create table `ref_role_application` (
   `valid_to` DATE,
   constraint ref_role_application_pk primary key (`code`)
 ) engine=InnoDB default charset=utf8mb4;
-insert into `ref_role_application` (`code`, `label`, `sort_order`) values ('fiduciary_admin', 'fiduciary_admin', 1);
-insert into `ref_role_application` (`code`, `label`, `sort_order`) values ('manager', 'manager', 2);
-insert into `ref_role_application` (`code`, `label`, `sort_order`) values ('service_manager', 'service_manager', 3);
-insert into `ref_role_application` (`code`, `label`, `sort_order`) values ('employee', 'employee', 4);
+insert into `ref_role_application` (`code`, `label`, `sort_order`) values ('admin_fiduciaire', 'admin_fiduciaire', 1);
+insert into `ref_role_application` (`code`, `label`, `sort_order`) values ('gestionnaire', 'gestionnaire', 2);
+insert into `ref_role_application` (`code`, `label`, `sort_order`) values ('chef_service', 'chef_service', 3);
+insert into `ref_role_application` (`code`, `label`, `sort_order`) values ('salarie', 'salarie', 4);
 insert into `ref_role_application` (`code`, `label`, `sort_order`) values ('medecine_travail', 'medecine_travail', 5);
 insert into `ref_role_application` (`code`, `label`, `sort_order`) values ('rh_urgence', 'rh_urgence', 6);
 insert into `ref_role_application` (`code`, `label`, `sort_order`) values ('dispatching', 'dispatching', 7);
@@ -255,11 +255,11 @@ create table `ref_statut_absence` (
   `valid_to` DATE,
   constraint ref_statut_absence_pk primary key (`code`)
 ) engine=InnoDB default charset=utf8mb4;
-insert into `ref_statut_absence` (`code`, `label`, `sort_order`) values ('pending', 'pending', 1);
-insert into `ref_statut_absence` (`code`, `label`, `sort_order`) values ('approved', 'approved', 2);
-insert into `ref_statut_absence` (`code`, `label`, `sort_order`) values ('refused', 'refused', 3);
-insert into `ref_statut_absence` (`code`, `label`, `sort_order`) values ('cancelled', 'cancelled', 4);
-insert into `ref_statut_absence` (`code`, `label`, `sort_order`) values ('proposed', 'proposed', 5);
+insert into `ref_statut_absence` (`code`, `label`, `sort_order`) values ('en_attente', 'en_attente', 1);
+insert into `ref_statut_absence` (`code`, `label`, `sort_order`) values ('valide', 'valide', 2);
+insert into `ref_statut_absence` (`code`, `label`, `sort_order`) values ('refuse', 'refuse', 3);
+insert into `ref_statut_absence` (`code`, `label`, `sort_order`) values ('annule', 'annule', 4);
+insert into `ref_statut_absence` (`code`, `label`, `sort_order`) values ('propose', 'propose', 5);
 
 create table `ref_statut_contrat` (
   `code` VARCHAR(64) not null,
@@ -269,10 +269,10 @@ create table `ref_statut_contrat` (
   `valid_to` DATE,
   constraint ref_statut_contrat_pk primary key (`code`)
 ) engine=InnoDB default charset=utf8mb4;
-insert into `ref_statut_contrat` (`code`, `label`, `sort_order`) values ('draft', 'draft', 1);
-insert into `ref_statut_contrat` (`code`, `label`, `sort_order`) values ('active', 'active', 2);
-insert into `ref_statut_contrat` (`code`, `label`, `sort_order`) values ('ended', 'ended', 3);
-insert into `ref_statut_contrat` (`code`, `label`, `sort_order`) values ('cancelled', 'cancelled', 4);
+insert into `ref_statut_contrat` (`code`, `label`, `sort_order`) values ('brouillon', 'brouillon', 1);
+insert into `ref_statut_contrat` (`code`, `label`, `sort_order`) values ('en_cours', 'en_cours', 2);
+insert into `ref_statut_contrat` (`code`, `label`, `sort_order`) values ('termine', 'termine', 3);
+insert into `ref_statut_contrat` (`code`, `label`, `sort_order`) values ('annule', 'annule', 4);
 
 create table `ref_statut_planning` (
   `code` VARCHAR(64) not null,
@@ -282,7 +282,7 @@ create table `ref_statut_planning` (
   `valid_to` DATE,
   constraint ref_statut_planning_pk primary key (`code`)
 ) engine=InnoDB default charset=utf8mb4;
-insert into `ref_statut_planning` (`code`, `label`, `sort_order`) values ('draft', 'draft', 1);
+insert into `ref_statut_planning` (`code`, `label`, `sort_order`) values ('brouillon', 'brouillon', 1);
 insert into `ref_statut_planning` (`code`, `label`, `sort_order`) values ('publie', 'publie', 2);
 
 
@@ -294,7 +294,7 @@ create table `absences` (
   `date_debut` DATE not null,
   `date_fin` DATE not null,
   `nombre_jours` DECIMAL(5,2) default 0 not null,
-  `statut` VARCHAR(64) default 'pending' not null,
+  `statut` VARCHAR(64) default 'en_attente' not null,
   `commentaire` TEXT,
   `certificat_recu` TINYINT(1) default 0 not null,
   `certificat_recu_le` DATE,
@@ -361,7 +361,7 @@ create table `alertes_conformite` (
   `reference_legale` TEXT,
   `severite` VARCHAR(64) not null,
   `date_echeance` DATE,
-  `etat` VARCHAR(64) default 'open' not null,
+  `etat` VARCHAR(64) default 'ouverte' not null,
   `traite_par` CHAR(36),
   `traite_le` DATETIME(6),
   `note_traitement` TEXT,
@@ -448,7 +448,7 @@ create table `contrats` (
   `societe_id` CHAR(36) not null,
   `salarie_id` CHAR(36) not null,
   `genre` VARCHAR(64) not null,
-  `statut` VARCHAR(64) default 'draft' not null,
+  `statut` VARCHAR(64) default 'brouillon' not null,
   `intitule_poste` TEXT not null,
   `description_poste` TEXT,
   `lieu_travail` TEXT,
@@ -600,14 +600,14 @@ create table `demandes_heures_sup` (
   `fin_periode` DATE not null,
   `heures` DECIMAL(6,2) not null,
   `motif` TEXT not null,
-  `statut` TEXT default 'requested' not null,
+  `statut` TEXT default 'demande' not null,
   `demande_par` CHAR(36),
   `demande_le` DATETIME(6) default CURRENT_TIMESTAMP(6) not null,
   `valide_rh_par` CHAR(36),
   `valide_rh_le` DATETIME(6),
   `accepte_par_salarie_le` DATETIME(6),
   `motif_refus` TEXT,
-  `compensation` TEXT default 'money' not null,
+  `compensation` TEXT default 'argent' not null,
   `note` TEXT,
   constraint demandes_heures_sup_pkey primary key (`id`)
 ) engine=InnoDB default charset=utf8mb4;
@@ -687,7 +687,7 @@ create table `elements_remuneration` (
   `montant` DECIMAL(10,2),
   `taux_pct` DECIMAL(6,3),
   `assiette` TEXT,
-  `periodicite` TEXT default 'monthly' not null,
+  `periodicite` TEXT default 'mensuel' not null,
   `dans_assiette_salaire` TINYINT(1) default 0 not null,
   `imposable` TINYINT(1) default 1 not null,
   `cotisable` TINYINT(1) default 1 not null,
@@ -707,7 +707,7 @@ create table `enfants_salarie` (
   `nom` TEXT,
   `sexe` VARCHAR(64),
   `date_naissance` DATE not null,
-  `lien_parente` TEXT default 'child' not null,
+  `lien_parente` TEXT default 'enfant' not null,
   `a_charge` TINYINT(1) default 1 not null,
   `refus_partage` TINYINT(1) default 0 not null,
   `date_adoption` DATE,
@@ -862,7 +862,7 @@ create table `modeles_creneau` (
 create table `organisations` (
   `id` CHAR(36) default (UUID()) not null,
   `nom` TEXT not null,
-  `genre` VARCHAR(64) default 'fiduciary' not null,
+  `genre` VARCHAR(64) default 'fiduciaire' not null,
   `cree_le` DATETIME(6) default CURRENT_TIMESTAMP(6) not null,
   constraint organisations_pkey primary key (`id`)
 ) engine=InnoDB default charset=utf8mb4;
@@ -946,7 +946,7 @@ create table `plannings` (
   `service_id` CHAR(36),
   `debut_semaine` DATE not null,
   `libelle` TEXT,
-  `statut` VARCHAR(64) default 'draft' not null,
+  `statut` VARCHAR(64) default 'brouillon' not null,
   `publie_le` DATETIME(6),
   `publie_par` CHAR(36),
   `cree_le` DATETIME(6) default CURRENT_TIMESTAMP(6) not null,
@@ -961,7 +961,7 @@ create table `primes` (
   `salarie_id` CHAR(36) not null,
   `contrat_id` CHAR(36),
   `rupture_id` CHAR(36),
-  `genre` TEXT default 'other' not null,
+  `genre` TEXT default 'autre' not null,
   `libelle` TEXT not null,
   `montant` DECIMAL(12,2) not null,
   `attribue_le` DATE not null,
@@ -1217,7 +1217,7 @@ create table `salaries` (
   `nom` TEXT not null,
   `date_naissance` DATE,
   `residence` VARCHAR(64) not null,
-  `qualification` VARCHAR(64) default 'unqualified' not null,
+  `qualification` VARCHAR(64) default 'non_qualifie' not null,
   `ligne` TEXT,
   `code_postal` TEXT,
   `localite` TEXT,
@@ -1228,7 +1228,7 @@ create table `salaries` (
   `iban_chiffre` LONGBLOB,
   `matricule_national_indice` TEXT,
   `cree_le` DATETIME(6) default CURRENT_TIMESTAMP(6) not null,
-  `sexe` VARCHAR(64) default 'unspecified' not null,
+  `sexe` VARCHAR(64) default 'non_precise' not null,
   `date_debut_carriere` DATE,
   `profession` TEXT,
   `est_cadre` TINYINT(1) default 0 not null,
@@ -1352,7 +1352,7 @@ create table `statuts_salarie` (
 create table `tranches_impot` (
   `id` CHAR(36) default (UUID()) not null,
   `classe_impot` VARCHAR(64) not null,
-  `periodicite` VARCHAR(64) default 'monthly' not null,
+  `periodicite` VARCHAR(64) default 'mensuel' not null,
   `debut_validite` DATE default '1970-01-01' not null,
   `fin_validite` DATE default '2037-12-31' not null,
   `tranche_min` DECIMAL(12,2) not null,
@@ -1396,7 +1396,7 @@ create table `types_document` (
   `id` CHAR(36) default (UUID()) not null,
   `code` VARCHAR(255) not null,
   `libelle` TEXT not null,
-  `echelon` VARCHAR(64) default 'during_contract' not null,
+  `echelon` VARCHAR(64) default 'pendant_contrat' not null,
   `validite_mois` INT,
   `obligatoire` TINYINT(1) default 0 not null,
   `residences_visees` JSON,
@@ -1612,7 +1612,7 @@ alter table `contrats` add constraint contract_dates_order CHECK (((date_fin IS 
 alter table `contrats` add constraint contract_not_its_own_predece CHECK (((contrat_precedent_id IS NULL) OR (contrat_precedent_id <> id)));
 alter table `contrats` add constraint contract_quantities_positive CHECK (((heures_hebdomadaires > (0)::numeric) AND (jours_par_semaine > (0)::numeric) AND (jours_par_semaine <= (7)::numeric) AND (brut_mensuel >= (0)::numeric) AND (nombre_renouvellements >= 0) AND ((pause_minutes IS NULL) OR (pause_minutes >= 0)) AND ((jours_conge_annuel IS NULL) OR (jours_conge_annuel >= (0)::numeric)) AND ((duree_essai IS NULL) OR (duree_essai > 0)) AND ((annee_apprentissage IS NULL) OR (annee_apprentissage > 0))));
 alter table `contrats` add constraint contrats_periode_coherente CHECK ((date_fin >= date_debut));
-alter table `contrats` add constraint fixed_term_needs_end CHECK (((genre <> ALL (ARRAY['cdd'::genre_contrat, 'seasonal'::genre_contrat, 'interim'::genre_contrat, 'apprenticeship'::genre_contrat])) OR (date_fin IS NOT NULL)));
+alter table `contrats` add constraint fixed_term_needs_end CHECK (((genre <> ALL (ARRAY['cdd'::genre_contrat, 'saisonnier'::genre_contrat, 'interim'::genre_contrat, 'apprentissage'::genre_contrat])) OR (date_fin IS NOT NULL)));
 alter table `contrats` add constraint interim_needs_user_company CHECK (((genre <> 'interim'::genre_contrat) OR (nom_societe_utilisateur IS NOT NULL)));
 alter table `contrats` add constraint probation_length_and_unit_to CHECK (((duree_essai IS NULL) = (unite_essai IS NULL)));
 alter table `conventions_collectives` add constraint conventions_collectives_peri CHECK ((fin_validite > debut_validite));

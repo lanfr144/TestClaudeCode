@@ -72,7 +72,7 @@ export default function DismissalSimulator() {
                 }`}
               >
                 <div className="flex items-start gap-3">
-                  <SeverityMark severity={result.triggers ? 'blocking' : 'ok'} />
+                  <SeverityMark severity={result.triggers ? 'bloquant' : 'ok'} />
                   <div>
                     <p
                       className={`text-sm font-bold ${

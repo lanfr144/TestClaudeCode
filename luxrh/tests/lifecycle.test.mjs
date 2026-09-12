@@ -44,10 +44,10 @@ for (const [libelle, pays, cp, attendu] of [
   ['Luxembourg-ville', 'LU', 'L-1424', 'ok'],
   ['Arlon, province de Luxembourg', 'BE', 'B-6700', 'ok'],
   ['Metz, Moselle', 'FR', 'F-57000', 'ok'],
-  ['Bruxelles, hors zone', 'BE', 'B-1000', 'outside'],
-  ['Paris, hors zone', 'FR', 'F-75001', 'outside'],
-  ['Trèves — bornes allemandes non chargées', 'DE', 'D-54294', 'unknown'],
-  ['Amsterdam — pays non couvert', 'NL', '1011AB', 'unknown'],
+  ['Bruxelles, hors zone', 'BE', 'B-1000', 'hors_perimetre'],
+  ['Paris, hors zone', 'FR', 'F-75001', 'hors_perimetre'],
+  ['Trèves — bornes allemandes non chargées', 'DE', 'D-54294', 'indeterminee'],
+  ['Amsterdam — pays non couvert', 'NL', '1011AB', 'indeterminee'],
 ]) {
   const r = await rpc(token, 'fn_validate_address', { p_country: pays, p_postal: cp })
   if (!r.ok) ko(libelle, JSON.stringify(r.body))
@@ -125,9 +125,9 @@ const employe = employes.body?.[0]
   else {
     const lignes = r.body ?? []
     ok('registre des accès', `${lignes.length} événement(s)`)
-    lignes.some((l) => l.nature === 'DECRYPT')
+    lignes.some((l) => l.nature === 'DECHIFFREMENT')
       ? ok('le déchiffrement qui précède y figure')
-      : ko('le déchiffrement qui précède y figure', 'aucune ligne DECRYPT')
+      : ko('le déchiffrement qui précède y figure', 'aucune ligne DECHIFFREMENT')
     const colonnes = Object.keys(lignes[0] ?? {})
     ;['quand', 'qui', 'quoi', 'd_ou'].every((c) => colonnes.includes(c))
       ? ok('qui / quoi / quand / d’où sont tous rendus')
@@ -145,7 +145,7 @@ console.log('\n== Un seul contrat en cours ==')
 
 const contrats = await rest(token,
   `contrats?select=id,salarie_id,societe_id,date_debut,date_fin,brut_mensuel,version,genre` +
-  `&societe_id=eq.${company?.id}&statut=eq.active&genre=eq.cdi&limit=1`)
+  `&societe_id=eq.${company?.id}&statut=eq.en_cours&genre=eq.cdi&limit=1`)
 const contrat = contrats.body?.[0]
 if (!contrat) ko('contrat de démonstration', 'aucun CDI actif lisible')
 
@@ -155,7 +155,7 @@ if (!contrat) ko('contrat de démonstration', 'aucun CDI actif lisible')
     method: 'POST',
     body: JSON.stringify({
       societe_id: contrat?.societe_id, salarie_id: contrat?.salarie_id,
-      genre: 'cdi', statut: 'active', intitule_poste: 'Doublon de test',
+      genre: 'cdi', statut: 'en_cours', intitule_poste: 'Doublon de test',
       date_debut: contrat?.date_debut, brut_mensuel: 3000,
       heures_hebdomadaires: 40, jours_par_semaine: 5, periode_reference_mois: 1,
     }),
@@ -214,15 +214,15 @@ let nouveau = null
 }
 if (nouveau) {
   const ancien = await rest(token, `contrats?select=statut,date_fin&id=eq.${contrat.id}`)
-  ancien.body?.[0]?.statut === 'ended'
-    ? ok('ancien contrat au statut « ended »')
+  ancien.body?.[0]?.statut === 'termine'
+    ? ok('ancien contrat au statut « termine »')
     : ko('statut de l’ancien', JSON.stringify(ancien.body))
 
   const neuf = await rest(token,
     `contrats?select=statut,version,date_debut,brut_mensuel,heures_hebdomadaires,est_temps_partiel,` +
     `contrat_precedent_id,signe_le,intitule_poste,genre&id=eq.${nouveau}`)
   const n = neuf.body?.[0] ?? {}
-  n.statut === 'active' ? ok('nouveau contrat actif') : ko('statut du nouveau', n.statut)
+  n.statut === 'en_cours' ? ok('nouveau contrat actif') : ko('statut du nouveau', n.statut)
   n.version === (contrat.version ?? 1) + 1
     ? ok('version incrémentée', String(n.version)) : ko('version', String(n.version))
   n.contrat_precedent_id === contrat.id
@@ -260,15 +260,15 @@ if (nouveau) {
   const remise = await fetch(`${URL}/rest/v1/contrats?id=eq.${contrat.id}`, {
     method: 'PATCH',
     headers: { ...h(token), Prefer: 'return=representation' },
-    body: JSON.stringify({ statut: 'active', date_fin: contrat.date_fin }),
+    body: JSON.stringify({ statut: 'en_cours', date_fin: contrat.date_fin }),
   })
   const revenu = await remise.json().catch(() => null)
-  remise.ok && revenu?.[0]?.statut === 'active'
+  remise.ok && revenu?.[0]?.statut === 'en_cours'
     ? ok('contrat d’origine rétabli', `fin ${revenu[0].date_fin ?? '—'}`)
     : ko('rétablissement du contrat', JSON.stringify(revenu).slice(0, 160))
 
   const restants = await rest(token,
-    `contrats?select=id&salarie_id=eq.${contrat.salarie_id}&statut=eq.active`)
+    `contrats?select=id&salarie_id=eq.${contrat.salarie_id}&statut=eq.en_cours`)
   restants.body?.length === 1
     ? ok('un seul contrat actif à nouveau')
     : ko('contrats actifs après nettoyage', `${restants.body?.length}`)

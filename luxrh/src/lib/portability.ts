@@ -11,7 +11,7 @@ import { callEngine } from './supabase'
 /** Enveloppe commune à tous les exports. */
 export interface ExportDocument {
   format: 'luxrh.export/1'
-  genre: 'employee' | 'company' | 'organization' | 'referential'
+  genre: 'salarie' | 'societe' | 'organisation' | 'referentiel'
   exported_at: string
   payload: Record<string, unknown>
 }
@@ -26,10 +26,10 @@ export interface ImportReport {
 }
 
 const NOM: Record<ExportDocument['genre'], string> = {
-  employee: 'mes-donnees',
-  company: 'societe',
-  organization: 'fiduciaire',
-  referential: 'referentiel',
+  salarie: 'mes-donnees',
+  societe: 'societe',
+  organisation: 'fiduciaire',
+  referentiel: 'referentiel',
 }
 
 /** Nom de fichier daté, pour que deux exports successifs ne se recouvrent pas. */

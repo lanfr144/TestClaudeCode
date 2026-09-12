@@ -34,19 +34,19 @@ WARN_INK = "#7D5312"
 WARN_VEIL = "#FDF3E2"
 
 TONES = {
-    "blocking": (DANGER_VEIL, DANGER_INK, DANGER),
-    "warning": (WARN_VEIL, WARN_INK, WARN),
+    "bloquant": (DANGER_VEIL, DANGER_INK, DANGER),
+    "avertissement": (WARN_VEIL, WARN_INK, WARN),
     "info": (ACTION_VEIL, ACTION, ACTION),
     "ok": (SUCCESS_VEIL, SUCCESS_INK, SUCCESS),
     "neutral": (RAIL, INK_MUTED, RULE),
     "violet": (VIOLET_VEIL, VIOLET_DEEP, VIOLET),
 }
 
-GLYPHS = {"blocking": "✕", "warning": "▲", "info": "i", "ok": "✓"}
+GLYPHS = {"bloquant": "✕", "avertissement": "▲", "info": "i", "ok": "✓"}
 
 SEVERITY_LABEL = {
-    "blocking": "Bloquant",
-    "warning": "Avertissement",
+    "bloquant": "Bloquant",
+    "avertissement": "Avertissement",
     "info": "À surveiller",
     "ok": "Conforme",
 }

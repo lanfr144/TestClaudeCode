@@ -35,9 +35,9 @@ console.log('\n== Droit d’accès du salarié ==')
   const [good, doc] = await rpc(employee, 'fn_export_self')
   good ? ok('export personnel produit') : ko('export personnel', JSON.stringify(doc))
   doc?.format === 'luxrh.export/1' ? ok('enveloppe versionnée') : ko('enveloppe', doc?.format)
-  doc?.genre === 'employee' ? ok('genre « employee »') : ko('genre', doc?.genre)
+  doc?.genre === 'salarie' ? ok('genre « salarie »') : ko('genre', doc?.genre)
 
-  const moi = doc?.payload?.employee ?? {}
+  const moi = doc?.payload?.salarie ?? {}
   // Un export où le matricule reste chiffré ne satisfait pas le droit d'accès.
   typeof moi.matricule_national === 'string' && /^\d{13}$/.test(moi.matricule_national)
     ? ok('matricule national déchiffré', moi.matricule_national.slice(0, 4) + '…')
@@ -51,7 +51,7 @@ console.log('\n== Droit d’accès du salarié ==')
 console.log('\n== Ce que l’export doit refuser ==')
 {
   const autres = await get(manager, 'salaries?select=id&limit=40')
-  const moi = await rpc(employee, 'fn_export_self').then(([, d]) => d?.payload?.employee?.id)
+  const moi = await rpc(employee, 'fn_export_self').then(([, d]) => d?.payload?.salarie?.id)
   const collegue = autres.find((e) => e.id !== moi)
   const [good, body] = await rpc(employee, 'fn_export_employee', { p_employee: collegue.id })
   !good && /acc[eè]s/i.test(JSON.stringify(body))
@@ -66,7 +66,7 @@ console.log('\n== Ce que l’export doit refuser ==')
 }
 {
   const [good] = await rpc(employee, 'fn_import_referential',
-    { p_document: { format: 'luxrh.export/1', genre: 'referential', payload: {} }, p_mode: 'replace' })
+    { p_document: { format: 'luxrh.export/1', genre: 'referentiel', payload: {} }, p_mode: 'replace' })
   !good ? ok('un salarié ne peut pas charger un référentiel')
         : ko('import réservé à l’admin', 'import accepté !')
 }
@@ -127,14 +127,14 @@ let referentiel
 }
 {
   const [good, body] = await rpc(manager, 'fn_import_referential',
-    { p_document: { format: 'autre-outil/2', genre: 'referential', payload: {} }, p_mode: 'skip_existing' })
+    { p_document: { format: 'autre-outil/2', genre: 'referentiel', payload: {} }, p_mode: 'skip_existing' })
   !good && /format/i.test(JSON.stringify(body))
     ? ok('un format étranger est refusé, et nommé')
     : ko('contrôle du format', good ? 'accepté !' : JSON.stringify(body))
 }
 {
   const [good, body] = await rpc(manager, 'fn_import_referential',
-    { p_document: { format: 'luxrh.export/1', genre: 'company', payload: {} }, p_mode: 'skip_existing' })
+    { p_document: { format: 'luxrh.export/1', genre: 'societe', payload: {} }, p_mode: 'skip_existing' })
   !good ? ok('un export de société n’est pas pris pour un référentiel')
         : ko('contrôle du genre', 'accepté !')
   void body

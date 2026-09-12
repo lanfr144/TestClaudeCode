@@ -54,7 +54,7 @@ const societes = await rest(
 const bg = societes.find((c) => c.raison_sociale.startsWith('Brasserie'))
 
 await rest(
-  token, "company '*, services, rate_periods, cba links'",
+  token, "societe '*, services, rate_periods, cba links'",
   `societes?select=*,services(*),periodes_taux_societe(*),conventions_de_la_societe(*,conventions_collectives(*,regles_convention(*)))&id=eq.${bg.id}`,
 )
 const salaries = await rest(
@@ -65,7 +65,7 @@ const aicha = salaries.find((e) => e.nom === 'Diallo')
 const tomas = salaries.find((e) => e.nom === 'Rocha')
 
 await rest(
-  token, "employee '*, tax_cards, contrats, documents'",
+  token, "salarie '*, tax_cards, contrats, documents'",
   `salaries?select=*,services(nom),fiches_retenue_impot(*),contrats(*),documents(*)&id=eq.${aicha.id}`,
 )
 const contrats = await rest(
@@ -74,7 +74,7 @@ const contrats = await rest(
 )
 const cAicha = contrats.find((c) => c.salarie_id === aicha.id)
 await rest(
-  token, "contract '*, salaries, societes, amendments, cba links'",
+  token, "contrat '*, salaries, societes, amendments, cba links'",
   `contrats?select=*,salaries(*),societes(*),avenants_contrat(*),conventions_du_contrat(*,conventions_collectives(nom,code,portee))&id=eq.${cAicha.id}`,
 )
 const plannings = await rest(token, 'plannings', `plannings?select=*&societe_id=eq.${bg.id}&order=debut_semaine.desc`)
@@ -120,7 +120,7 @@ if (lb) ok('  → solde congés', `${lb.balance} j (${lb.entitlement_source})`)
 const sc = await rpc(token, 'fn_sick_counters', { p_employee: tomas.id, p_on: ON })
 if (sc) ok('  → maladie', `${sc.days_in_window}/${sc.limit_days} j, protection ${sc.protection_end}`)
 await rpc(token, 'fn_leave_request_impact', {
-  p_employee: aicha.id, p_type: absTypes.find((t) => t.code === 'annual_leave').id,
+  p_employee: aicha.id, p_type: absTypes.find((t) => t.code === 'conge_annuel').id,
   p_start: '2026-10-26', p_end: '2026-10-30',
 })
 const scan = await rpc(token, 'fn_compliance_scan', { p_company: bg.id, p_on: ON })

@@ -58,8 +58,8 @@ export default function SickLeave() {
 
   const [form, setForm] = useState({ salarie_id: '', date_debut: referenceDate, date_fin: referenceDate, days: '' })
 
-  const sickType = (types.data ?? []).find((t) => t.code === 'sick')
-  const sickAbsences = (absences.data ?? []).filter((a) => a.types_absence?.categorie === 'sick')
+  const sickType = (types.data ?? []).find((t) => t.code === 'maladie')
+  const sickAbsences = (absences.data ?? []).filter((a) => a.types_absence?.categorie === 'maladie')
 
   if (!activeCompanyId) return <Card title="Aucun dossier sélectionné">Choisissez une société.</Card>
   if (salaries.isLoading) return <Card><Loading /></Card>
@@ -108,7 +108,7 @@ export default function SickLeave() {
                   date_debut: form.date_debut,
                   date_fin: form.date_fin,
                   nombre_jours: Number(form.days || 0),
-                  statut: 'approved',
+                  statut: 'valide',
                 })
               }
             >

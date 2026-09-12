@@ -64,9 +64,9 @@ mySched.length === 1 && mySched[0].statut === 'publie'
 
 console.log('\n== 4. Retour à l’état de démonstration ==')
 await patch(admin, `creneaux?id=eq.${shiftJeu.id}`, { heure_debut: shiftJeu.heure_debut })
-await patch(admin, `plannings?id=eq.${sched.id}`, { statut: 'draft', publie_le: null, publie_par: null })
+await patch(admin, `plannings?id=eq.${sched.id}`, { statut: 'brouillon', publie_le: null, publie_par: null })
 const [, vBack] = await call(admin, 'fn_validate_schedule', { p_schedule: sched.id })
-vBack.blocking_count === 1 && vBack.statut === 'draft'
+vBack.blocking_count === 1 && vBack.statut === 'brouillon'
   ? ok('état initial rétabli', '1 blocage, brouillon')
   : ko('restauration', `${vBack.blocking_count} blocage(s), statut ${vBack.statut}`)
 const backShifts = await get(emp, 'creneaux?select=id')

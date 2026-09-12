@@ -21,13 +21,13 @@ create table "REF_BLOC_CONVENTION" (
   "VALID_TO" DATE,
   constraint ref_bloc_convention_pk primary key ("CODE")
 );
-insert into "REF_BLOC_CONVENTION" ("CODE", "LABEL", "SORT_ORDER") values ('salary_grid', 'salary_grid', 1);
-insert into "REF_BLOC_CONVENTION" ("CODE", "LABEL", "SORT_ORDER") values ('worktime', 'worktime', 2);
-insert into "REF_BLOC_CONVENTION" ("CODE", "LABEL", "SORT_ORDER") values ('leave', 'leave', 3);
-insert into "REF_BLOC_CONVENTION" ("CODE", "LABEL", "SORT_ORDER") values ('premiums', 'premiums', 4);
-insert into "REF_BLOC_CONVENTION" ("CODE", "LABEL", "SORT_ORDER") values ('surcharges', 'surcharges', 5);
-insert into "REF_BLOC_CONVENTION" ("CODE", "LABEL", "SORT_ORDER") values ('notice_probation', 'notice_probation', 6);
-insert into "REF_BLOC_CONVENTION" ("CODE", "LABEL", "SORT_ORDER") values ('custom_holidays', 'custom_holidays', 7);
+insert into "REF_BLOC_CONVENTION" ("CODE", "LABEL", "SORT_ORDER") values ('grille_salaires', 'grille_salaires', 1);
+insert into "REF_BLOC_CONVENTION" ("CODE", "LABEL", "SORT_ORDER") values ('temps_travail', 'temps_travail', 2);
+insert into "REF_BLOC_CONVENTION" ("CODE", "LABEL", "SORT_ORDER") values ('conges', 'conges', 3);
+insert into "REF_BLOC_CONVENTION" ("CODE", "LABEL", "SORT_ORDER") values ('primes', 'primes', 4);
+insert into "REF_BLOC_CONVENTION" ("CODE", "LABEL", "SORT_ORDER") values ('majorations', 'majorations', 5);
+insert into "REF_BLOC_CONVENTION" ("CODE", "LABEL", "SORT_ORDER") values ('preavis_essai', 'preavis_essai', 6);
+insert into "REF_BLOC_CONVENTION" ("CODE", "LABEL", "SORT_ORDER") values ('feries_usage', 'feries_usage', 7);
 
 create table "REF_CATEGORIE_ABSENCE" (
   "CODE" VARCHAR2(64 CHAR) not null,
@@ -37,12 +37,12 @@ create table "REF_CATEGORIE_ABSENCE" (
   "VALID_TO" DATE,
   constraint ref_categorie_absence_pk primary key ("CODE")
 );
-insert into "REF_CATEGORIE_ABSENCE" ("CODE", "LABEL", "SORT_ORDER") values ('annual_leave', 'annual_leave', 1);
-insert into "REF_CATEGORIE_ABSENCE" ("CODE", "LABEL", "SORT_ORDER") values ('sick', 'sick', 2);
-insert into "REF_CATEGORIE_ABSENCE" ("CODE", "LABEL", "SORT_ORDER") values ('extraordinary', 'extraordinary', 3);
-insert into "REF_CATEGORIE_ABSENCE" ("CODE", "LABEL", "SORT_ORDER") values ('public_holiday', 'public_holiday', 4);
-insert into "REF_CATEGORIE_ABSENCE" ("CODE", "LABEL", "SORT_ORDER") values ('unpaid', 'unpaid', 5);
-insert into "REF_CATEGORIE_ABSENCE" ("CODE", "LABEL", "SORT_ORDER") values ('compensatory', 'compensatory', 6);
+insert into "REF_CATEGORIE_ABSENCE" ("CODE", "LABEL", "SORT_ORDER") values ('conge_annuel', 'conge_annuel', 1);
+insert into "REF_CATEGORIE_ABSENCE" ("CODE", "LABEL", "SORT_ORDER") values ('maladie', 'maladie', 2);
+insert into "REF_CATEGORIE_ABSENCE" ("CODE", "LABEL", "SORT_ORDER") values ('conge_extraordinaire', 'conge_extraordinaire', 3);
+insert into "REF_CATEGORIE_ABSENCE" ("CODE", "LABEL", "SORT_ORDER") values ('jour_ferie', 'jour_ferie', 4);
+insert into "REF_CATEGORIE_ABSENCE" ("CODE", "LABEL", "SORT_ORDER") values ('sans_solde', 'sans_solde', 5);
+insert into "REF_CATEGORIE_ABSENCE" ("CODE", "LABEL", "SORT_ORDER") values ('recuperation', 'recuperation', 6);
 
 create table "REF_CLASSE_IMPOT" (
   "CODE" VARCHAR2(64 CHAR) not null,
@@ -64,9 +64,9 @@ create table "REF_ETAPE_DOCUMENT" (
   "VALID_TO" DATE,
   constraint ref_etape_document_pk primary key ("CODE")
 );
-insert into "REF_ETAPE_DOCUMENT" ("CODE", "LABEL", "SORT_ORDER") values ('pre_hire', 'pre_hire', 1);
-insert into "REF_ETAPE_DOCUMENT" ("CODE", "LABEL", "SORT_ORDER") values ('during_contract', 'during_contract', 2);
-insert into "REF_ETAPE_DOCUMENT" ("CODE", "LABEL", "SORT_ORDER") values ('end_of_contract', 'end_of_contract', 3);
+insert into "REF_ETAPE_DOCUMENT" ("CODE", "LABEL", "SORT_ORDER") values ('avant_embauche', 'avant_embauche', 1);
+insert into "REF_ETAPE_DOCUMENT" ("CODE", "LABEL", "SORT_ORDER") values ('pendant_contrat', 'pendant_contrat', 2);
+insert into "REF_ETAPE_DOCUMENT" ("CODE", "LABEL", "SORT_ORDER") values ('fin_contrat', 'fin_contrat', 3);
 
 create table "REF_ETAT_ALERTE" (
   "CODE" VARCHAR2(64 CHAR) not null,
@@ -76,9 +76,9 @@ create table "REF_ETAT_ALERTE" (
   "VALID_TO" DATE,
   constraint ref_etat_alerte_pk primary key ("CODE")
 );
-insert into "REF_ETAT_ALERTE" ("CODE", "LABEL", "SORT_ORDER") values ('open', 'open', 1);
-insert into "REF_ETAT_ALERTE" ("CODE", "LABEL", "SORT_ORDER") values ('handled', 'handled', 2);
-insert into "REF_ETAT_ALERTE" ("CODE", "LABEL", "SORT_ORDER") values ('dismissed', 'dismissed', 3);
+insert into "REF_ETAT_ALERTE" ("CODE", "LABEL", "SORT_ORDER") values ('ouverte', 'ouverte', 1);
+insert into "REF_ETAT_ALERTE" ("CODE", "LABEL", "SORT_ORDER") values ('traitee', 'traitee', 2);
+insert into "REF_ETAT_ALERTE" ("CODE", "LABEL", "SORT_ORDER") values ('ecartee', 'ecartee', 3);
 
 create table "REF_FAMILLE_PARAMETRE" (
   "CODE" VARCHAR2(64 CHAR) not null,
@@ -90,9 +90,9 @@ create table "REF_FAMILLE_PARAMETRE" (
 );
 insert into "REF_FAMILLE_PARAMETRE" ("CODE", "LABEL", "SORT_ORDER") values ('social', 'social', 1);
 insert into "REF_FAMILLE_PARAMETRE" ("CODE", "LABEL", "SORT_ORDER") values ('fiscal', 'fiscal', 2);
-insert into "REF_FAMILLE_PARAMETRE" ("CODE", "LABEL", "SORT_ORDER") values ('worktime', 'worktime', 3);
-insert into "REF_FAMILLE_PARAMETRE" ("CODE", "LABEL", "SORT_ORDER") values ('leave', 'leave', 4);
-insert into "REF_FAMILLE_PARAMETRE" ("CODE", "LABEL", "SORT_ORDER") values ('contract', 'contract', 5);
+insert into "REF_FAMILLE_PARAMETRE" ("CODE", "LABEL", "SORT_ORDER") values ('temps_travail', 'temps_travail', 3);
+insert into "REF_FAMILLE_PARAMETRE" ("CODE", "LABEL", "SORT_ORDER") values ('conges', 'conges', 4);
+insert into "REF_FAMILLE_PARAMETRE" ("CODE", "LABEL", "SORT_ORDER") values ('contrat', 'contrat', 5);
 insert into "REF_FAMILLE_PARAMETRE" ("CODE", "LABEL", "SORT_ORDER") values ('effectif', 'effectif', 6);
 insert into "REF_FAMILLE_PARAMETRE" ("CODE", "LABEL", "SORT_ORDER") values ('ccss', 'ccss', 7);
 
@@ -106,8 +106,8 @@ create table "REF_GENRE_CONTRAT" (
 );
 insert into "REF_GENRE_CONTRAT" ("CODE", "LABEL", "SORT_ORDER") values ('cdi', 'cdi', 1);
 insert into "REF_GENRE_CONTRAT" ("CODE", "LABEL", "SORT_ORDER") values ('cdd', 'cdd', 2);
-insert into "REF_GENRE_CONTRAT" ("CODE", "LABEL", "SORT_ORDER") values ('seasonal', 'seasonal', 3);
-insert into "REF_GENRE_CONTRAT" ("CODE", "LABEL", "SORT_ORDER") values ('apprenticeship', 'apprenticeship', 4);
+insert into "REF_GENRE_CONTRAT" ("CODE", "LABEL", "SORT_ORDER") values ('saisonnier', 'saisonnier', 3);
+insert into "REF_GENRE_CONTRAT" ("CODE", "LABEL", "SORT_ORDER") values ('apprentissage', 'apprentissage', 4);
 insert into "REF_GENRE_CONTRAT" ("CODE", "LABEL", "SORT_ORDER") values ('interim', 'interim', 5);
 
 create table "REF_GENRE_ELEMENT_REMUNERATION" (
@@ -118,11 +118,11 @@ create table "REF_GENRE_ELEMENT_REMUNERATION" (
   "VALID_TO" DATE,
   constraint ref_genre_element_remune_pk primary key ("CODE")
 );
-insert into "REF_GENRE_ELEMENT_REMUNERATION" ("CODE", "LABEL", "SORT_ORDER") values ('fixed', 'fixed', 1);
+insert into "REF_GENRE_ELEMENT_REMUNERATION" ("CODE", "LABEL", "SORT_ORDER") values ('fixe', 'fixe', 1);
 insert into "REF_GENRE_ELEMENT_REMUNERATION" ("CODE", "LABEL", "SORT_ORDER") values ('variable', 'variable', 2);
-insert into "REF_GENRE_ELEMENT_REMUNERATION" ("CODE", "LABEL", "SORT_ORDER") values ('benefit_in_kind', 'benefit_in_kind', 3);
-insert into "REF_GENRE_ELEMENT_REMUNERATION" ("CODE", "LABEL", "SORT_ORDER") values ('premium', 'premium', 4);
-insert into "REF_GENRE_ELEMENT_REMUNERATION" ("CODE", "LABEL", "SORT_ORDER") values ('expense', 'expense', 5);
+insert into "REF_GENRE_ELEMENT_REMUNERATION" ("CODE", "LABEL", "SORT_ORDER") values ('avantage_nature', 'avantage_nature', 3);
+insert into "REF_GENRE_ELEMENT_REMUNERATION" ("CODE", "LABEL", "SORT_ORDER") values ('prime', 'prime', 4);
+insert into "REF_GENRE_ELEMENT_REMUNERATION" ("CODE", "LABEL", "SORT_ORDER") values ('frais', 'frais', 5);
 
 create table "REF_GENRE_ORGANISATION" (
   "CODE" VARCHAR2(64 CHAR) not null,
@@ -132,8 +132,8 @@ create table "REF_GENRE_ORGANISATION" (
   "VALID_TO" DATE,
   constraint ref_genre_organisation_pk primary key ("CODE")
 );
-insert into "REF_GENRE_ORGANISATION" ("CODE", "LABEL", "SORT_ORDER") values ('fiduciary', 'fiduciary', 1);
-insert into "REF_GENRE_ORGANISATION" ("CODE", "LABEL", "SORT_ORDER") values ('company', 'company', 2);
+insert into "REF_GENRE_ORGANISATION" ("CODE", "LABEL", "SORT_ORDER") values ('fiduciaire', 'fiduciaire', 1);
+insert into "REF_GENRE_ORGANISATION" ("CODE", "LABEL", "SORT_ORDER") values ('societe', 'societe', 2);
 
 create table "REF_GENRE_QUALIFICATION" (
   "CODE" VARCHAR2(64 CHAR) not null,
@@ -143,8 +143,8 @@ create table "REF_GENRE_QUALIFICATION" (
   "VALID_TO" DATE,
   constraint ref_genre_qualification_pk primary key ("CODE")
 );
-insert into "REF_GENRE_QUALIFICATION" ("CODE", "LABEL", "SORT_ORDER") values ('qualified', 'qualified', 1);
-insert into "REF_GENRE_QUALIFICATION" ("CODE", "LABEL", "SORT_ORDER") values ('unqualified', 'unqualified', 2);
+insert into "REF_GENRE_QUALIFICATION" ("CODE", "LABEL", "SORT_ORDER") values ('qualifie', 'qualifie', 1);
+insert into "REF_GENRE_QUALIFICATION" ("CODE", "LABEL", "SORT_ORDER") values ('non_qualifie', 'non_qualifie', 2);
 
 create table "REF_GENRE_RESIDENCE" (
   "CODE" VARCHAR2(64 CHAR) not null,
@@ -170,10 +170,10 @@ create table "REF_GENRE_SEVERITE" (
   "VALID_TO" DATE,
   constraint ref_genre_severite_pk primary key ("CODE")
 );
-insert into "REF_GENRE_SEVERITE" ("CODE", "LABEL", "SORT_ORDER") values ('blocking', 'blocking', 1);
-insert into "REF_GENRE_SEVERITE" ("CODE", "LABEL", "SORT_ORDER") values ('warning', 'warning', 2);
+insert into "REF_GENRE_SEVERITE" ("CODE", "LABEL", "SORT_ORDER") values ('bloquant', 'bloquant', 1);
+insert into "REF_GENRE_SEVERITE" ("CODE", "LABEL", "SORT_ORDER") values ('avertissement', 'avertissement', 2);
 insert into "REF_GENRE_SEVERITE" ("CODE", "LABEL", "SORT_ORDER") values ('info', 'info', 3);
-insert into "REF_GENRE_SEVERITE" ("CODE", "LABEL", "SORT_ORDER") values ('problem', 'problem', 4);
+insert into "REF_GENRE_SEVERITE" ("CODE", "LABEL", "SORT_ORDER") values ('probleme', 'probleme', 4);
 
 create table "REF_GENRE_SEXE" (
   "CODE" VARCHAR2(64 CHAR) not null,
@@ -183,9 +183,9 @@ create table "REF_GENRE_SEXE" (
   "VALID_TO" DATE,
   constraint ref_genre_sexe_pk primary key ("CODE")
 );
-insert into "REF_GENRE_SEXE" ("CODE", "LABEL", "SORT_ORDER") values ('male', 'male', 1);
-insert into "REF_GENRE_SEXE" ("CODE", "LABEL", "SORT_ORDER") values ('female', 'female', 2);
-insert into "REF_GENRE_SEXE" ("CODE", "LABEL", "SORT_ORDER") values ('unspecified', 'unspecified', 3);
+insert into "REF_GENRE_SEXE" ("CODE", "LABEL", "SORT_ORDER") values ('masculin', 'masculin', 1);
+insert into "REF_GENRE_SEXE" ("CODE", "LABEL", "SORT_ORDER") values ('feminin', 'feminin', 2);
+insert into "REF_GENRE_SEXE" ("CODE", "LABEL", "SORT_ORDER") values ('non_precise', 'non_precise', 3);
 
 create table "REF_GENRE_STATUT_SALARIE" (
   "CODE" VARCHAR2(64 CHAR) not null,
@@ -195,16 +195,16 @@ create table "REF_GENRE_STATUT_SALARIE" (
   "VALID_TO" DATE,
   constraint ref_genre_statut_salarie_pk primary key ("CODE")
 );
-insert into "REF_GENRE_STATUT_SALARIE" ("CODE", "LABEL", "SORT_ORDER") values ('pregnancy', 'pregnancy', 1);
-insert into "REF_GENRE_STATUT_SALARIE" ("CODE", "LABEL", "SORT_ORDER") values ('maternity_leave', 'maternity_leave', 2);
-insert into "REF_GENRE_STATUT_SALARIE" ("CODE", "LABEL", "SORT_ORDER") values ('breastfeeding', 'breastfeeding', 3);
-insert into "REF_GENRE_STATUT_SALARIE" ("CODE", "LABEL", "SORT_ORDER") values ('parental_leave', 'parental_leave', 4);
-insert into "REF_GENRE_STATUT_SALARIE" ("CODE", "LABEL", "SORT_ORDER") values ('delegate', 'delegate', 5);
-insert into "REF_GENRE_STATUT_SALARIE" ("CODE", "LABEL", "SORT_ORDER") values ('safety_delegate', 'safety_delegate', 6);
-insert into "REF_GENRE_STATUT_SALARIE" ("CODE", "LABEL", "SORT_ORDER") values ('equality_delegate', 'equality_delegate', 7);
-insert into "REF_GENRE_STATUT_SALARIE" ("CODE", "LABEL", "SORT_ORDER") values ('reemployment_bonus', 'reemployment_bonus', 8);
-insert into "REF_GENRE_STATUT_SALARIE" ("CODE", "LABEL", "SORT_ORDER") values ('company_manager', 'company_manager', 9);
-insert into "REF_GENRE_STATUT_SALARIE" ("CODE", "LABEL", "SORT_ORDER") values ('protected_other', 'protected_other', 10);
+insert into "REF_GENRE_STATUT_SALARIE" ("CODE", "LABEL", "SORT_ORDER") values ('grossesse', 'grossesse', 1);
+insert into "REF_GENRE_STATUT_SALARIE" ("CODE", "LABEL", "SORT_ORDER") values ('conge_maternite', 'conge_maternite', 2);
+insert into "REF_GENRE_STATUT_SALARIE" ("CODE", "LABEL", "SORT_ORDER") values ('allaitement', 'allaitement', 3);
+insert into "REF_GENRE_STATUT_SALARIE" ("CODE", "LABEL", "SORT_ORDER") values ('conge_parental', 'conge_parental', 4);
+insert into "REF_GENRE_STATUT_SALARIE" ("CODE", "LABEL", "SORT_ORDER") values ('delegue_personnel', 'delegue_personnel', 5);
+insert into "REF_GENRE_STATUT_SALARIE" ("CODE", "LABEL", "SORT_ORDER") values ('delegue_securite', 'delegue_securite', 6);
+insert into "REF_GENRE_STATUT_SALARIE" ("CODE", "LABEL", "SORT_ORDER") values ('delegue_egalite', 'delegue_egalite', 7);
+insert into "REF_GENRE_STATUT_SALARIE" ("CODE", "LABEL", "SORT_ORDER") values ('prime_reemploi', 'prime_reemploi', 8);
+insert into "REF_GENRE_STATUT_SALARIE" ("CODE", "LABEL", "SORT_ORDER") values ('gerant', 'gerant', 9);
+insert into "REF_GENRE_STATUT_SALARIE" ("CODE", "LABEL", "SORT_ORDER") values ('autre_protege', 'autre_protege', 10);
 
 create table "REF_PERIODICITE_IMPOT" (
   "CODE" VARCHAR2(64 CHAR) not null,
@@ -214,9 +214,9 @@ create table "REF_PERIODICITE_IMPOT" (
   "VALID_TO" DATE,
   constraint ref_periodicite_impot_pk primary key ("CODE")
 );
-insert into "REF_PERIODICITE_IMPOT" ("CODE", "LABEL", "SORT_ORDER") values ('monthly', 'monthly', 1);
-insert into "REF_PERIODICITE_IMPOT" ("CODE", "LABEL", "SORT_ORDER") values ('daily', 'daily', 2);
-insert into "REF_PERIODICITE_IMPOT" ("CODE", "LABEL", "SORT_ORDER") values ('annual', 'annual', 3);
+insert into "REF_PERIODICITE_IMPOT" ("CODE", "LABEL", "SORT_ORDER") values ('mensuel', 'mensuel', 1);
+insert into "REF_PERIODICITE_IMPOT" ("CODE", "LABEL", "SORT_ORDER") values ('journalier', 'journalier', 2);
+insert into "REF_PERIODICITE_IMPOT" ("CODE", "LABEL", "SORT_ORDER") values ('annuel', 'annuel', 3);
 
 create table "REF_PORTEE_CONVENTION" (
   "CODE" VARCHAR2(64 CHAR) not null,
@@ -227,10 +227,10 @@ create table "REF_PORTEE_CONVENTION" (
   constraint ref_portee_convention_pk primary key ("CODE")
 );
 insert into "REF_PORTEE_CONVENTION" ("CODE", "LABEL", "SORT_ORDER") values ('secteur', 'secteur', 1);
-insert into "REF_PORTEE_CONVENTION" ("CODE", "LABEL", "SORT_ORDER") values ('harassment', 'harassment', 2);
-insert into "REF_PORTEE_CONVENTION" ("CODE", "LABEL", "SORT_ORDER") values ('employee_category', 'employee_category', 3);
-insert into "REF_PORTEE_CONVENTION" ("CODE", "LABEL", "SORT_ORDER") values ('department', 'department', 4);
-insert into "REF_PORTEE_CONVENTION" ("CODE", "LABEL", "SORT_ORDER") values ('company', 'company', 5);
+insert into "REF_PORTEE_CONVENTION" ("CODE", "LABEL", "SORT_ORDER") values ('harcelement', 'harcelement', 2);
+insert into "REF_PORTEE_CONVENTION" ("CODE", "LABEL", "SORT_ORDER") values ('categorie_professionnelle', 'categorie_professionnelle', 3);
+insert into "REF_PORTEE_CONVENTION" ("CODE", "LABEL", "SORT_ORDER") values ('service', 'service', 4);
+insert into "REF_PORTEE_CONVENTION" ("CODE", "LABEL", "SORT_ORDER") values ('societe', 'societe', 5);
 
 create table "REF_ROLE_APPLICATION" (
   "CODE" VARCHAR2(64 CHAR) not null,
@@ -240,10 +240,10 @@ create table "REF_ROLE_APPLICATION" (
   "VALID_TO" DATE,
   constraint ref_role_application_pk primary key ("CODE")
 );
-insert into "REF_ROLE_APPLICATION" ("CODE", "LABEL", "SORT_ORDER") values ('fiduciary_admin', 'fiduciary_admin', 1);
-insert into "REF_ROLE_APPLICATION" ("CODE", "LABEL", "SORT_ORDER") values ('manager', 'manager', 2);
-insert into "REF_ROLE_APPLICATION" ("CODE", "LABEL", "SORT_ORDER") values ('service_manager', 'service_manager', 3);
-insert into "REF_ROLE_APPLICATION" ("CODE", "LABEL", "SORT_ORDER") values ('employee', 'employee', 4);
+insert into "REF_ROLE_APPLICATION" ("CODE", "LABEL", "SORT_ORDER") values ('admin_fiduciaire', 'admin_fiduciaire', 1);
+insert into "REF_ROLE_APPLICATION" ("CODE", "LABEL", "SORT_ORDER") values ('gestionnaire', 'gestionnaire', 2);
+insert into "REF_ROLE_APPLICATION" ("CODE", "LABEL", "SORT_ORDER") values ('chef_service', 'chef_service', 3);
+insert into "REF_ROLE_APPLICATION" ("CODE", "LABEL", "SORT_ORDER") values ('salarie', 'salarie', 4);
 insert into "REF_ROLE_APPLICATION" ("CODE", "LABEL", "SORT_ORDER") values ('medecine_travail', 'medecine_travail', 5);
 insert into "REF_ROLE_APPLICATION" ("CODE", "LABEL", "SORT_ORDER") values ('rh_urgence', 'rh_urgence', 6);
 insert into "REF_ROLE_APPLICATION" ("CODE", "LABEL", "SORT_ORDER") values ('dispatching', 'dispatching', 7);
@@ -256,11 +256,11 @@ create table "REF_STATUT_ABSENCE" (
   "VALID_TO" DATE,
   constraint ref_statut_absence_pk primary key ("CODE")
 );
-insert into "REF_STATUT_ABSENCE" ("CODE", "LABEL", "SORT_ORDER") values ('pending', 'pending', 1);
-insert into "REF_STATUT_ABSENCE" ("CODE", "LABEL", "SORT_ORDER") values ('approved', 'approved', 2);
-insert into "REF_STATUT_ABSENCE" ("CODE", "LABEL", "SORT_ORDER") values ('refused', 'refused', 3);
-insert into "REF_STATUT_ABSENCE" ("CODE", "LABEL", "SORT_ORDER") values ('cancelled', 'cancelled', 4);
-insert into "REF_STATUT_ABSENCE" ("CODE", "LABEL", "SORT_ORDER") values ('proposed', 'proposed', 5);
+insert into "REF_STATUT_ABSENCE" ("CODE", "LABEL", "SORT_ORDER") values ('en_attente', 'en_attente', 1);
+insert into "REF_STATUT_ABSENCE" ("CODE", "LABEL", "SORT_ORDER") values ('valide', 'valide', 2);
+insert into "REF_STATUT_ABSENCE" ("CODE", "LABEL", "SORT_ORDER") values ('refuse', 'refuse', 3);
+insert into "REF_STATUT_ABSENCE" ("CODE", "LABEL", "SORT_ORDER") values ('annule', 'annule', 4);
+insert into "REF_STATUT_ABSENCE" ("CODE", "LABEL", "SORT_ORDER") values ('propose', 'propose', 5);
 
 create table "REF_STATUT_CONTRAT" (
   "CODE" VARCHAR2(64 CHAR) not null,
@@ -270,10 +270,10 @@ create table "REF_STATUT_CONTRAT" (
   "VALID_TO" DATE,
   constraint ref_statut_contrat_pk primary key ("CODE")
 );
-insert into "REF_STATUT_CONTRAT" ("CODE", "LABEL", "SORT_ORDER") values ('draft', 'draft', 1);
-insert into "REF_STATUT_CONTRAT" ("CODE", "LABEL", "SORT_ORDER") values ('active', 'active', 2);
-insert into "REF_STATUT_CONTRAT" ("CODE", "LABEL", "SORT_ORDER") values ('ended', 'ended', 3);
-insert into "REF_STATUT_CONTRAT" ("CODE", "LABEL", "SORT_ORDER") values ('cancelled', 'cancelled', 4);
+insert into "REF_STATUT_CONTRAT" ("CODE", "LABEL", "SORT_ORDER") values ('brouillon', 'brouillon', 1);
+insert into "REF_STATUT_CONTRAT" ("CODE", "LABEL", "SORT_ORDER") values ('en_cours', 'en_cours', 2);
+insert into "REF_STATUT_CONTRAT" ("CODE", "LABEL", "SORT_ORDER") values ('termine', 'termine', 3);
+insert into "REF_STATUT_CONTRAT" ("CODE", "LABEL", "SORT_ORDER") values ('annule', 'annule', 4);
 
 create table "REF_STATUT_PLANNING" (
   "CODE" VARCHAR2(64 CHAR) not null,
@@ -283,7 +283,7 @@ create table "REF_STATUT_PLANNING" (
   "VALID_TO" DATE,
   constraint ref_statut_planning_pk primary key ("CODE")
 );
-insert into "REF_STATUT_PLANNING" ("CODE", "LABEL", "SORT_ORDER") values ('draft', 'draft', 1);
+insert into "REF_STATUT_PLANNING" ("CODE", "LABEL", "SORT_ORDER") values ('brouillon', 'brouillon', 1);
 insert into "REF_STATUT_PLANNING" ("CODE", "LABEL", "SORT_ORDER") values ('publie', 'publie', 2);
 
 
@@ -295,7 +295,7 @@ create table "ABSENCES" (
   "DATE_DEBUT" DATE not null,
   "DATE_FIN" DATE not null,
   "NOMBRE_JOURS" NUMBER(5,2) default 0 not null,
-  "STATUT" VARCHAR2(9 CHAR) default 'pending' not null,
+  "STATUT" VARCHAR2(10 CHAR) default 'en_attente' not null,
   "COMMENTAIRE" VARCHAR2(4000 CHAR),
   "CERTIFICAT_RECU" BOOLEAN default 0 not null,
   "CERTIFICAT_RECU_LE" DATE,
@@ -360,9 +360,9 @@ create table "ALERTES_CONFORMITE" (
   "DETAIL" VARCHAR2(4000 CHAR) not null,
   "CONSEQUENCE" VARCHAR2(4000 CHAR),
   "REFERENCE_LEGALE" VARCHAR2(4000 CHAR),
-  "SEVERITE" VARCHAR2(8 CHAR) not null,
+  "SEVERITE" VARCHAR2(13 CHAR) not null,
   "DATE_ECHEANCE" DATE,
-  "ETAT" VARCHAR2(9 CHAR) default 'open' not null,
+  "ETAT" VARCHAR2(8 CHAR) default 'ouverte' not null,
   "TRAITE_PAR" VARCHAR2(36 CHAR),
   "TRAITE_LE" TIMESTAMP(6) WITH TIME ZONE,
   "NOTE_TRAITEMENT" VARCHAR2(4000 CHAR),
@@ -448,8 +448,8 @@ create table "CONTRATS" (
   "ID" VARCHAR2(36 CHAR) default LOWER(REGEXP_REPLACE(RAWTOHEX(SYS_GUID()), '(.{8})(.{4})(.{4})(.{4})(.{12})', '\1-\2-\3-\4-\5')) not null,
   "SOCIETE_ID" VARCHAR2(36 CHAR) not null,
   "SALARIE_ID" VARCHAR2(36 CHAR) not null,
-  "GENRE" VARCHAR2(14 CHAR) not null,
-  "STATUT" VARCHAR2(9 CHAR) default 'draft' not null,
+  "GENRE" VARCHAR2(13 CHAR) not null,
+  "STATUT" VARCHAR2(9 CHAR) default 'brouillon' not null,
   "INTITULE_POSTE" VARCHAR2(4000 CHAR) not null,
   "DESCRIPTION_POSTE" VARCHAR2(4000 CHAR),
   "LIEU_TRAVAIL" VARCHAR2(4000 CHAR),
@@ -510,7 +510,7 @@ create table "CONVENTIONS_COLLECTIVES" (
   "FIN_VALIDITE" DATE default '2037-12-31' not null,
   "ACTIF" BOOLEAN default 0 not null,
   "CREE_LE" TIMESTAMP(6) WITH TIME ZONE default SYSTIMESTAMP not null,
-  "PORTEE" VARCHAR2(17 CHAR) default 'secteur' not null,
+  "PORTEE" VARCHAR2(25 CHAR) default 'secteur' not null,
   "REMPLACE_ID" VARCHAR2(36 CHAR),
   "CATEGORIE_PROFESSIONNELLE" VARCHAR2(4000 CHAR),
   constraint conventions_collectives_pkey primary key ("ID")
@@ -601,14 +601,14 @@ create table "DEMANDES_HEURES_SUP" (
   "FIN_PERIODE" DATE not null,
   "HEURES" NUMBER(6,2) not null,
   "MOTIF" VARCHAR2(4000 CHAR) not null,
-  "STATUT" VARCHAR2(4000 CHAR) default 'requested' not null,
+  "STATUT" VARCHAR2(4000 CHAR) default 'demande' not null,
   "DEMANDE_PAR" VARCHAR2(36 CHAR),
   "DEMANDE_LE" TIMESTAMP(6) WITH TIME ZONE default SYSTIMESTAMP not null,
   "VALIDE_RH_PAR" VARCHAR2(36 CHAR),
   "VALIDE_RH_LE" TIMESTAMP(6) WITH TIME ZONE,
   "ACCEPTE_PAR_SALARIE_LE" TIMESTAMP(6) WITH TIME ZONE,
   "MOTIF_REFUS" VARCHAR2(4000 CHAR),
-  "COMPENSATION" VARCHAR2(4000 CHAR) default 'money' not null,
+  "COMPENSATION" VARCHAR2(4000 CHAR) default 'argent' not null,
   "NOTE" VARCHAR2(4000 CHAR),
   constraint demandes_heures_sup_pkey primary key ("ID")
 );
@@ -688,7 +688,7 @@ create table "ELEMENTS_REMUNERATION" (
   "MONTANT" NUMBER(10,2),
   "TAUX_PCT" NUMBER(6,3),
   "ASSIETTE" VARCHAR2(4000 CHAR),
-  "PERIODICITE" VARCHAR2(4000 CHAR) default 'monthly' not null,
+  "PERIODICITE" VARCHAR2(4000 CHAR) default 'mensuel' not null,
   "DANS_ASSIETTE_SALAIRE" BOOLEAN default 0 not null,
   "IMPOSABLE" BOOLEAN default 1 not null,
   "COTISABLE" BOOLEAN default 1 not null,
@@ -708,7 +708,7 @@ create table "ENFANTS_SALARIE" (
   "NOM" VARCHAR2(4000 CHAR),
   "SEXE" VARCHAR2(11 CHAR),
   "DATE_NAISSANCE" DATE not null,
-  "LIEN_PARENTE" VARCHAR2(4000 CHAR) default 'child' not null,
+  "LIEN_PARENTE" VARCHAR2(4000 CHAR) default 'enfant' not null,
   "A_CHARGE" BOOLEAN default 1 not null,
   "REFUS_PARTAGE" BOOLEAN default 0 not null,
   "DATE_ADOPTION" DATE,
@@ -863,7 +863,7 @@ create table "MODELES_CRENEAU" (
 create table "ORGANISATIONS" (
   "ID" VARCHAR2(36 CHAR) default LOWER(REGEXP_REPLACE(RAWTOHEX(SYS_GUID()), '(.{8})(.{4})(.{4})(.{4})(.{12})', '\1-\2-\3-\4-\5')) not null,
   "NOM" VARCHAR2(4000 CHAR) not null,
-  "GENRE" VARCHAR2(9 CHAR) default 'fiduciary' not null,
+  "GENRE" VARCHAR2(10 CHAR) default 'fiduciaire' not null,
   "CREE_LE" TIMESTAMP(6) WITH TIME ZONE default SYSTIMESTAMP not null,
   constraint organisations_pkey primary key ("ID")
 );
@@ -877,7 +877,7 @@ create table "PARAMETRES_ATTENDUS" (
 
 create table "PARAMETRES_LEGAUX" (
   "ID" VARCHAR2(36 CHAR) default LOWER(REGEXP_REPLACE(RAWTOHEX(SYS_GUID()), '(.{8})(.{4})(.{4})(.{4})(.{12})', '\1-\2-\3-\4-\5')) not null,
-  "FAMILLE" VARCHAR2(8 CHAR) not null,
+  "FAMILLE" VARCHAR2(13 CHAR) not null,
   "CLE_PARAMETRE" VARCHAR2(4000 CHAR) not null,
   "LIBELLE" VARCHAR2(4000 CHAR) not null,
   "VALEUR_NUM" NUMBER,
@@ -947,7 +947,7 @@ create table "PLANNINGS" (
   "SERVICE_ID" VARCHAR2(36 CHAR),
   "DEBUT_SEMAINE" DATE not null,
   "LIBELLE" VARCHAR2(4000 CHAR),
-  "STATUT" VARCHAR2(8 CHAR) default 'draft' not null,
+  "STATUT" VARCHAR2(9 CHAR) default 'brouillon' not null,
   "PUBLIE_LE" TIMESTAMP(6) WITH TIME ZONE,
   "PUBLIE_PAR" VARCHAR2(36 CHAR),
   "CREE_LE" TIMESTAMP(6) WITH TIME ZONE default SYSTIMESTAMP not null,
@@ -962,7 +962,7 @@ create table "PRIMES" (
   "SALARIE_ID" VARCHAR2(36 CHAR) not null,
   "CONTRAT_ID" VARCHAR2(36 CHAR),
   "RUPTURE_ID" VARCHAR2(36 CHAR),
-  "GENRE" VARCHAR2(4000 CHAR) default 'other' not null,
+  "GENRE" VARCHAR2(4000 CHAR) default 'autre' not null,
   "LIBELLE" VARCHAR2(4000 CHAR) not null,
   "MONTANT" NUMBER(12,2) not null,
   "ATTRIBUE_LE" DATE not null,
@@ -1140,7 +1140,7 @@ create table "REF_UNITE_PRIME" (
 create table "REGLES_CONVENTION" (
   "ID" VARCHAR2(36 CHAR) default LOWER(REGEXP_REPLACE(RAWTOHEX(SYS_GUID()), '(.{8})(.{4})(.{4})(.{4})(.{12})', '\1-\2-\3-\4-\5')) not null,
   "CONVENTION_ID" VARCHAR2(36 CHAR) not null,
-  "BLOC" VARCHAR2(16 CHAR) not null,
+  "BLOC" VARCHAR2(15 CHAR) not null,
   "REGLES" CLOB default '{}' not null constraint regles_convention_regles_json check ("REGLES" is json),
   "COMPLET" BOOLEAN default 0 not null,
   "MODIFIE_LE" TIMESTAMP(6) WITH TIME ZONE default SYSTIMESTAMP not null,
@@ -1218,7 +1218,7 @@ create table "SALARIES" (
   "NOM" VARCHAR2(4000 CHAR) not null,
   "DATE_NAISSANCE" DATE,
   "RESIDENCE" VARCHAR2(14 CHAR) not null,
-  "QUALIFICATION" VARCHAR2(11 CHAR) default 'unqualified' not null,
+  "QUALIFICATION" VARCHAR2(12 CHAR) default 'non_qualifie' not null,
   "LIGNE" VARCHAR2(4000 CHAR),
   "CODE_POSTAL" VARCHAR2(4000 CHAR),
   "LOCALITE" VARCHAR2(4000 CHAR),
@@ -1229,7 +1229,7 @@ create table "SALARIES" (
   "IBAN_CHIFFRE" BLOB,
   "MATRICULE_NATIONAL_INDICE" VARCHAR2(4000 CHAR),
   "CREE_LE" TIMESTAMP(6) WITH TIME ZONE default SYSTIMESTAMP not null,
-  "SEXE" VARCHAR2(11 CHAR) default 'unspecified' not null,
+  "SEXE" VARCHAR2(11 CHAR) default 'non_precise' not null,
   "DATE_DEBUT_CARRIERE" DATE,
   "PROFESSION" VARCHAR2(4000 CHAR),
   "EST_CADRE" BOOLEAN default 0 not null,
@@ -1337,7 +1337,7 @@ create table "STATUTS_SALARIE" (
   "ID" VARCHAR2(36 CHAR) default LOWER(REGEXP_REPLACE(RAWTOHEX(SYS_GUID()), '(.{8})(.{4})(.{4})(.{4})(.{12})', '\1-\2-\3-\4-\5')) not null,
   "SOCIETE_ID" VARCHAR2(36 CHAR) not null,
   "SALARIE_ID" VARCHAR2(36 CHAR) not null,
-  "GENRE" VARCHAR2(18 CHAR) not null,
+  "GENRE" VARCHAR2(17 CHAR) not null,
   "DECLARE_LE" DATE default CURRENT_DATE not null,
   "DATE_DEBUT" DATE not null,
   "DATE_FIN" DATE default '2037-12-31' not null,
@@ -1353,7 +1353,7 @@ create table "STATUTS_SALARIE" (
 create table "TRANCHES_IMPOT" (
   "ID" VARCHAR2(36 CHAR) default LOWER(REGEXP_REPLACE(RAWTOHEX(SYS_GUID()), '(.{8})(.{4})(.{4})(.{4})(.{12})', '\1-\2-\3-\4-\5')) not null,
   "CLASSE_IMPOT" VARCHAR2(8 CHAR) not null,
-  "PERIODICITE" VARCHAR2(8 CHAR) default 'monthly' not null,
+  "PERIODICITE" VARCHAR2(10 CHAR) default 'mensuel' not null,
   "DEBUT_VALIDITE" DATE default '1970-01-01' not null,
   "FIN_VALIDITE" DATE default '2037-12-31' not null,
   "TRANCHE_MIN" NUMBER(12,2) not null,
@@ -1370,7 +1370,7 @@ create table "TYPES_ABSENCE" (
   "ID" VARCHAR2(36 CHAR) default LOWER(REGEXP_REPLACE(RAWTOHEX(SYS_GUID()), '(.{8})(.{4})(.{4})(.{4})(.{12})', '\1-\2-\3-\4-\5')) not null,
   "CODE" VARCHAR2(4000 CHAR) not null,
   "LIBELLE" VARCHAR2(4000 CHAR) not null,
-  "CATEGORIE" VARCHAR2(14 CHAR) not null,
+  "CATEGORIE" VARCHAR2(20 CHAR) not null,
   "REFERENCE_LEGALE" VARCHAR2(4000 CHAR),
   "CERTIFICAT_EXIGE" BOOLEAN default 0 not null,
   "REMUNERE" BOOLEAN default 1 not null,
@@ -1397,7 +1397,7 @@ create table "TYPES_DOCUMENT" (
   "ID" VARCHAR2(36 CHAR) default LOWER(REGEXP_REPLACE(RAWTOHEX(SYS_GUID()), '(.{8})(.{4})(.{4})(.{4})(.{12})', '\1-\2-\3-\4-\5')) not null,
   "CODE" VARCHAR2(4000 CHAR) not null,
   "LIBELLE" VARCHAR2(4000 CHAR) not null,
-  "ECHELON" VARCHAR2(15 CHAR) default 'during_contract' not null,
+  "ECHELON" VARCHAR2(15 CHAR) default 'pendant_contrat' not null,
   "VALIDITE_MOIS" NUMBER(10),
   "OBLIGATOIRE" BOOLEAN default 0 not null,
   "RESIDENCES_VISEES" CLOB,
@@ -1613,7 +1613,7 @@ alter table "CONTRATS" add constraint contract_dates_order CHECK (((date_fin IS 
 alter table "CONTRATS" add constraint contract_not_its_own_predece CHECK (((contrat_precedent_id IS NULL) OR (contrat_precedent_id <> id)));
 alter table "CONTRATS" add constraint contract_quantities_positive CHECK (((heures_hebdomadaires > (0)::numeric) AND (jours_par_semaine > (0)::numeric) AND (jours_par_semaine <= (7)::numeric) AND (brut_mensuel >= (0)::numeric) AND (nombre_renouvellements >= 0) AND ((pause_minutes IS NULL) OR (pause_minutes >= 0)) AND ((jours_conge_annuel IS NULL) OR (jours_conge_annuel >= (0)::numeric)) AND ((duree_essai IS NULL) OR (duree_essai > 0)) AND ((annee_apprentissage IS NULL) OR (annee_apprentissage > 0))));
 alter table "CONTRATS" add constraint contrats_periode_coherente CHECK ((date_fin >= date_debut));
-alter table "CONTRATS" add constraint fixed_term_needs_end CHECK (((genre <> ALL (ARRAY['cdd'::genre_contrat, 'seasonal'::genre_contrat, 'interim'::genre_contrat, 'apprenticeship'::genre_contrat])) OR (date_fin IS NOT NULL)));
+alter table "CONTRATS" add constraint fixed_term_needs_end CHECK (((genre <> ALL (ARRAY['cdd'::genre_contrat, 'saisonnier'::genre_contrat, 'interim'::genre_contrat, 'apprentissage'::genre_contrat])) OR (date_fin IS NOT NULL)));
 alter table "CONTRATS" add constraint interim_needs_user_company CHECK (((genre <> 'interim'::genre_contrat) OR (nom_societe_utilisateur IS NOT NULL)));
 alter table "CONTRATS" add constraint probation_length_and_unit_to CHECK (((duree_essai IS NULL) = (unite_essai IS NULL)));
 alter table "CONVENTIONS_COLLECTIVES" add constraint conventions_collectives_peri CHECK ((fin_validite > debut_validite));

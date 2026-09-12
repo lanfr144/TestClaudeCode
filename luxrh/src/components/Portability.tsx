@@ -21,7 +21,7 @@ import {
 } from '@/lib/portability'
 import { Badge, Button, Card, ErrorNote, Select } from '@/components/ui'
 
-type Portee = 'self' | 'company' | 'organization' | 'referential'
+type Portee = 'self' | 'societe' | 'organisation' | 'referentiel'
 
 export function PortabilityCard() {
   const { activeCompanyId, activeCompany, profile } = useApp()
@@ -43,12 +43,12 @@ export function PortabilityCard() {
       const doc =
         portee === 'self'
           ? await exportSelf()
-          : portee === 'company'
+          : portee === 'societe'
             ? await exportCompany(activeCompanyId!)
-            : portee === 'organization'
+            : portee === 'organisation'
               ? await exportOrganization()
               : await exportReferential()
-      download(doc, portee === 'company' ? activeCompany?.raison_sociale?.slice(0, 24) : undefined)
+      download(doc, portee === 'societe' ? activeCompany?.raison_sociale?.slice(0, 24) : undefined)
       setDone({ doc, parts: sections(doc) })
     } catch (e) {
       setError(e)
@@ -63,7 +63,7 @@ export function PortabilityCard() {
     setDone(null)
     setReport(null)
     try {
-      setReport(await importReferential(await readDocument(file, 'referential'), mode))
+      setReport(await importReferential(await readDocument(file, 'referentiel'), mode))
     } catch (e) {
       setError(e)
     } finally {
@@ -98,13 +98,13 @@ export function PortabilityCard() {
             </p>
             <div className="mt-2 flex flex-wrap gap-2">
               {activeCompanyId && (
-                <Button size="sm" disabled={busy !== null} onClick={() => run('company')}>
-                  {busy === 'company' ? 'Préparation…' : `Exporter ${activeCompany?.raison_sociale ?? 'la société'}`}
+                <Button size="sm" disabled={busy !== null} onClick={() => run('societe')}>
+                  {busy === 'societe' ? 'Préparation…' : `Exporter ${activeCompany?.raison_sociale ?? 'la société'}`}
                 </Button>
               )}
               {admin && (
-                <Button size="sm" disabled={busy !== null} onClick={() => run('organization')}>
-                  {busy === 'organization' ? 'Préparation…' : 'Exporter toute la fiduciaire'}
+                <Button size="sm" disabled={busy !== null} onClick={() => run('organisation')}>
+                  {busy === 'organisation' ? 'Préparation…' : 'Exporter toute la fiduciaire'}
                 </Button>
               )}
             </div>
@@ -119,8 +119,8 @@ export function PortabilityCard() {
             techniques : il peut donc repeupler une base neuve sans y dupliquer ce qui s’y trouve déjà.
           </p>
           <div className="mt-2 flex flex-wrap items-center gap-2">
-            <Button size="sm" disabled={busy !== null} onClick={() => run('referential')}>
-              {busy === 'referential' ? 'Préparation…' : 'Exporter le référentiel'}
+            <Button size="sm" disabled={busy !== null} onClick={() => run('referentiel')}>
+              {busy === 'referentiel' ? 'Préparation…' : 'Exporter le référentiel'}
             </Button>
 
             {admin && (
@@ -184,7 +184,7 @@ export function PortabilityCard() {
           <div className="rounded border border-rule bg-surface-sunken p-2.5">
             <p className="text-xs font-medium text-ink">{report.message}</p>
             {report.rejected.length > 0 && (
-              <ul className="mt-1.5 space-y-0.5 text-2xs text-blocking">
+              <ul className="mt-1.5 space-y-0.5 text-2xs text-bloquant">
                 {report.rejected.map((r) => (
                   <li key={r}>{r}</li>
                 ))}

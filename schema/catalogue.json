@@ -1,21 +1,21 @@
 {
  "enums": {
   "bloc_convention": [
-   "salary_grid",
-   "worktime",
-   "leave",
-   "premiums",
-   "surcharges",
-   "notice_probation",
-   "custom_holidays"
+   "grille_salaires",
+   "temps_travail",
+   "conges",
+   "primes",
+   "majorations",
+   "preavis_essai",
+   "feries_usage"
   ],
   "categorie_absence": [
-   "annual_leave",
-   "sick",
-   "extraordinary",
-   "public_holiday",
-   "unpaid",
-   "compensatory"
+   "conge_annuel",
+   "maladie",
+   "conge_extraordinaire",
+   "jour_ferie",
+   "sans_solde",
+   "recuperation"
   ],
   "classe_impot": [
    "1",
@@ -23,45 +23,45 @@
    "2"
   ],
   "etape_document": [
-   "pre_hire",
-   "during_contract",
-   "end_of_contract"
+   "avant_embauche",
+   "pendant_contrat",
+   "fin_contrat"
   ],
   "etat_alerte": [
-   "open",
-   "handled",
-   "dismissed"
+   "ouverte",
+   "traitee",
+   "ecartee"
   ],
   "famille_parametre": [
    "social",
    "fiscal",
-   "worktime",
-   "leave",
-   "contract",
+   "temps_travail",
+   "conges",
+   "contrat",
    "effectif",
    "ccss"
   ],
   "genre_contrat": [
    "cdi",
    "cdd",
-   "seasonal",
-   "apprenticeship",
+   "saisonnier",
+   "apprentissage",
    "interim"
   ],
   "genre_element_remuneration": [
-   "fixed",
+   "fixe",
    "variable",
-   "benefit_in_kind",
-   "premium",
-   "expense"
+   "avantage_nature",
+   "prime",
+   "frais"
   ],
   "genre_organisation": [
-   "fiduciary",
-   "company"
+   "fiduciaire",
+   "societe"
   ],
   "genre_qualification": [
-   "qualified",
-   "unqualified"
+   "qualifie",
+   "non_qualifie"
   ],
   "genre_residence": [
    "resident",
@@ -73,68 +73,68 @@
    "frontalier_deu"
   ],
   "genre_severite": [
-   "blocking",
-   "warning",
+   "bloquant",
+   "avertissement",
    "info",
-   "problem"
+   "probleme"
   ],
   "genre_sexe": [
-   "male",
-   "female",
-   "unspecified"
+   "masculin",
+   "feminin",
+   "non_precise"
   ],
   "genre_statut_salarie": [
-   "pregnancy",
-   "maternity_leave",
-   "breastfeeding",
-   "parental_leave",
-   "delegate",
-   "safety_delegate",
-   "equality_delegate",
-   "reemployment_bonus",
-   "company_manager",
-   "protected_other"
+   "grossesse",
+   "conge_maternite",
+   "allaitement",
+   "conge_parental",
+   "delegue_personnel",
+   "delegue_securite",
+   "delegue_egalite",
+   "prime_reemploi",
+   "gerant",
+   "autre_protege"
   ],
   "periodicite_impot": [
-   "monthly",
-   "daily",
-   "annual"
+   "mensuel",
+   "journalier",
+   "annuel"
   ],
   "portee_convention": [
    "secteur",
-   "harassment",
-   "employee_category",
-   "department",
-   "company"
+   "harcelement",
+   "categorie_professionnelle",
+   "service",
+   "societe"
   ],
   "role_application": [
-   "fiduciary_admin",
-   "manager",
-   "service_manager",
-   "employee",
+   "admin_fiduciaire",
+   "gestionnaire",
+   "chef_service",
+   "salarie",
    "medecine_travail",
    "rh_urgence",
    "dispatching"
   ],
   "statut_absence": [
-   "pending",
-   "approved",
-   "refused",
-   "cancelled",
-   "proposed"
+   "en_attente",
+   "valide",
+   "refuse",
+   "annule",
+   "propose"
   ],
   "statut_contrat": [
-   "draft",
-   "active",
-   "ended",
-   "cancelled"
+   "brouillon",
+   "en_cours",
+   "termine",
+   "annule"
   ],
   "statut_planning": [
-   "draft",
+   "brouillon",
    "publie"
   ]
  },
- "generated_at": "2026-09-12T12:38:56.857341+00:00",
+ "generated_at": "2026-09-12T12:58:45.036195+00:00",
  "source": "fn_schema_catalogue",
  "tables": [
   {
@@ -197,7 +197,7 @@
     },
     {
      "commentaire": "Où en est la demande : proposé, en attente, validé, refusé, annulé. Un refus n'est jamais un point final — il doit s'accompagner d'une contre-proposition, chaînée par absence_parente_id.",
-     "default": "'pending'::statut_absence",
+     "default": "'en_attente'::statut_absence",
      "nom": "statut",
      "notnull": true,
      "type": "statut_absence",
@@ -831,7 +831,7 @@
     },
     {
      "commentaire": "État de traitement : ouverte, traitée, écartée.",
-     "default": "'open'::etat_alerte",
+     "default": "'ouverte'::etat_alerte",
      "nom": "etat",
      "notnull": true,
      "type": "etat_alerte",
@@ -1655,7 +1655,7 @@
     },
     {
      "commentaire": "Brouillon, actif, terminé. Un brouillon n'engage rien mais se contrôle déjà.",
-     "default": "'draft'::statut_contrat",
+     "default": "'brouillon'::statut_contrat",
      "nom": "statut",
      "notnull": true,
      "type": "statut_contrat",
@@ -1952,7 +1952,7 @@
     },
     {
      "commentaire": null,
-     "def": "CHECK (((genre <> ALL (ARRAY['cdd'::genre_contrat, 'seasonal'::genre_contrat, 'interim'::genre_contrat, 'apprenticeship'::genre_contrat])) OR (date_fin IS NOT NULL)))",
+     "def": "CHECK (((genre <> ALL (ARRAY['cdd'::genre_contrat, 'saisonnier'::genre_contrat, 'interim'::genre_contrat, 'apprentissage'::genre_contrat])) OR (date_fin IS NOT NULL)))",
      "nom": "fixed_term_needs_end",
      "type": "c"
     },
@@ -2006,7 +2006,7 @@
     },
     {
      "commentaire": "Un salarié n'a qu'un seul contrat en cours à un instant donné. Contrainte d'exclusion plutôt que compteur : deux contrats actifs qui ne se recouvrent pas restent licites, un recouvrement d'un jour ne l'est pas.",
-     "def": "EXCLUDE USING gist (salarie_id WITH =, daterange(date_debut, date_fin, '[]'::text) WITH &&) WHERE ((statut = 'active'::statut_contrat))",
+     "def": "EXCLUDE USING gist (salarie_id WITH =, daterange(date_debut, date_fin, '[]'::text) WITH &&) WHERE ((statut = 'en_cours'::statut_contrat))",
      "nom": "one_active_contract_at_a_time",
      "type": "x"
     }
@@ -2037,7 +2037,7 @@
      "nom": "contrats_previous_contract_idx"
     },
     {
-     "def": "CREATE INDEX one_active_contract_at_a_time ON public.contrats USING gist (salarie_id, daterange(date_debut, date_fin, '[]'::text)) WHERE (statut = 'active'::statut_contrat)",
+     "def": "CREATE INDEX one_active_contract_at_a_time ON public.contrats USING gist (salarie_id, daterange(date_debut, date_fin, '[]'::text)) WHERE (statut = 'en_cours'::statut_contrat)",
      "nom": "one_active_contract_at_a_time"
     }
    ],
@@ -3123,7 +3123,7 @@
     },
     {
      "commentaire": "État de la demande. hr_approved ne suffit pas : tant que le salarié n'a pas accepté, les heures ne sont pas couvertes.",
-     "default": "'requested'::text",
+     "default": "'demande'::text",
      "nom": "statut",
      "notnull": true,
      "type": "text",
@@ -3179,7 +3179,7 @@
     },
     {
      "commentaire": "Mode de compensation retenu : repos compensateur ou paiement majoré.",
-     "default": "'money'::text",
+     "default": "'argent'::text",
      "nom": "compensation",
      "notnull": true,
      "type": "text",
@@ -3949,7 +3949,7 @@
     },
     {
      "commentaire": "Périodicité de versement.",
-     "default": "'monthly'::text",
+     "default": "'mensuel'::text",
      "nom": "periodicite",
      "notnull": true,
      "type": "text",
@@ -4135,7 +4135,7 @@
     },
     {
      "commentaire": "Lien : enfant, enfant adopté, enfant du conjoint.",
-     "default": "'child'::text",
+     "default": "'enfant'::text",
      "nom": "lien_parente",
      "notnull": true,
      "type": "text",
@@ -5523,7 +5523,7 @@
     },
     {
      "commentaire": "Distingue une fiduciaire gérant plusieurs sociétés clientes d'une entreprise gérant la sienne.",
-     "default": "'fiduciary'::genre_organisation",
+     "default": "'fiduciaire'::genre_organisation",
      "nom": "genre",
      "notnull": true,
      "type": "genre_organisation",
@@ -6267,7 +6267,7 @@
     },
     {
      "commentaire": "Brouillon ou publié. La publication passe par fn_publish_schedule, qui refuse un planning non conforme.",
-     "default": "'draft'::statut_planning",
+     "default": "'brouillon'::statut_planning",
      "nom": "statut",
      "notnull": true,
      "type": "statut_planning",
@@ -6411,7 +6411,7 @@
     },
     {
      "commentaire": "Nature de la prime. Détermine son régime fiscal et social, et le plafond légal qui s'y applique le cas échéant.",
-     "default": "'other'::text",
+     "default": "'autre'::text",
      "nom": "genre",
      "notnull": true,
      "type": "text",
@@ -8491,7 +8491,7 @@
     },
     {
      "commentaire": "Qualifié ou non qualifié : détermine le salaire social minimum applicable.",
-     "default": "'unqualified'::genre_qualification",
+     "default": "'non_qualifie'::genre_qualification",
      "nom": "qualification",
      "notnull": true,
      "type": "genre_qualification",
@@ -8579,7 +8579,7 @@
     },
     {
      "commentaire": "Sexe déclaré par le salarié, librement. Modifiable par lui depuis son espace. À ne pas confondre avec sexe_legal, qui est dérivé et non déclaratif. Sera renommé sexe_declare lors du passage au français.",
-     "default": "'unspecified'::genre_sexe",
+     "default": "'non_precise'::genre_sexe",
      "nom": "sexe",
      "notnull": true,
      "type": "genre_sexe",
@@ -9715,7 +9715,7 @@
     },
     {
      "commentaire": "Périodicité du barème : mensuel, annuel. Un barème mensuel n'est pas le douzième d'un barème annuel.",
-     "default": "'monthly'::periodicite_impot",
+     "default": "'mensuel'::periodicite_impot",
      "nom": "periodicite",
      "notnull": true,
      "type": "periodicite_impot",
@@ -10057,7 +10057,7 @@
     },
     {
      "commentaire": "Moment du cycle de vie où la pièce est attendue : embauche, cours de contrat, ou fin de contrat.",
-     "default": "'during_contract'::etape_document",
+     "default": "'pendant_contrat'::etape_document",
      "nom": "echelon",
      "notnull": true,
      "type": "etape_document",

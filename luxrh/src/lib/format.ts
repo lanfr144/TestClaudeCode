@@ -102,7 +102,7 @@ export const STATUS_KIND_LABEL: Record<string, string> = {
   pregnancy: 'Grossesse',
   maternity_leave: 'Congé de maternité',
   breastfeeding: 'Allaitement',
-  parental_leave: 'Congé parental',
+  parental_leave: 'Congé conge_parental',
   delegate: 'Délégué du personnel',
   safety_delegate: 'Délégué à la sécurité',
   equality_delegate: 'Délégué à l’égalité',

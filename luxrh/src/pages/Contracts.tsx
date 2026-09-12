@@ -5,7 +5,7 @@ import { useContracts, useVigilance } from '@/lib/queries'
 import { Badge, Button, Card, EmptyState, ErrorNote, Input, Loading, Select, Table } from '@/components/ui'
 import { date, eur, sansFin } from '@/lib/format'
 
-type Filter = 'all' | 'active' | 'draft' | 'ended'
+type Filter = 'all' | 'en_cours' | 'brouillon' | 'termine'
 
 export default function Contracts() {
   const { activeCompanyId, referenceDate } = useApp()
@@ -44,9 +44,9 @@ export default function Contracts() {
           <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Rechercher…" className="max-w-xs" />
           <Select value={filter} onChange={(e) => setFilter(e.target.value as Filter)} className="max-w-[180px]">
             <option value="all">Tous les statuts</option>
-            <option value="active">Actifs</option>
-            <option value="draft">Brouillons</option>
-            <option value="ended">Échus</option>
+            <option value="en_cours">Actifs</option>
+            <option value="brouillon">Brouillons</option>
+            <option value="termine">Échus</option>
           </Select>
         </div>
 
@@ -71,13 +71,13 @@ export default function Contracts() {
                   <td className="lux-td">{sansFin(c.date_fin) ? '—' : date(c.date_fin)}</td>
                   <td className="lux-td font-mono">{eur(c.brut_mensuel)}</td>
                   <td className="lux-td">
-                    <Badge tone={c.statut === 'active' ? 'ok' : c.statut === 'draft' ? 'info' : 'neutral'}>
+                    <Badge tone={c.statut === 'en_cours' ? 'ok' : c.statut === 'brouillon' ? 'info' : 'neutral'}>
                       {c.statut}
                     </Badge>
                   </td>
                   <td className="lux-td">
                     {alert ? (
-                      <Badge tone={alert.severite === 'blocking' ? 'blocking' : 'warning'}>
+                      <Badge tone={alert.severite === 'bloquant' ? 'blocking' : 'warning'}>
                         {alert.days_left !== null ? `J-${alert.days_left}` : 'à surveiller'}
                       </Badge>
                     ) : (

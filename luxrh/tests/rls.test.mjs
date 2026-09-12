@@ -96,7 +96,7 @@ okScan ? ko('centre de vigilance', 'accessible à un salarié !') : ok('centre d
 // Un salarié ne peut pas valider sa propre demande de congé.
 const [okWrite, wErr] = await fetch(`${URL}/rest/v1/absences?salarie_id=eq.${marta.id}`, {
   method: 'PATCH', headers: { ...h(emp), Prefer: 'return=representation' },
-  body: JSON.stringify({ statut: 'approved' }),
+  body: JSON.stringify({ statut: 'valide' }),
 }).then(async (r) => [r.ok, await r.json()])
 !okWrite || (Array.isArray(wErr) && wErr.length === 0)
   ? ok('ne peut pas valider une absence lui-même')

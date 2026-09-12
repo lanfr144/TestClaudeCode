@@ -53,7 +53,7 @@ def planning() -> None:
                 "societe_id": company["id"],
                 "debut_semaine": week.isoformat(),
                 "libelle": f"Semaine {week.isocalendar().week}",
-                "statut": "draft",
+                "statut": "brouillon",
             }).execute()
             db.invalidate()
             st.rerun()
@@ -87,13 +87,13 @@ def planning() -> None:
     grid: dict[str, dict[str, list[str]]] = {}
     for shift in creneaux:
         employee = shift.get("salaries") or {}
-        name = f"{employee.get('prenom','')} {employee.get('nom','')}".strip()
+        name = f"{salarie.get('prenom','')} {salarie.get('nom','')}".strip()
         column = DAYS[date.fromisoformat(shift["date_creneau"]).weekday()]
         grid.setdefault(name, {}).setdefault(column, []).append(
             f"{shift['heure_debut'][:5]}–{shift['heure_fin'][:5]}"
         )
     for absence in absences:
-        if absence["statut"] == "refused":
+        if absence["statut"] == "refuse":
             continue
         for i, day in enumerate(days):
             if absence["date_debut"] <= day.isoformat() <= absence["date_fin"]:
@@ -193,9 +193,9 @@ def leave() -> None:
         "*, salaries(prenom, nom), types_absence(libelle, categorie, impute_sur_conge, reference_legale)",
         societe_id=company["id"], _order="date_debut", _desc=True,
     )
-    pending = [a for a in absences if a["statut"] == "pending"]
+    pending = [a for a in absences if a["statut"] == "en_attente"]
 
-    ds.section("Demandes en attente", f"{len(pending)} à traiter")
+    ds.section("Demandes en attente", f"{len(en_attente)} à traiter")
     for absence in pending:
         employee = absence.get("salaries") or {}
         kind = absence.get("types_absence") or {}
@@ -207,14 +207,14 @@ def leave() -> None:
         with st.container(border=True):
             columns = st.columns([3, 2, 2])
             columns[0].markdown(
-                f"**{ds.esc(employee.get('prenom',''))} {ds.esc(employee.get('nom',''))}** — "
+                f"**{ds.esc(salarie.get('prenom',''))} {ds.esc(salarie.get('nom',''))}** — "
                 f"{ds.esc(genre.get('libelle',''))}<br>"
                 f"<span class='lux-muted'>{ds.fmt_date(absence['date_debut'])} – "
                 f"{ds.fmt_date(absence['date_fin'])} · {ds.fmt_num(absence['nombre_jours'])} jour(s)</span>",
                 unsafe_allow_html=True)
             columns[1].markdown(
                 ds.badge("Conforme" if impact["is_valid"] else "Refus recommandé",
-                         "ok" if impact["is_valid"] else "blocking"),
+                         "ok" if impact["is_valid"] else "bloquant"),
                 unsafe_allow_html=True)
             columns[1].caption(impact["message"])
             if impact.get("balance_after") is not None:
@@ -224,9 +224,9 @@ def leave() -> None:
 
             actions = st.columns([1, 1, 6])
             if actions[0].button("Valider", key=f"ok_{absence['id']}", type="primary"):
-                _decide(absence["id"], "approved")
+                _decide(absence["id"], "valide")
             if actions[1].button("Refuser", key=f"no_{absence['id']}"):
-                _decide(absence["id"], "refused")
+                _decide(absence["id"], "refuse")
 
     ds.section("Toutes les absences")
     if absences:
@@ -250,7 +250,7 @@ def leave() -> None:
         balance = db.call("fn_leave_balance", p_employee=employee["id"], p_on=on)
         if not balance.get("no_contract"):
             balances.append({
-                "Salarié": f"{employee['prenom']} {employee['nom']}",
+                "Salarié": f"{salarie['prenom']} {salarie['nom']}",
                 "Droit annuel": balance.get("entitlement_days"),
                 "Source": balance.get("entitlement_source"),
                 "Acquis": balance.get("accrued"),
@@ -293,7 +293,7 @@ def sick_leave() -> None:
         if counters["days_in_window"] == 0:
             continue
         table_rows.append({
-            "Salarié": f"{employee['prenom']} {employee['nom']}",
+            "Salarié": f"{salarie['prenom']} {salarie['nom']}",
             "Incapacité / période": f"{ds.fmt_num(counters['days_in_window'],0)} / "
                                     f"{ds.fmt_num(counters['limit_days'],0)} j",
             "Fin de continuation": ds.fmt_date(counters["continuation_end"]) if counters["continuation_end"] else "en cours",
@@ -321,10 +321,10 @@ def _sick_form(company: dict) -> None:
     salaries = db.rows("salaries", "id, prenom, nom",
                         societe_id=company["id"], _order="nom")
     types = db.rows("types_absence", "id, code, libelle")
-    sick_type = next((t for t in types if t["code"] == "sick"), None)
+    sick_type = next((t for t in types if t["code"] == "maladie"), None)
     if not salaries or not sick_type:
         return
-    with st.form("sick"):
+    with st.form("maladie"):
         columns = st.columns(5)
         names = {f"{e['nom']} {e['prenom']}": e["id"] for e in salaries}
         who = columns[0].selectbox("Salarié", list(names))
@@ -344,7 +344,7 @@ def _sick_form(company: dict) -> None:
                     "date_debut": start.isoformat(),
                     "date_fin": end.isoformat(),
                     "nombre_jours": float(days),
-                    "statut": "approved",
+                    "statut": "valide",
                     "certificat_recu": certificate,
                     "certificat_original_recu": original,
                 }).execute()
@@ -376,12 +376,12 @@ def overtime() -> None:
         with st.container(border=True):
             columns = st.columns([3, 2, 2, 2])
             columns[0].markdown(
-                f"**{ds.esc(employee.get('prenom',''))} {ds.esc(employee.get('nom',''))}**<br>"
+                f"**{ds.esc(salarie.get('prenom',''))} {ds.esc(salarie.get('nom',''))}**<br>"
                 f"<span class='lux-muted'>{ds.fmt_date(request['debut_periode'])} – "
                 f"{ds.fmt_date(request['fin_periode'])} · {ds.fmt_num(request['heures'])} h · "
                 f"{ds.esc(request['motif'])}</span>",
                 unsafe_allow_html=True)
-            tone = {"approved": "ok", "rejected": "blocking", "requested": "info",
+            tone = {"valide": "ok", "refuse": "bloquant", "demande": "info",
                     "hr_approved": "warning", "cancelled": "neutral"}[request["statut"]]
             columns[1].markdown(ds.badge(request["statut"], tone), unsafe_allow_html=True)
             columns[2].caption(
@@ -389,7 +389,7 @@ def overtime() -> None:
                 + " · "
                 + ("salarié : accepté" if request["accepte_par_salarie_le"] else "salarié : en attente")
             )
-            if request["statut"] in ("requested", "hr_approved"):
+            if request["statut"] in ("demande", "valide_rh"):
                 if not request["valide_rh_le"] and columns[3].button(
                         "Valider (RH)", key=f"hr_{request['id']}", type="primary"):
                     _approve(request["id"], True)
@@ -411,7 +411,7 @@ def overtime() -> None:
                 start = columns[1].date_input("Du", db.reference_date())
                 end = columns[2].date_input("Au", db.reference_date())
                 hours = columns[3].number_input("Heures", 0.5, 200.0, 4.0, step=0.5)
-                compensation = columns[4].selectbox("Compensation", ["money", "rest"])
+                compensation = columns[4].selectbox("Compensation", ["argent", "repos"])
                 reason = st.text_input("Motif", "Surcroît ponctuel d’activité")
                 if st.form_submit_button("Enregistrer la demande", type="primary"):
                     try:
@@ -458,7 +458,7 @@ def meal_vouchers() -> None:
             check = db.call("fn_meal_voucher_check", p_grant=grant["id"])
             employee = grant.get("salaries") or {}
             table_rows.append({
-                "Salarié": f"{employee.get('prenom','')} {employee.get('nom','')}".strip(),
+                "Salarié": f"{salarie.get('prenom','')} {salarie.get('nom','')}".strip(),
                 "Période": check["period"],
                 "Nombre": grant["nombre_titres"],
                 "Valeur faciale": ds.fmt_eur(grant["valeur_faciale"]),

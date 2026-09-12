@@ -10,13 +10,13 @@ import {
 import { date, estEnVigueur, eur, num, sansFin } from '@/lib/format'
 
 const BLOCKS = [
-  { key: 'salary_grid', label: 'Grille de salaires' },
-  { key: 'worktime', label: 'Durée de travail' },
-  { key: 'leave', label: 'Congés' },
-  { key: 'surcharges', label: 'Majorations' },
-  { key: 'premiums', label: 'Primes' },
-  { key: 'notice_probation', label: 'Préavis & essai' },
-  { key: 'custom_holidays', label: 'Jours fériés d’usage' },
+  { key: 'grille_salaires', label: 'Grille de salaires' },
+  { key: 'temps_travail', label: 'Durée de travail' },
+  { key: 'conges', label: 'Congés' },
+  { key: 'majorations', label: 'Majorations' },
+  { key: 'primes', label: 'Primes' },
+  { key: 'preavis_essai', label: 'Préavis & essai' },
+  { key: 'feries_usage', label: 'Jours fériés d’usage' },
 ] as const
 
 /** Champs du bloc « majorations » : le formulaire alimente le moteur, pas du code. */
@@ -33,7 +33,7 @@ export default function CbaEditor() {
   const params = useLegalParameters()
   const qc = useQueryClient()
   const [cbaId, setCbaId] = useState<string>('')
-  const [block, setBlock] = useState<(typeof BLOCKS)[number]['key']>('surcharges')
+  const [block, setBlock] = useState<(typeof BLOCKS)[number]['key']>('majorations')
   const [draft, setDraft] = useState<Record<string, unknown>>({})
   const [saveError, setSaveError] = useState<unknown>(null)
   const [busy, setBusy] = useState(false)
@@ -169,7 +169,7 @@ export default function CbaEditor() {
             Aucune règle n’est écrite en code : ce formulaire alimente le moteur.
           </p>
 
-          {block === 'surcharges' && (
+          {block === 'majorations' && (
             <div className="space-y-3">
               {SURCHARGE_FIELDS.map((f) => {
                 const min = legalMin(f.min)
@@ -204,7 +204,7 @@ export default function CbaEditor() {
             </div>
           )}
 
-          {block === 'leave' && (
+          {block === 'conges' && (
             <div className="grid gap-3 sm:grid-cols-2">
               <Field
                 label="Congé annuel (jours)"
@@ -226,7 +226,7 @@ export default function CbaEditor() {
             </div>
           )}
 
-          {block === 'worktime' && (
+          {block === 'temps_travail' && (
             <div className="grid gap-3 sm:grid-cols-2">
               <Field label="Durée hebdomadaire (h)">
                 <Input
@@ -262,7 +262,7 @@ export default function CbaEditor() {
             </div>
           )}
 
-          {block === 'salary_grid' && (
+          {block === 'grille_salaires' && (
             <Table head={['Catégorie', 'Ancienneté', 'Montant mensuel', 'Indice']}>
               {(cba.grilles_salaires_convention ?? [])
                 .sort((a, b) => a.categorie.localeCompare(b.categorie) || a.anciennete_de_annees - b.anciennete_de_annees)
@@ -279,7 +279,7 @@ export default function CbaEditor() {
             </Table>
           )}
 
-          {(block === 'premiums' || block === 'custom_holidays' || block === 'notice_probation') && (
+          {(block === 'primes' || block === 'feries_usage' || block === 'preavis_essai') && (
             <Field label="Règles du bloc (JSON)" hint="Édition libre tant que le formulaire dédié n’est pas ouvert.">
               <textarea
                 disabled={isShared}

@@ -8,8 +8,8 @@ import { num } from '@/lib/format'
 
 const FILTERS = [
   { key: 'all', label: 'Toutes' },
-  { key: 'contract', label: 'Contrats' },
-  { key: 'worktime', label: 'Temps de travail' },
+  { key: 'contrat', label: 'Contrats' },
+  { key: 'temps_travail', label: 'Temps de travail' },
   { key: 'absence', label: 'Absences' },
   { key: 'effectif', label: 'Effectif' },
   { key: 'document', label: 'Documents' },
@@ -66,10 +66,10 @@ export default function Vigilance() {
 
       <div className="grid gap-4 xl:grid-cols-[1fr_340px]">
         <div className="space-y-3">
-          <VigilanceBlock title={`En retard · ${keep(s.overdue).length}`} tone="blocking" items={keep(s.overdue)} />
+          <VigilanceBlock title={`En retard · ${keep(s.overdue).length}`} tone="bloquant" items={keep(s.overdue)} />
           <VigilanceBlock
             title={`Dans les ${s.horizon_days} jours · ${keep(s.due_soon).length}`}
-            tone="warning"
+            tone="avertissement"
             items={keep(s.due_soon)}
           />
           <VigilanceBlock title={`À surveiller · ${keep(s.watch).length}`} tone="info" items={keep(s.watch)} />

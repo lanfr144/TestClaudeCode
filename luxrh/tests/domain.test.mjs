@@ -53,12 +53,12 @@ await del(`enfants_salarie?salarie_id=eq.${marta.id}`)
 {
   await post('enfants_salarie', {
     societe_id: bg.id, salarie_id: marta.id, prenom: 'Léa', nom: 'Ferreira',
-    sexe: 'female', date_naissance: '2018-05-04',
+    sexe: 'feminin', date_naissance: '2018-05-04',
   })
   // Refus des attentions : le nom et le sexe ne doivent pas être conservés.
   const [okIns, refused] = await post('enfants_salarie', {
     societe_id: bg.id, salarie_id: marta.id, prenom: 'Hugo', nom: 'Ferreira',
-    sexe: 'male', date_naissance: '2012-02-20', refus_partage: true,
+    sexe: 'masculin', date_naissance: '2012-02-20', refus_partage: true,
   })
   if (!okIns) ko('enfant confidentiel', JSON.stringify(refused).slice(0, 140))
   else {
@@ -82,18 +82,18 @@ await del(`demandes_heures_sup?salarie_id=eq.${marta.id}`)
     heures: 6, motif: 'Banquet exceptionnel',
   })
   const request = created[0]
-  request.statut === 'requested' ? ok('demande créée') : ko('demande', request.statut)
+  request.statut === 'demande' ? ok('demande créée') : ko('demande', request.statut)
 
   await rpc('fn_overtime_approve', { p_request: request.id, p_as_hr: true })
   const [, afterHr] = await get(`demandes_heures_sup?select=statut&id=eq.${request.id}`)
     .then((rows) => [true, rows[0]])
-  afterHr.statut === 'hr_approved'
+  afterHr.statut === 'valide_rh'
     ? ok('validation RH seule ne suffit pas', afterHr.statut)
     : ko('validation RH', afterHr.statut)
 
   await rpc('fn_overtime_approve', { p_request: request.id, p_as_hr: false })
   const [after] = await get(`demandes_heures_sup?select=statut&id=eq.${request.id}`)
-  after.statut === 'approved'
+  after.statut === 'valide'
     ? ok('accord mutuel acquis', after.statut)
     : ko('accord mutuel', after.statut)
 

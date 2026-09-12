@@ -72,8 +72,8 @@ def login_screen() -> None:
             with st.form("signup"):
                 nom_complet = st.text_input("Nom complet")
                 org_name = st.text_input("Nom de l’espace de travail")
-                genre_organisation = st.selectbox("Type d’espace", ["fiduciary", "company"],
-                                        format_func=lambda k: "Fiduciaire" if k == "fiduciary" else "Entreprise")
+                genre_organisation = st.selectbox("Type d’espace", ["fiduciaire", "societe"],
+                                        format_func=lambda k: "Fiduciaire" if k == "fiduciaire" else "Entreprise")
                 email = st.text_input("Adresse e-mail ", key="su_email")
                 password = st.text_input("Mot de passe ", type="password", key="su_password")
                 if st.form_submit_button("Créer l’espace", type="primary", use_container_width=True):
@@ -104,23 +104,23 @@ PAGES: dict[str, tuple[str, callable]] = {
     "salaries": ("Employés", core.employees_view),
     "employee_detail": ("Fiche salarié", core.employee_detail),
     "contrats": ("Contrats", compliance.contrats),
-    "leave": ("Congés", timekeeping.leave),
-    "sick": ("Maladies", timekeeping.sick_leave),
+    "conges": ("Congés", timekeeping.leave),
+    "maladie": ("Maladies", timekeeping.sick_leave),
     "vouchers": ("Chèques-repas", timekeeping.meal_vouchers),
     "vigilance": ("Vigilance", compliance.vigilance),
     "dismissal": ("Licenciement collectif", compliance.dismissal_simulator),
     "primes": ("Primes", compliance.primes),
     "societes": ("Sociétés", core.companies_view),
     "company_detail": ("Fiche société", core.company_detail),
-    "referential": ("Référentiel", compliance.referential),
+    "referentiel": ("Référentiel", compliance.referential),
     "portability": ("Portabilité", portability.portability),
 }
 
 GROUPS = [
     ("Pilotage", ["dashboard", "vigilance", "dismissal"]),
-    ("Exploitation", ["planning", "overtime", "leave", "sick", "vouchers"]),
+    ("Exploitation", ["planning", "overtime", "conges", "maladie", "vouchers"]),
     ("Dossiers", ["salaries", "employee_detail", "contrats", "primes"]),
-    ("Administration", ["societes", "company_detail", "referential", "portability"]),
+    ("Administration", ["societes", "company_detail", "referentiel", "portability"]),
 ]
 
 
@@ -131,7 +131,7 @@ def sidebar() -> str:
     with st.sidebar:
         st.markdown(
             f"<div style='font-weight:700;font-size:19px'>LuxRH</div>"
-            f"<div style='font-size:11px;opacity:.75'>{organization}</div>",
+            f"<div style='font-size:11px;opacity:.75'>{organisation}</div>",
             unsafe_allow_html=True)
         st.divider()
 
@@ -212,7 +212,7 @@ def main() -> None:
     company = db.active_company()
     st.markdown(
         f"<div style='font-size:12px;couleur:{ds.INK_MUTED};margin-bottom:2px'>"
-        f"{company['raison_sociale'] if company else 'Aucun dossier'} › {titre}</div>",
+        f"{societe['raison_sociale'] if societe else 'Aucun dossier'} › {titre}</div>",
         unsafe_allow_html=True)
 
     try:

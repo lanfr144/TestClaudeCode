@@ -7,7 +7,7 @@ quel ordre la suite se déroule.
 Il est tenu à jour à chaque étape. Si le travail s'interrompt, c'est ici qu'on reprend — pas
 dans l'historique d'une conversation.
 
-**État général au 12 septembre 2026** : 109 migrations appliquées, 75 tables, **836 colonnes
+**État général au 12 septembre 2026** : 113 migrations appliquées, 75 tables, **836 colonnes
 toutes commentées**, 190 vérifications en six suites, 0 échec, build à 0 erreur TypeScript,
 schémas Oracle et MySQL régénérés à **0 point non traduit**, dépôt et base réconciliés.
 
