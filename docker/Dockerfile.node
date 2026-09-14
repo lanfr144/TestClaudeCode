@@ -1,0 +1,30 @@
+# Interface React de LuxRH, servie par Vite
+#
+# Aucun port n'est inscrit ici : il vient de `.env`, par `docker-compose.yml`.
+
+FROM node:22-slim
+
+ARG UID=1000
+ARG GID=1000
+
+WORKDIR /app
+
+# L'image `node` fournit déjà un utilisateur `node` en 1000:1000. On ne le
+# recrée que si la distribution WSL emploie d'autres identifiants — sinon
+# `groupadd` échouerait sur un identifiant déjà pris.
+RUN if [ "${UID}" != "1000" ] || [ "${GID}" != "1000" ]; then \
+      groupadd -g "${GID}" luxrh && useradd -m -u "${UID}" -g "${GID}" luxrh; \
+    fi
+
+# Le manifeste d'abord : une modification du code ne relance pas l'installation.
+COPY luxrh/package.json luxrh/package-lock.json* /app/
+RUN npm ci 2>/dev/null || npm install
+
+COPY --chown=${UID}:${GID} luxrh/ /app/
+
+USER ${UID}:${GID}
+
+# `--host` fait écouter Vite sur toutes les interfaces : sans cela le serveur
+# n'écoute que sur la boucle locale DU CONTENEUR, et la correspondance de port
+# ne mène nulle part. Le port vient de l'environnement.
+CMD ["sh", "-c", "npm run dev -- --host 0.0.0.0 --port \"${VITE_PORT}\""]

@@ -1,0 +1,38 @@
+# Interface Streamlit de LuxRH
+#
+# Aucun port n'est inscrit ici : il vient de `.env`, par `docker-compose.yml`.
+# Pas d'EXPOSE non plus, qui ne ferait que documenter une valeur figée.
+
+FROM python:3.12-slim
+
+# Un utilisateur non privilégié, dont l'identifiant correspond à celui de la
+# distribution WSL : sans cela, les fichiers écrits dans le volume monté
+# appartiennent à root et deviennent illisibles depuis WSL.
+ARG UID=1000
+ARG GID=1000
+
+# `libaio1` est requis par le pilote Oracle ; `curl` sert au contrôle de santé.
+# `--no-install-recommends` évite une centaine de mégaoctets inutiles.
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends libaio1 curl \
+ && rm -rf /var/lib/apt/lists/*
+
+RUN groupadd -g "${GID}" luxrh 2>/dev/null || true \
+ && useradd -m -u "${UID}" -g "${GID}" -s /bin/bash luxrh 2>/dev/null || true
+
+WORKDIR /app
+
+# Les dépendances d'abord, le code ensuite : une modification du code ne
+# réinstalle pas les paquets.
+COPY luxrh-py/requirements.txt /tmp/requirements.txt
+RUN pip install --no-cache-dir -r /tmp/requirements.txt \
+ && pip install --no-cache-dir oracledb
+
+COPY --chown=${UID}:${GID} luxrh-py/ /app/
+
+USER luxrh
+
+# Le port et l'adresse viennent de l'environnement, posés par Compose.
+CMD ["sh", "-c", "streamlit run app.py \
+     --server.port \"${STREAMLIT_SERVER_PORT}\" \
+     --server.address \"${STREAMLIT_SERVER_ADDRESS}\""]

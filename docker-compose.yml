@@ -1,0 +1,111 @@
+# LuxRH — pile conteneurisée, destinée à la distribution WSL « luxrh »
+#
+# AUCUN PORT N'EST ÉCRIT DANS CE FICHIER.
+# ========================================
+# Chaque valeur vient de `.env`, à la racine du dépôt. Un conflit de port sur la
+# machine hôte se règle en changeant une ligne de `.env` — ce fichier et les
+# Dockerfiles restent intacts. Les deux côtés de chaque correspondance sont
+# paramétrables : port de l'hôte et port dans le conteneur.
+#
+# POURQUOI STRICTEMENT DANS WSL
+# ==============================
+# Oracle exige des verrous de fichiers que le pilote 9p de Windows ne rend pas
+# correctement : une base posée sur `/mnt/c/...` se corrompt ou refuse de
+# démarrer. Les volumes vivent donc sur le système de fichiers Linux de la
+# distribution. `docker/demarrer.sh` refuse de s'exécuter ailleurs, plutôt que de
+# laisser découvrir le problème trois heures plus tard.
+#
+# DÉMARRAGE
+# =========
+#     wsl -d luxrh
+#     cd ~/luxrh && ./docker/demarrer.sh
+
+services:
+
+  # ------------------------------------------------------------------ Oracle
+  oracle:
+    image: ${ORACLE_IMAGE}
+    container_name: ${COMPOSE_PROJECT_NAME}-oracle
+    restart: unless-stopped
+    environment:
+      ORACLE_PWD: ${ORACLE_PWD}
+      ORACLE_PDB: ${ORACLE_PDB}
+      ORACLE_CHARACTERSET: ${ORACLE_CHARACTERSET}
+    ports:
+      - "${ORACLE_PORT}:${ORACLE_CONTAINER_PORT}"
+      - "${ORACLE_EM_PORT}:${ORACLE_EM_CONTAINER_PORT}"
+    volumes:
+      - ${ORACLE_DATA}:/opt/oracle/oradata
+      # `scripts/setup` est joué UNE SEULE FOIS, après création de la base.
+      # `scripts/startup` le serait à chaque démarrage — y placer un `create
+      # user` ferait échouer le second lancement. Les scripts sont malgré tout
+      # écrits de façon idempotente : un volume conservé et une image recréée
+      # suffiraient à les rejouer.
+      - ./docker/oracle-init:/opt/oracle/scripts/setup:ro
+    healthcheck:
+      # `sqlplus -L` échoue vite plutôt que d'attendre indéfiniment un écouteur
+      # qui n'est pas encore là.
+      test: ["CMD-SHELL", "echo 'select 1 from dual;' | sqlplus -S -L system/${ORACLE_PWD}@localhost:${ORACLE_CONTAINER_PORT}/${ORACLE_PDB} | grep -q 1"]
+      interval: 20s
+      timeout: 15s
+      retries: 40          # la première initialisation dépasse dix minutes
+      start_period: 180s
+
+  # -------------------------------------------------------------- Streamlit
+  streamlit:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.streamlit
+      args:
+        UID: ${UID}
+        GID: ${GID}
+    container_name: ${COMPOSE_PROJECT_NAME}-streamlit
+    restart: unless-stopped
+    environment:
+      STREAMLIT_SERVER_PORT: ${STREAMLIT_CONTAINER_PORT}
+      STREAMLIT_SERVER_ADDRESS: 0.0.0.0
+      # Sans cela, Streamlit tente d'ouvrir un navigateur qui n'existe pas.
+      STREAMLIT_SERVER_HEADLESS: "true"
+      LUXRH_DB: ${LUXRH_DB:-supabase}
+      LUXRH_DSN: oracle:${ORACLE_CONTAINER_PORT}/${ORACLE_PDB}
+      LUXRH_DB_USER: ${LUXRH_DB_USER}
+      LUXRH_DB_PASSWORD: ${LUXRH_DB_PASSWORD}
+    env_file:
+      # Les secrets de l'application — Supabase, comptes de démonstration.
+      # Absent, le conteneur démarre mais l'application refuse de se connecter
+      # en le disant, ce qui vaut mieux qu'un écran vide.
+      - path: ./luxrh/.env.local
+        required: false
+    ports:
+      - "${STREAMLIT_PORT}:${STREAMLIT_CONTAINER_PORT}"
+    volumes:
+      - ./luxrh-py:/app:rw
+    depends_on:
+      oracle:
+        condition: service_healthy
+
+  # --------------------------------------------------------- React / Node.js
+  api:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.node
+      args:
+        UID: ${UID}
+        GID: ${GID}
+    container_name: ${COMPOSE_PROJECT_NAME}-api
+    restart: unless-stopped
+    environment:
+      VITE_PORT: ${API_CONTAINER_PORT}
+    env_file:
+      - path: ./luxrh/.env.local
+        required: false
+    ports:
+      - "${API_PORT}:${API_CONTAINER_PORT}"
+    volumes:
+      - ./luxrh:/app:rw
+      # Les dépendances restent dans le conteneur : celles installées sous
+      # Windows portent des binaires incompatibles avec Linux.
+      - node_modules:/app/node_modules
+
+volumes:
+  node_modules:

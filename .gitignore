@@ -43,6 +43,11 @@ secrets/
 /docker/volumes/
 /docker/.env
 
+# Scripts d'initialisation Oracle générés au démarrage : l'un porte le mot de
+# passe applicatif, l'autre est une copie du schéma régénérable.
+/docker/oracle-init/00_variables.sql
+/docker/oracle-init/02_schema.sql
+
 # Artefacts de l'outil de conception
 .thumbnail
 
