@@ -48,3 +48,21 @@ secrets/
 
 # Projet Node distinct, sans rapport avec LuxRH (plusieurs centaines de Mo).
 video/
+
+# Contenus sous licence — règle d'or, voir ~/.claude/CLAUDE.md
+#
+# Textes de loi, conventions collectives, barèmes : ces documents portent une
+# licence et exigent une attribution. Ils ne sont PAS versionnés, même quand la
+# licence l'autoriserait : une attribution se perd au premier fork, un texte est
+# abrogé sans que la copie le signale, et un binaire supprimé reste dans tous
+# les clones.
+#
+# Ce qui est versionné à la place : `docs/sources-legales.md`, le manifeste des
+# références — ELI, licence, attribution, URL et empreinte —, régénéré par
+# `tools/inventaire_sources.py`. Le répertoire local se reconstitue par
+# `tools/telecharger_sources.py`.
+/lois_et_règlements/
+/lois&règlements/
+
+# Archive des échanges de travail : journal local, pas un livrable.
+/discussion/
