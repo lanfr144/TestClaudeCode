@@ -144,7 +144,61 @@ echo
 
 docker compose up -d --build
 
+# ------------------------------------------------- 8. la pile est-elle saine
+#
+# Sans ce contrôle, `compose up` rend la main dès que les conteneurs existent.
+# Un service mort passerait inaperçu et les autres tourneraient avec une
+# dépendance absente — c'est précisément ce que les `healthcheck` évitent, mais
+# encore faut-il les lire.
+
 echo
-info "La première initialisation d'Oracle dépasse dix minutes."
-info "Suivre :  docker compose logs -f oracle"
-info "État   :  docker compose ps"
+info "Attente de l'état « healthy » — la première initialisation d'Oracle"
+info "dépasse dix minutes."
+echo
+
+SERVICES=$(docker compose config --services)
+LIMITE=$(( $(date +%s) + ${ATTENTE_SANTE:-900} ))
+
+while :; do
+  RESTE=""
+  for s in $SERVICES; do
+    cid=$(docker compose ps -q "$s" 2>/dev/null || true)
+    if [ -z "$cid" ]; then RESTE="$RESTE $s(absent)"; continue; fi
+    etat=$(docker inspect -f '{{if .State.Health}}{{.State.Health.Status}}{{else}}{{.State.Status}}{{end}}' "$cid" 2>/dev/null || echo inconnu)
+    case "$etat" in
+      healthy) ;;
+      *)       RESTE="$RESTE $s($etat)" ;;
+    esac
+  done
+
+  [ -z "$RESTE" ] && { vert "Tous les services sont sains."; break; }
+
+  if [ "$(date +%s)" -ge "$LIMITE" ]; then
+    rouge "DÉLAI DÉPASSÉ — services non sains :$RESTE"
+    for s in $SERVICES; do
+      cid=$(docker compose ps -q "$s" 2>/dev/null || true)
+      [ -n "$cid" ] || continue
+      etat=$(docker inspect -f '{{if .State.Health}}{{.State.Health.Status}}{{else}}{{.State.Status}}{{end}}' "$cid")
+      [ "$etat" = healthy ] && continue
+      echo >&2
+      rouge "--- $s ($etat) : vingt dernières lignes ---"
+      docker compose logs --tail=20 "$s" >&2 || true
+      # Le dernier contrôle de santé dit souvent tout : on ne le cache pas.
+      docker inspect -f '{{if .State.Health}}{{range .State.Health.Log}}{{.Output}}{{end}}{{end}}' "$cid" 2>/dev/null | tail -5 >&2 || true
+    done
+    echo >&2
+    rouge "La pile est INCOMPLÈTE. Ne pas s'en servir en l'état."
+    info  "Diagnostic réseau :  ./docker/diagnostic.sh"
+    exit 1
+  fi
+
+  printf '  en attente :%-60s' "$RESTE"
+  sleep 10
+done
+
+echo
+info "Oracle      : localhost:${ORACLE_PORT}  (service ${ORACLE_PDB:-LUXRHPDB})"
+info "Streamlit   : http://localhost:${STREAMLIT_PORT}"
+info "React       : http://localhost:${API_PORT}"
+info "État        : docker compose ps"
+info "Diagnostic  : ./docker/diagnostic.sh"

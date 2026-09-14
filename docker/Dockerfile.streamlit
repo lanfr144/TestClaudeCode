@@ -1,20 +1,58 @@
 # Interface Streamlit de LuxRH
 #
 # Aucun port n'est inscrit ici : il vient de `.env`, par `docker-compose.yml`.
-# Pas d'EXPOSE non plus, qui ne ferait que documenter une valeur figée.
+# Pas d'`EXPOSE` non plus — il ne documenterait qu'une valeur figée et
+# contredirait le remappage dynamique.
 
-FROM python:3.12-slim
+# Image épinglée par version mineure. `apt-get upgrade` n'apporte alors que des
+# correctifs de sécurité, sans changer la base sous les pieds d'une construction
+# à l'autre.
+FROM python:3.12-slim-bookworm
 
-# Un utilisateur non privilégié, dont l'identifiant correspond à celui de la
-# distribution WSL : sans cela, les fichiers écrits dans le volume monté
-# appartiennent à root et deviennent illisibles depuis WSL.
+# Identifiants alignés sur ceux de la distribution WSL : sans cela, les fichiers
+# écrits dans le volume monté appartiennent à root et deviennent illisibles.
 ARG UID=1000
 ARG GID=1000
 
-# `libaio1` est requis par le pilote Oracle ; `curl` sert au contrôle de santé.
-# `--no-install-recommends` évite une centaine de mégaoctets inutiles.
+# `PYTHONUNBUFFERED` : sans lui, les traces restent en tampon et n'apparaissent
+# pas dans `docker logs` au moment où on en a besoin — au démarrage qui échoue.
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PIP_NO_CACHE_DIR=1 \
+    DEBIAN_FRONTEND=noninteractive
+
+# --------------------------------------------------------------- paquets
+#
+# Une seule couche : mise à jour, contrôle de cohérence, installation, purge.
+# Pas de `sudo` — la construction s'exécute en root, et l'image `slim` n'en
+# contient pas : la commande échouerait sur « sudo: not found ».
+#
+# Les outils de diagnostic réseau sont installés à dessein. Le jour où ce
+# conteneur ne joint pas la base, on veut pouvoir l'observer de l'intérieur
+# plutôt que le deviner. Le surcoût est de quelques mégaoctets.
+#
+#   libaio1        requis par le pilote Oracle
+#   curl           contrôle de santé, et diagnostic HTTP
+#   iproute2       ss, ip
+#   net-tools      netstat, ifconfig, route
+#   iputils-ping   ping
+#   dnsutils       dig, nslookup
+#   traceroute     chemin réseau
+#   procps         ps, top
 RUN apt-get update \
- && apt-get install -y --no-install-recommends libaio1 curl \
+ && apt-get upgrade -y \
+ && apt-get check \
+ && apt-get install -y --no-install-recommends \
+      libaio1 \
+      curl \
+      iproute2 \
+      net-tools \
+      iputils-ping \
+      dnsutils \
+      traceroute \
+      procps \
+ && apt-get autoremove -y \
+ && apt-get clean \
  && rm -rf /var/lib/apt/lists/*
 
 RUN groupadd -g "${GID}" luxrh 2>/dev/null || true \
@@ -22,17 +60,45 @@ RUN groupadd -g "${GID}" luxrh 2>/dev/null || true \
 
 WORKDIR /app
 
-# Les dépendances d'abord, le code ensuite : une modification du code ne
-# réinstalle pas les paquets.
+# Les dépendances avant le code : une modification du code ne réinstalle pas
+# les paquets.
 COPY luxrh-py/requirements.txt /tmp/requirements.txt
 RUN pip install --no-cache-dir -r /tmp/requirements.txt \
  && pip install --no-cache-dir oracledb
 
 COPY --chown=${UID}:${GID} luxrh-py/ /app/
 
+# ------------------------------------------------- vérification des prérequis
+#
+# À la CONSTRUCTION, pas au démarrage : un manque doit faire échouer le build,
+# et non se découvrir devant un utilisateur. Chaque défaut est nommé.
+RUN set -e; \
+    manques=""; \
+    for outil in streamlit curl ss netstat ip ping dig; do \
+      command -v "$outil" >/dev/null 2>&1 || manques="$manques $outil"; \
+    done; \
+    for module in streamlit supabase pandas oracledb; do \
+      python -c "import $module" 2>/dev/null || manques="$manques python:$module"; \
+    done; \
+    [ -f /app/app.py ] || manques="$manques /app/app.py"; \
+    if [ -n "$manques" ]; then \
+      echo "PRÉREQUIS MANQUANTS :$manques" >&2; \
+      exit 1; \
+    fi; \
+    echo "Prérequis vérifiés : outils réseau, modules Python, point d'entrée."
+
 USER luxrh
 
-# Le port et l'adresse viennent de l'environnement, posés par Compose.
+# ------------------------------------------------------- contrôle de santé
+#
+# Interroge ce que le service REND, pas qu'un processus existe. `-f` fait
+# échouer curl sur un code >= 400 ; sans lui, curl rend 0 même sur une 500.
+# La route `_stcore/health` est celle que Streamlit expose pour cela.
+#
+# Le port vient de l'environnement : le contrôle suit le remappage.
+HEALTHCHECK --interval=20s --timeout=5s --start-period=40s --retries=3 \
+  CMD curl -fsS "http://127.0.0.1:${STREAMLIT_SERVER_PORT:-8501}/_stcore/health" || exit 1
+
 CMD ["sh", "-c", "streamlit run app.py \
      --server.port \"${STREAMLIT_SERVER_PORT}\" \
      --server.address \"${STREAMLIT_SERVER_ADDRESS}\""]

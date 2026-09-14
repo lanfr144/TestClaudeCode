@@ -15,7 +15,11 @@ Distinction faite d'emblée, plutôt que laissée à découvrir au premier lance
 | Syntaxe des scripts (`bash -n`) | ✅ vérifiée |
 | Refus hors WSL | ✅ éprouvé — le script s'arrête et dit quoi faire |
 | Choix des ports contre l'occupation réelle du poste | ✅ relevé le 14/09/2026 |
-| Cohérence `.env` ⇄ `docker-compose.yml` ⇄ Dockerfiles | ✅ relue |
+| Cohérence `.env` ⇄ `docker-compose.yml` ⇄ Dockerfiles | ✅ vérifiée par script — 0 variable sans valeur |
+| Un `healthcheck` sur chacun des trois services | ✅ vérifié par script |
+| `logging`, `init`, `mem_limit`, `stop_grace_period`, `security_opt` | ✅ vérifiés par script sur les trois |
+| Dépendances exprimées sur `service_healthy` | ✅ vérifié |
+| `.dockerignore` | ✅ présent — 111 Mo + 29 Mo écartés du contexte |
 | **Construction des images** | ❌ **non vérifiée** |
 | **Démarrage effectif d'Oracle** | ❌ **non vérifié** |
 | **Jeu du schéma `oracle.sql` sur une base réelle** | ❌ **non vérifié** |
@@ -123,10 +127,29 @@ Renseigner dans `.env` au minimum `ORACLE_PWD` et `LUXRH_DB_PASSWORD`.
 ./docker/demarrer.sh
 ```
 
-Le script contrôle, dans l'ordre : l'exécution sous WSL, le nom de la
+Le script contrôle **avant** de lancer : l'exécution sous WSL, le nom de la
 distribution, l'emplacement du dépôt, la présence de Docker, celle du `.env`, les
-variables obligatoires, **la disponibilité de chaque port**, puis dépose le schéma
-Oracle. Chaque refus indique la correction.
+variables obligatoires, **la disponibilité de chaque port**. Chaque refus indique
+la correction.
+
+Puis il contrôle **après** : il attend que chaque service passe `healthy` et,
+au-delà du délai, affiche les journaux et la sortie du dernier contrôle de santé
+des services fautifs, **et sort en erreur**. Sans cela, `compose up` rendrait la
+main dès que les conteneurs existent — un service mort passerait inaperçu et les
+autres tourneraient avec une dépendance absente.
+
+### Diagnostic
+
+```bash
+./docker/diagnostic.sh
+```
+
+Observe sans rien modifier : état et santé de chaque service, sortie du dernier
+contrôle, ports en écoute côté hôte, résolution du nom `oracle` et ouverture de
+son port **depuis l'intérieur** des autres conteneurs, interfaces et écoutes de
+chacun, espace disque. C'est pour cela que les images embarquent `ss`, `netstat`,
+`ip`, `ifconfig`, `ping` et `dig` : sans eux, un défaut réseau ne s'observe pas de
+l'intérieur.
 
 Arrêt :
 

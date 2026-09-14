@@ -1,0 +1,65 @@
+# Ce qui n'est PAS envoyé au démon Docker à chaque construction.
+#
+# Sans ce fichier, l'intégralité du répertoire part au démon — mesuré sur ce
+# dépôt : 111 Mo de `node_modules` et 29 Mo de textes légaux, pour des images qui
+# n'en utilisent aucun. Outre le temps perdu à chaque build, tout fichier envoyé
+# peut se retrouver dans une couche, y compris un fichier d'environnement.
+#
+# Les motifs sont pris par la négative quand c'est possible : exclure largement,
+# puis réadmettre explicitement. Une règle formulée ainsi couvre les fichiers qui
+# n'existent pas encore.
+
+# ---------------------------------------------------------------- secrets
+# En premier, et sans exception. Un secret entré dans une couche y reste, même
+# supprimé par une instruction ultérieure.
+.env
+.env.*
+!.env.example
+**/.env
+**/.env.*
+!**/.env.example
+*.pem
+*.key
+*.p12
+secrets/
+
+# ------------------------------------------------------------ dépendances
+# Réinstallées dans l'image : celles posées sous Windows portent des binaires
+# incompatibles avec Linux.
+**/node_modules/
+**/.venv/
+**/__pycache__/
+**/*.pyc
+**/.pytest_cache/
+
+# ------------------------------------------------------- sorties de build
+**/dist/
+**/build/
+**/.vite/
+**/*.egg-info/
+
+# ------------------------------------------------------------- historique
+.git/
+.gitignore
+.gitattributes
+
+# ------------------------------------- contenus volumineux et sous licence
+# Textes de loi et conventions collectives : hors du dépôt par la règle d'or,
+# hors du contexte de build pour la même raison, et parce qu'aucune image n'en
+# a besoin.
+lois_et_règlements/
+docker/volumes/
+data/brut/
+video/
+
+# ------------------------------------------------------- journaux et outils
+discussion/
+docs/pdf/
+.thumbnail
+**/.DS_Store
+**/Thumbs.db
+
+# ---------------------------------------------- ce qui ne sert qu'à l'hôte
+# Les scripts d'orchestration s'exécutent sur l'hôte, jamais dans une image.
+docker/demarrer.sh
+docker/arreter.sh

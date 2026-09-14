@@ -1,11 +1,41 @@
 # Interface React de LuxRH, servie par Vite
 #
 # Aucun port n'est inscrit ici : il vient de `.env`, par `docker-compose.yml`.
+# Pas d'`EXPOSE`, qui ne documenterait qu'une valeur figée.
 
-FROM node:22-slim
+FROM node:22-bookworm-slim
 
 ARG UID=1000
 ARG GID=1000
+
+ENV DEBIAN_FRONTEND=noninteractive \
+    NPM_CONFIG_FUND=false \
+    NPM_CONFIG_AUDIT=false \
+    # Sans cela, une erreur de Vite n'apparaît pas dans `docker logs`.
+    CI=true
+
+# --------------------------------------------------------------- paquets
+#
+# Même politique que l'image Streamlit : mise à jour, contrôle, installation,
+# purge, en une seule couche. Pas de `sudo` — on est root à la construction, et
+# l'image `slim` n'en contient pas.
+#
+# Les outils de diagnostic réseau sont présents à dessein : sans eux, un
+# conteneur qui ne joint pas son voisin ne s'observe pas de l'intérieur.
+RUN apt-get update \
+ && apt-get upgrade -y \
+ && apt-get check \
+ && apt-get install -y --no-install-recommends \
+      curl \
+      iproute2 \
+      net-tools \
+      iputils-ping \
+      dnsutils \
+      traceroute \
+      procps \
+ && apt-get autoremove -y \
+ && apt-get clean \
+ && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
@@ -16,15 +46,41 @@ RUN if [ "${UID}" != "1000" ] || [ "${GID}" != "1000" ]; then \
       groupadd -g "${GID}" luxrh && useradd -m -u "${UID}" -g "${GID}" luxrh; \
     fi
 
-# Le manifeste d'abord : une modification du code ne relance pas l'installation.
+# Le manifeste avant le code : une modification du code ne relance pas
+# l'installation des dépendances.
 COPY luxrh/package.json luxrh/package-lock.json* /app/
 RUN npm ci 2>/dev/null || npm install
 
 COPY --chown=${UID}:${GID} luxrh/ /app/
 
+# ------------------------------------------------- vérification des prérequis
+#
+# À la construction. Un manque nommé ici coûte trente secondes ; le même manque
+# découvert au démarrage coûte une session de débogage.
+RUN set -e; \
+    manques=""; \
+    for outil in node npm curl ss netstat ip ping dig; do \
+      command -v "$outil" >/dev/null 2>&1 || manques="$manques $outil"; \
+    done; \
+    [ -d /app/node_modules ] || manques="$manques node_modules"; \
+    [ -f /app/package.json ] || manques="$manques package.json"; \
+    node -e "require('vite')" 2>/dev/null || manques="$manques vite"; \
+    if [ -n "$manques" ]; then \
+      echo "PRÉREQUIS MANQUANTS :$manques" >&2; \
+      exit 1; \
+    fi; \
+    echo "Prérequis vérifiés : outils réseau, dépendances Node, Vite."
+
 USER ${UID}:${GID}
 
-# `--host` fait écouter Vite sur toutes les interfaces : sans cela le serveur
-# n'écoute que sur la boucle locale DU CONTENEUR, et la correspondance de port
-# ne mène nulle part. Le port vient de l'environnement.
+# ------------------------------------------------------- contrôle de santé
+#
+# Vite ne publie pas de route de santé : on interroge la racine, qui doit rendre
+# un code < 400 dès que le serveur sert quelque chose. `-f` est indispensable —
+# sans lui, curl rend 0 même sur une 500, et le service passerait pour sain.
+HEALTHCHECK --interval=20s --timeout=5s --start-period=45s --retries=3 \
+  CMD curl -fsS "http://127.0.0.1:${VITE_PORT:-5173}/" >/dev/null || exit 1
+
+# `--host 0.0.0.0` : sans cela Vite n'écoute que sur la boucle locale DU
+# CONTENEUR, et la correspondance de port ne mène nulle part.
 CMD ["sh", "-c", "npm run dev -- --host 0.0.0.0 --port \"${VITE_PORT}\""]

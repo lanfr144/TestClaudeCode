@@ -7,18 +7,38 @@
 # Dockerfiles restent intacts. Les deux côtés de chaque correspondance sont
 # paramétrables : port de l'hôte et port dans le conteneur.
 #
+# UN CONTRÔLE DE SANTÉ SUR CHAQUE SERVICE
+# ========================================
+# Sans lui, Docker tient un conteneur pour « démarré » dès que son processus
+# principal existe — même s'il boucle sur une erreur ou n'écoute sur rien. La
+# pile monte, un service est mort, et les autres continuent comme si de rien
+# n'était : le défaut ne se voit qu'à l'usage.
+#
+# Chaque contrôle interroge donc ce que le service REND : une requête pour la
+# base, un code HTTP sur une route réelle pour les interfaces. Et les dépendances
+# s'expriment sur `service_healthy`, jamais sur `service_started` — lequel ne
+# garantit que l'existence du conteneur.
+#
 # POURQUOI STRICTEMENT DANS WSL
 # ==============================
 # Oracle exige des verrous de fichiers que le pilote 9p de Windows ne rend pas
 # correctement : une base posée sur `/mnt/c/...` se corrompt ou refuse de
-# démarrer. Les volumes vivent donc sur le système de fichiers Linux de la
-# distribution. `docker/demarrer.sh` refuse de s'exécuter ailleurs, plutôt que de
-# laisser découvrir le problème trois heures plus tard.
+# démarrer. `docker/demarrer.sh` refuse de s'exécuter ailleurs.
 #
-# DÉMARRAGE
-# =========
 #     wsl -d luxrh
 #     cd ~/luxrh && ./docker/demarrer.sh
+
+# Réglages communs. Sans rotation, un journal finit par remplir le disque de
+# l'hôte — et c'est l'hôte entier qui s'arrête, pas seulement le conteneur.
+x-journal: &journal
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "5"
+
+x-securite: &securite
+  # Interdit à un processus du conteneur d'acquérir des privilèges qu'il n'a pas.
+  no-new-privileges: "true"
 
 services:
 
@@ -27,6 +47,14 @@ services:
     image: ${ORACLE_IMAGE}
     container_name: ${COMPOSE_PROJECT_NAME}-oracle
     restart: unless-stopped
+    init: true                      # réoriente les signaux, récolte les zombies
+    logging: *journal
+    security_opt: [*securite]
+    # Une base tuée au bout de dix secondes se corrompt : on lui laisse le temps
+    # d'un arrêt propre.
+    stop_grace_period: 90s
+    shm_size: ${ORACLE_SHM:-2g}     # Oracle échoue avec les 64 Mo par défaut
+    mem_limit: ${ORACLE_MEM_LIMIT:-6g}
     environment:
       ORACLE_PWD: ${ORACLE_PWD}
       ORACLE_PDB: ${ORACLE_PDB}
@@ -39,17 +67,25 @@ services:
       # `scripts/setup` est joué UNE SEULE FOIS, après création de la base.
       # `scripts/startup` le serait à chaque démarrage — y placer un `create
       # user` ferait échouer le second lancement. Les scripts sont malgré tout
-      # écrits de façon idempotente : un volume conservé et une image recréée
-      # suffiraient à les rejouer.
+      # écrits de façon idempotente.
       - ./docker/oracle-init:/opt/oracle/scripts/setup:ro
     healthcheck:
-      # `sqlplus -L` échoue vite plutôt que d'attendre indéfiniment un écouteur
-      # qui n'est pas encore là.
-      test: ["CMD-SHELL", "echo 'select 1 from dual;' | sqlplus -S -L system/${ORACLE_PWD}@localhost:${ORACLE_CONTAINER_PORT}/${ORACLE_PDB} | grep -q 1"]
+      # Une requête qui rend une ligne : c'est le service, pas le processus.
+      # `-L` fait échouer sqlplus immédiatement plutôt que d'attendre un
+      # écouteur qui n'est pas encore là.
+      test:
+        - "CMD-SHELL"
+        - >-
+          echo 'select 1 from dual;' |
+          sqlplus -S -L system/${ORACLE_PWD}@localhost:${ORACLE_CONTAINER_PORT}/${ORACLE_PDB}
+          | grep -q 1
       interval: 20s
       timeout: 15s
-      retries: 40          # la première initialisation dépasse dix minutes
-      start_period: 180s
+      retries: 40
+      # La première initialisation dépasse dix minutes. Un `start_period` trop
+      # court ferait passer le service en `unhealthy` et le redémarrerait en
+      # boucle, sans jamais lui laisser finir.
+      start_period: 300s
 
   # -------------------------------------------------------------- Streamlit
   streamlit:
@@ -61,6 +97,11 @@ services:
         GID: ${GID}
     container_name: ${COMPOSE_PROJECT_NAME}-streamlit
     restart: unless-stopped
+    init: true
+    logging: *journal
+    security_opt: [*securite]
+    stop_grace_period: 15s
+    mem_limit: ${STREAMLIT_MEM_LIMIT:-1g}
     environment:
       STREAMLIT_SERVER_PORT: ${STREAMLIT_CONTAINER_PORT}
       STREAMLIT_SERVER_ADDRESS: 0.0.0.0
@@ -71,15 +112,25 @@ services:
       LUXRH_DB_USER: ${LUXRH_DB_USER}
       LUXRH_DB_PASSWORD: ${LUXRH_DB_PASSWORD}
     env_file:
-      # Les secrets de l'application — Supabase, comptes de démonstration.
-      # Absent, le conteneur démarre mais l'application refuse de se connecter
-      # en le disant, ce qui vaut mieux qu'un écran vide.
+      # Les secrets applicatifs. Absent, le conteneur démarre et l'application
+      # signale l'absence de configuration — ce qui vaut mieux qu'un écran vide.
       - path: ./luxrh/.env.local
         required: false
     ports:
       - "${STREAMLIT_PORT}:${STREAMLIT_CONTAINER_PORT}"
     volumes:
       - ./luxrh-py:/app:rw
+    healthcheck:
+      # Route de santé publiée par Streamlit. `-f` fait échouer curl sur un code
+      # >= 400 ; sans lui, curl rend 0 même sur une 500 et le service passerait
+      # pour sain.
+      test:
+        - "CMD-SHELL"
+        - "curl -fsS http://127.0.0.1:${STREAMLIT_CONTAINER_PORT}/_stcore/health || exit 1"
+      interval: 20s
+      timeout: 5s
+      retries: 3
+      start_period: 40s
     depends_on:
       oracle:
         condition: service_healthy
@@ -94,6 +145,11 @@ services:
         GID: ${GID}
     container_name: ${COMPOSE_PROJECT_NAME}-api
     restart: unless-stopped
+    init: true
+    logging: *journal
+    security_opt: [*securite]
+    stop_grace_period: 15s
+    mem_limit: ${API_MEM_LIMIT:-2g}
     environment:
       VITE_PORT: ${API_CONTAINER_PORT}
     env_file:
@@ -106,6 +162,19 @@ services:
       # Les dépendances restent dans le conteneur : celles installées sous
       # Windows portent des binaires incompatibles avec Linux.
       - node_modules:/app/node_modules
+    healthcheck:
+      # Vite ne publie pas de route de santé : on interroge la racine, qui doit
+      # rendre un code < 400 dès que le serveur sert quelque chose.
+      test:
+        - "CMD-SHELL"
+        - "curl -fsS http://127.0.0.1:${API_CONTAINER_PORT}/ >/dev/null || exit 1"
+      interval: 20s
+      timeout: 5s
+      retries: 3
+      start_period: 45s
+    depends_on:
+      oracle:
+        condition: service_healthy
 
 volumes:
   node_modules:
