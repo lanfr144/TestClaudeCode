@@ -71,3 +71,22 @@ video/
 
 # Archive des échanges de travail : journal local, pas un livrable.
 /discussion/
+
+# Rebuts d'éditeurs — voir ~/.claude/CLAUDE.md
+#
+# Les copies de secours de Word doublent le poids de l'historique et divergent
+# en silence de l'original : on ne sait plus laquelle fait foi. Un document de
+# travail se conserve par un commit, pas par une copie posée à côté.
+*.wbk
+~$*
+*.tmp
+*.bak
+*.old
+*.orig
+*.rej
+.~lock.*#
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db

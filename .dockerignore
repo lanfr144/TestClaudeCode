@@ -56,6 +56,17 @@ video/
 discussion/
 docs/pdf/
 .thumbnail
+
+# Rebuts d'éditeurs : un rebut envoyé au démon pèse autant qu'un fichier utile.
+**/*.wbk
+**/~$*
+**/*.tmp
+**/*.bak
+**/*.old
+**/*.orig
+**/*.rej
+**/*.swp
+**/*~
 **/.DS_Store
 **/Thumbs.db
 
