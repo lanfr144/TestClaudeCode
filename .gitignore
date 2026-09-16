@@ -69,6 +69,15 @@ video/
 /lois_et_règlements/
 /lois&règlements/
 
+# Quarantaine de l'audit du corpus — voir `tools/audit_corpus.py`.
+#
+# Y atterrit tout document qui n'entre dans aucune des cinq catégories de la
+# taxonomie, et tout rebut d'éditeur trouvé dans le corpus. C'est un sas, pas
+# une corbeille : rien n'y est supprimé, et l'audit dit pourquoi chaque fichier
+# s'y trouve. Hors de git pour la même raison que le corpus lui-même — licence,
+# attribution, volume.
+/inconnu/
+
 # Archive des échanges de travail : journal local, pas un livrable.
 /discussion/
 
