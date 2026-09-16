@@ -19,12 +19,22 @@ const BLOCKS = [
   { key: 'feries_usage', label: 'Jours fériés d’usage' },
 ] as const
 
-/** Champs du bloc « majorations » : le formulaire alimente le moteur, pas du code. */
+/** Champs du bloc « majorations » : le formulaire alimente le moteur, pas du code.
+ *
+ *  `min` est la clé `Abrege` du classeur des paramètres, et `enPourcent` la
+ *  convertit dans la grandeur que ce champ manipule. Les deux ne coïncident pas :
+ *  le classeur porte des **taux de majoration** (0,7), le formulaire des
+ *  **pourcentages** (70), et le jour férié un **total** (300) où trois parts se
+ *  cumulent — salaire mensuel, heure prestée, majoration de l'art. L. 232-7.
+ *
+ *  Afficher le taux brut donnerait « minimum légal : 0,7 % », et toute saisie
+ *  serait jugée conforme. La conversion appartient donc au champ, pas au lecteur.
+ */
 const SURCHARGE_FIELDS = [
-  { key: 'night_pct', label: 'Travail de nuit', note: 'Aucune majoration légale générale.', min: null },
-  { key: 'sunday_pct', label: 'Dimanche', note: 'Minimum légal', min: 'sunday_surcharge_pct' },
-  { key: 'holiday_pct', label: 'Jour férié travaillé', note: 'Total légal', min: 'holiday_surcharge_pct' },
-  { key: 'overtime_money_pct', label: 'Heure supplémentaire', note: 'Compensation en argent, légal', min: 'overtime_money_pct' },
+  { key: 'night_pct', label: 'Travail de nuit', note: 'Aucune majoration légale générale.', min: null, enPourcent: (t: number) => t * 100 },
+  { key: 'sunday_pct', label: 'Dimanche', note: 'Minimum légal', min: 'H_DIM_PCT', enPourcent: (t: number) => t * 100 },
+  { key: 'holiday_pct', label: 'Jour férié travaillé', note: 'Total légal', min: 'H_FER_PCT', enPourcent: (t: number) => 200 + t * 100 },
+  { key: 'overtime_money_pct', label: 'Heure supplémentaire', note: 'Compensation en argent, légal', min: 'H_SUP_PCT', enPourcent: (t: number) => 100 + t * 100 },
 ] as const
 
 export default function CbaEditor() {
@@ -173,16 +183,18 @@ export default function CbaEditor() {
             <div className="space-y-3">
               {SURCHARGE_FIELDS.map((f) => {
                 const min = legalMin(f.min)
+                // Le paramètre est un taux ; ce champ raisonne en pourcentage.
+                const minPct = min ? f.enPourcent(Number(min.valeur_num)) : undefined
                 const value = Number(draft[f.key] ?? 0)
-                const below = min && value < Number(min.valeur_num)
+                const below = minPct !== undefined && value < minPct
                 return (
                   <div key={f.key} className="flex items-center gap-3 border-b border-rule pb-3">
                     <div className="min-w-0 flex-1">
                       <p className="text-sm font-medium text-ink">{f.label}</p>
                       <p className="text-xs text-ink-muted">
                         {f.note}
-                        {min && ` ${num(min.valeur_num, 0)} %`}
-                        {min && !below && ' — respecté'}
+                        {minPct !== undefined && ` ${num(minPct, 0)} %`}
+                        {minPct !== undefined && !below && ' — respecté'}
                       </p>
                     </div>
                     <div className="w-28">
@@ -208,7 +220,7 @@ export default function CbaEditor() {
             <div className="grid gap-3 sm:grid-cols-2">
               <Field
                 label="Congé annuel (jours)"
-                hint={`Minimum légal : ${num(legalMin('annual_leave_min_days')?.valeur_num, 0)} j.`}
+                hint={`Minimum légal : ${num(legalMin('CONGE_J')?.valeur_num, 0)} j.`}
               >
                 <Input
                   type="number" disabled={isShared}

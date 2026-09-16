@@ -77,13 +77,13 @@ export default function ContractWizard() {
   const cddReasons =
     (params.data?.find((p) => p.cle_parametre === 'cdd_reasons')?.valeur_json as unknown as string[] | undefined) ?? []
   const legalWeekly = params.data?.find(
-    (p) => p.cle_parametre === 'normal_weekly_hours' && estEnVigueur(p, referenceDate),
+    (p) => p.cle_parametre === 'SEMAINE_H' && estEnVigueur(p, referenceDate),
   )
   const maxPrl = params.data?.find(
     (p) => p.cle_parametre === 'max_reference_period_months' && estEnVigueur(p, referenceDate),
   )
   const minLeave = params.data?.find(
-    (p) => p.cle_parametre === 'annual_leave_min_days' && estEnVigueur(p, referenceDate),
+    (p) => p.cle_parametre === 'CONGE_J' && estEnVigueur(p, referenceDate),
   )
   const breakThreshold = params.data?.find(
     (p) => p.cle_parametre === 'break_threshold_hours' && estEnVigueur(p, referenceDate),
