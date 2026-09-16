@@ -44,6 +44,9 @@ Code de sortie non nul s'il trouve quelque chose — utilisable en intégration.
 
 from __future__ import annotations
 
+import io
+
+
 import json
 import os
 import re
@@ -52,6 +55,11 @@ import sys
 import urllib.error
 import urllib.request
 from pathlib import Path
+
+# La console Windows est en cp1252. Un caractère venu de la documentation
+# citée — une coche, un tiret cadratin — faisait tomber le rapport au moment
+# de l'afficher : l'outil de contrôle échouait sur sa propre sortie.
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
 
 RACINE = Path(__file__).resolve().parent.parent
 ENV = RACINE / "luxrh" / ".env.local"

@@ -109,7 +109,7 @@ Python global héberge l'installation Airflow de l'utilisateur et **ne doit pas
   ses routines de support, exécutables par `PUBLIC`. Qualifier les appels à `pgcrypto`.
 - **Migrations** : numérotées et jamais réécrites une fois appliquées.
 - Commentaires en français, comme le reste du code.
-- **Toute table et toute colonne portent un commentaire.** 75 tables, 836 colonnes, 100 %.
+- **Toute table et toute colonne portent un commentaire.** 78 tables, 869 colonnes, 100 %.
   Une colonne ajoutée sans commentaire est signalée par `verifier_coherence.py`.
 - **`fin_validite` n'est jamais nulle, et le code ne doit pas faire semblant du contraire.**
   Une validité ouverte porte la sentinelle **`2037-12-31`**, un début de toujours
