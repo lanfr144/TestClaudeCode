@@ -15,8 +15,7 @@ cd "$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 set -a; . ./.env; set +a
 
 if [ "${1:-}" = "--effacer" ]; then
-  DONNEES="${ORACLE_DATA:-./docker/volumes/oracle}"
-  echo "Cette opération supprime définitivement la base Oracle de $DONNEES."
+  echo "Cette opération supprime définitivement la base Oracle."
   echo "La réinitialisation qui suivra dépasse dix minutes."
   printf 'Confirmer en écrivant « effacer » : '
   read -r reponse
@@ -24,8 +23,10 @@ if [ "${1:-}" = "--effacer" ]; then
     echo "Abandon — rien n'a été touché."
     exit 0
   fi
+  # `down -v` suffit : les données vivent dans le volume nommé `oracle_data`,
+  # plus dans un répertoire de l'hôte. Le `rm -rf` d'avant ne servait plus à
+  # rien et pointait vers un chemin qui n'existe pas.
   docker compose down -v
-  rm -rf "${DONNEES:?}"/*
   echo "Pile arrêtée, données supprimées."
 else
   docker compose down

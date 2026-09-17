@@ -114,7 +114,8 @@ fi
 # On le dépose là où l'image Oracle joue ses scripts d'initialisation, à la
 # création de la base et une seule fois.
 
-mkdir -p docker/oracle-init "${ORACLE_DATA:-./docker/volumes/oracle}"
+# Les données d'Oracle vivent dans un volume nommé : rien à créer ici.
+mkdir -p docker/oracle-init
 
 # Le mot de passe applicatif est transmis à SQL*Plus par un fichier de
 # définitions écrit à la volée. Il est exclu du dépôt et réécrit à chaque
@@ -192,7 +193,8 @@ while :; do
     exit 1
   fi
 
-  printf '  en attente :%-60s' "$RESTE"
+  printf '
+  en attente :%-60s' "$RESTE"
   sleep 10
 done
 

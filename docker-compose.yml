@@ -71,7 +71,20 @@ services:
       - "${ORACLE_PORT}:${ORACLE_CONTAINER_PORT}"
       - "${ORACLE_EM_PORT}:${ORACLE_EM_CONTAINER_PORT}"
     volumes:
-      - ${ORACLE_DATA}:/opt/oracle/oradata
+      # Volume NOMMÉ, et non un chemin de l'hôte.
+      #
+      # Oracle tourne dans l'image sous l'utilisateur « oracle », UID 54321. Un
+      # répertoire créé sur l'hôte appartient à celui qui l'a créé — UID 1000 —
+      # et Oracle n'y écrit pas : « Cannot create directory
+      # /opt/oracle/oradata/FREE ». La création de la base échoue, le conteneur
+      # s'arrête, `restart: unless-stopped` le relance, et tout recommence. La
+      # boucle a tourné cent quatre fois avant qu'on la voie, parce que le
+      # contrôle de santé se déclarait satisfait.
+      #
+      # Docker initialise les droits d'un volume nommé depuis l'image : la
+      # question ne se pose plus. La persistance est la même, et `arreter.sh
+      # --effacer` sait le supprimer.
+      - oracle_data:/opt/oracle/oradata
       # `scripts/setup` est joué UNE SEULE FOIS, après création de la base.
       # `scripts/startup` le serait à chaque démarrage — y placer un `create
       # user` ferait échouer le second lancement. Les scripts sont malgré tout
@@ -194,3 +207,4 @@ select ''BASE_PRETE'' from dual;
 
 volumes:
   node_modules:
+  oracle_data:
