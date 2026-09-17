@@ -101,8 +101,8 @@ services:
       context: .
       dockerfile: docker/Dockerfile.streamlit
       args:
-        UID: ${UID}
-        GID: ${GID}
+        UID: ${LUXRH_UID}
+        GID: ${LUXRH_GID}
     container_name: ${COMPOSE_PROJECT_NAME}-streamlit
     restart: unless-stopped
     init: true
@@ -149,8 +149,8 @@ services:
       context: .
       dockerfile: docker/Dockerfile.node
       args:
-        UID: ${UID}
-        GID: ${GID}
+        UID: ${LUXRH_UID}
+        GID: ${LUXRH_GID}
     container_name: ${COMPOSE_PROJECT_NAME}-api
     restart: unless-stopped
     init: true
