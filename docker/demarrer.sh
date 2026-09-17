@@ -120,12 +120,22 @@ mkdir -p docker/oracle-init
 # Le mot de passe applicatif est transmis à SQL*Plus par un fichier de
 # définitions écrit à la volée. Il est exclu du dépôt et réécrit à chaque
 # démarrage : aucun mot de passe ne transite par un fichier versionné.
-umask 077
 cat > docker/oracle-init/00_variables.sql <<SQL
 -- Généré par docker/demarrer.sh — ne pas versionner, ne pas modifier.
 define LUXRH_DB_PASSWORD = "${LUXRH_DB_PASSWORD:-changez-moi}"
 SQL
-umask 022
+
+# Lisible par tous, et c'est voulu.
+#
+# Un `umask 077` mettait le fichier en 0600 et sous l'UID de l'hôte. Oracle
+# tourne sous l'UID 54321 dans le conteneur : il ne pouvait pas le lire, les
+# scripts d'initialisation ne se jouaient pas, et la base restait vide sans que
+# rien ne le dise.
+#
+# Le fichier vit dans `docker/oracle-init/`, exclu du dépôt, sur une machine où
+# le même mot de passe figure déjà en clair dans `.env`. Le restreindre ici ne
+# protégeait de rien et cassait le démarrage.
+chmod 644 docker/oracle-init/00_variables.sql
 
 if [ -f schema/oracle.sql ]; then
   cp schema/oracle.sql docker/oracle-init/02_schema.sql
