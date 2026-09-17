@@ -91,7 +91,18 @@ esac
 # Vérifié avant de lancer : un « port is already allocated » au milieu d'un
 # `compose up` laisse une pile à moitié démarrée.
 
-occupe() { ss -ltn 2>/dev/null | awk '{print $4}' | grep -qE "[:.]$1\$"; }
+# Un port tenu par la pile elle-même n'est pas un conflit : c'est le cas normal
+# d'un redémarrage. Sans cette exception, `demarrer.sh` se refusait l'accès à
+# ses propres ports et demandait d'en changer — conseil absurde et bloquant.
+ports_de_la_pile() {
+  docker compose ps --format '{{.Publishers}}' 2>/dev/null     | grep -oE '"PublishedPort":[0-9]+' | grep -oE '[0-9]+' | sort -u
+}
+DEJA_A_NOUS="$(ports_de_la_pile)"
+
+occupe() {
+  echo "$DEJA_A_NOUS" | grep -qx "$1" && return 1
+  ss -ltn 2>/dev/null | awk '{print $4}' | grep -qE "[:.]$1\$"
+}
 
 CONFLITS=()
 for couple in "ORACLE_PORT:$ORACLE_PORT" "ORACLE_EM_PORT:$ORACLE_EM_PORT" \
