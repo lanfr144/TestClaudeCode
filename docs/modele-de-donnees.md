@@ -3,7 +3,7 @@
 Ce document décrit les tables de LuxRH, par domaine, avec leurs relations et leurs clés
 d'isolation. Il s'adresse aux développeurs qui écrivent des requêtes ou des migrations.
 
-**État vérifié le 10 septembre 2026.** La base déployée porte **79 tables** (vérifié par requête
+**État vérifié le 10 septembre 2026.** La base déployée porte **85 tables** (vérifié par requête
 sur `pg_class`/`pg_namespace`, schéma `public`, hors extension). Les migrations 46 à 56 sont
 **appliquées** ; elles ont ajouté six tables au fil de la série — `journal_acces` (migration 49),
 `parametres_attendus` (migration 50), `sites_client` et `distances_trajet` (migration 52),
@@ -64,7 +64,7 @@ redondantes. Aucune intégrité perdue — c'est un rappel qu'**une clé étrang
 graphe de relations que PostgREST expose** : en ajouter une change le contrat d'API, même sans
 toucher une ligne de front.
 
-Les 79 tables déployées ont RLS active — vérifié sur la base déployée, aucune exception. 184
+Les 85 tables déployées ont RLS active — vérifié sur la base déployée, aucune exception. 184
 politiques y sont installées (52 `select`, 44 `insert`, 45 `update`, 43 `delete`). `secrets_application`
 est le seul cas où RLS est active **sans aucune politique** : la table est donc inaccessible depuis
 l'API, et sa clé n'est lue que par une fonction `security definer`. Les quatre tables ajoutées par

@@ -7,7 +7,7 @@ quel ordre la suite se déroule.
 Il est tenu à jour à chaque étape. Si le travail s'interrompt, c'est ici qu'on reprend — pas
 dans l'historique d'une conversation.
 
-**État général au 12 septembre 2026** : 133 migrations appliquées, 79 tables, **878 colonnes
+**État général au 12 septembre 2026** : 143 migrations appliquées, 85 tables, **958 colonnes
 toutes commentées**, 190 vérifications en six suites, 0 échec, build à 0 erreur TypeScript,
 schémas Oracle et MySQL régénérés à **0 point non traduit**, dépôt et base réconciliés.
 
@@ -18,7 +18,7 @@ schémas Oracle et MySQL régénérés à **0 point non traduit**, dépôt et ba
 | § | Chantier | État | Bloqué par |
 |---|---|---|---|
 | 1 | Français intégral (code, tables, colonnes) | ◐ **Préparé** — dictionnaire, migration et outil prêts | **Votre autorisation** d'appliquer la migration 76 |
-| 1b | Commentaires sur toutes les tables et colonnes | ✅ **Fait** — 79/79 tables, 878/878 colonnes | — |
+| 1b | Commentaires sur toutes les tables et colonnes | ✅ **Fait** — 85/85 tables, 958/958 colonnes | — |
 | 2 | Congés : statut « proposé », contre-proposition | ✅ **Fait** — migration 65 | — |
 | 3 | CHECK de liste → tables de domaine | ✅ **Fait** | — |
 | 4 | Bi-temporalité, `fin_validite` non nul au 31/12/2037 | ✅ **Fait** — migration 70, les 13 tables héritées | — |

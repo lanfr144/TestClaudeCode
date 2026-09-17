@@ -164,7 +164,7 @@ conflits potentiels. Le comportement observable — refuser un recouvrement de p
 identique ; le coût ne l'est pas.
 
 `schema/oracle.sql` et `schema/mysql.sql` ont été régénérés avec ce code corrigé, à partir d'un
-catalogue lui aussi rafraîchi : **les deux portent les 79 tables de la base déployée**, 95
+catalogue lui aussi rafraîchi : **les deux portent les 85 tables de la base déployée**, 95
 créations d'objets et **836 `commentaire on column`**. La liste « ce qui n'a pas été traduit » est
 vide.
 
@@ -182,7 +182,7 @@ pas traduites, et figurent dans la liste finale.
 ## Voir aussi
 
 - [index.md](index.md) — sommaire de la documentation
-- [modele-de-donnees.md](modele-de-donnees.md) — les 79 tables de la base déployée, domaine par domaine (le schéma traduit ici, `schema/catalogue.json`, n'en porte encore que 47 : voir « Le schéma portable » dans [architecture.md](architecture.md))
+- [modele-de-donnees.md](modele-de-donnees.md) — les 85 tables de la base déployée, domaine par domaine (le schéma traduit ici, `schema/catalogue.json`, n'en porte encore que 47 : voir « Le schéma portable » dans [architecture.md](architecture.md))
 - [moteur-de-regles.md](moteur-de-regles.md) — le moteur PL/pgSQL qui ne se déplace pas
 - [demarrage.md](demarrage.md) — lancer l'application Python sur une autre base
 - [architecture.md](architecture.md) — pourquoi le navigateur ne se connecte pas à Oracle
