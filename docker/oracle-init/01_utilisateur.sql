@@ -1,6 +1,7 @@
 -- Création de l'utilisateur applicatif LuxRH
 --
--- Joué une seule fois, après la création de la base, par l'image Oracle Free.
+-- Appelé par `00_charger.sh`, qui porte la sentinelle et ne le joue que si le
+-- schéma est absent.
 -- Le script suivant — `02_schema.sql` — est déposé par `docker/demarrer.sh`
 -- depuis `schema/oracle.sql`, lui-même régénéré à partir de PostgreSQL.
 --
@@ -16,7 +17,12 @@
 -- n'est écrit nulle part dans le dépôt.
 
 set serveroutput on
-alter session set container = LUXRHPDB;
+
+-- Pas de « alter session set container » : la connexion vise déjà le PDB par
+-- son nom de service. La ligne qui figurait ici nommait LUXRHPDB en dur, un PDB
+-- qui n'existe pas — l'image `database/free` livre FREEPDB1 et ignore
+-- ORACLE_PDB, sa base étant déjà créée. Le script échouait sur sa deuxième
+-- ligne, avant d'avoir rien fait.
 
 declare
   v_existe integer;
@@ -46,4 +52,3 @@ begin
 end;
 /
 
-exit

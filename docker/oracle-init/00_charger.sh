@@ -60,16 +60,20 @@ dire "Schéma LUXRH absent. Création."
 
 # ----------------------------------------------------------- l'utilisateur
 dire "1/2 — utilisateur et droits"
-sqlplus -S -L "$connexion" <<SQL
+sortie=$(sqlplus -S -L "$connexion" <<SQL 2>&1
 whenever sqlerror exit 1
 define LUXRH_DB_PASSWORD = "${MOT_DE_PASSE}"
 @${REPERTOIRE}/01_utilisateur.sql
 exit
 SQL
+)
 if [ $? -ne 0 ]; then
-  dire "ÉCHEC à la création de l'utilisateur."
+  # Un échec sans son message est un échec qu'on ne corrige pas.
+  dire "ÉCHEC à la création de l'utilisateur :"
+  echo "$sortie" | sed 's/^/    /'
   exit 1
 fi
+echo "$sortie" | grep -E 'LUXRH' | sed 's/^/    /'
 
 # --------------------------------------------------------------- le schéma
 if [ ! -f "${REPERTOIRE}/02_schema.sql" ]; then
