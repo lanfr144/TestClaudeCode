@@ -133,6 +133,52 @@ if (!modele) {
       : ko('contrôle d’accès', 'un tiers a pu découper un créneau')
   }
 
+  // --- restitution en langage naturel, sur une vacation de nuit
+  //
+  // Le cas de la spécification : 22h00 → 02h00, pause d'une heure, 03h00 → 07h00.
+  // Huit heures effectives, dont sept de nuit — la fenêtre s'arrête à 06h00.
+  const [okn, nuitBody] = await post(token, 'creneaux', {
+    planning_id: modele.planning_id,
+    societe_id: modele.societe_id,
+    salarie_id: modele.salarie_id,
+    date_creneau: '2027-03-15',
+    heure_debut: '22:00',
+    heure_fin: '07:00',
+    pause_minutes: 60,
+    libelle: 'ESSAI nuit',
+  })
+  if (okn) {
+    const idNuit = nuitBody[0].id
+    await rpc(token, 'fn_decouper_creneau', { p_creneau: idNuit })
+
+    const r = await rpc(token, 'fn_releve_lisible', {
+      p_salarie: modele.salarie_id, p_jour: '2027-03-15',
+    })
+    const l = r.body?.[0]
+    if (!r.ok || !l) {
+      ko('restitution lisible', JSON.stringify(r.body))
+    } else {
+      console.log(`       « ${l.phrase} »`)
+      l.phrase.includes('travaillé de 22h00')
+        ? ok('la phrase commence à 22h00')
+        : ko('phrase', l.phrase)
+      l.phrase.includes('pause')
+        ? ok('la pause est mentionnée')
+        : ko('pause absente', l.phrase)
+      l.minutes_effectives === 480
+        ? ok('huit heures effectives', `${l.minutes_effectives} min`)
+        : ko('effectives', `${l.minutes_effectives} min au lieu de 480`)
+      l.minutes_pause === 60
+        ? ok('une heure de pause', `${l.minutes_pause} min`)
+        : ko('pause', `${l.minutes_pause} min au lieu de 60`)
+      // 22h→02h = 4h de nuit, 03h→06h = 3h de nuit, 06h→07h hors fenêtre.
+      l.minutes_nuit === 420
+        ? ok('sept heures de nuit', `${l.minutes_nuit} min`)
+        : ko('nuit', `${l.minutes_nuit} min au lieu de 420`)
+    }
+    await del(token, `creneaux?id=eq.${idNuit}`)
+  }
+
   // --- nettoyage : les segments partent en cascade avec les créneaux
   for (const id of crees) await del(token, `creneaux?id=eq.${id}`)
   const restants = await get(token,
