@@ -82,11 +82,19 @@ services:
       # `-L` fait échouer sqlplus immédiatement plutôt que d'attendre un
       # écouteur qui n'est pas encore là.
       test:
+        # Le jeton cherché ne doit apparaître dans AUCUN message d'erreur.
+        # « grep -q 1 » déclarait la base saine sur « ORA-12541 » et sur
+        # « TNS-00511: No listener » — tous deux portent un « 1 ». Le contrôle
+        # passait au vert pendant qu'Oracle se configurait encore, et la pile
+        # rendait la main sur une base injoignable. C'est précisément le défaut
+        # que les contrôles de santé existent pour éviter.
         - "CMD-SHELL"
         - >-
-          echo 'select 1 from dual;' |
+          printf 'whenever sqlerror exit 1
+select ''BASE_PRETE'' from dual;
+' |
           sqlplus -S -L system/${ORACLE_PWD}@localhost:${ORACLE_CONTAINER_PORT}/${ORACLE_PDB}
-          | grep -q 1
+          | grep -q BASE_PRETE
       interval: 20s
       timeout: 15s
       retries: 40

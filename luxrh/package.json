@@ -9,7 +9,7 @@
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
-    "test": "node tests/api.test.mjs && node tests/rls.test.mjs && node tests/publication.test.mjs && node tests/domain.test.mjs && node tests/portability.test.mjs && node tests/lifecycle.test.mjs",
+    "test": "node tests/api.test.mjs && node tests/rls.test.mjs && node tests/publication.test.mjs && node tests/domain.test.mjs && node tests/portability.test.mjs && node tests/lifecycle.test.mjs && node tests/segments.test.mjs",
     "test:api": "node tests/api.test.mjs",
     "test:rls": "node tests/rls.test.mjs",
     "test:portability": "node tests/portability.test.mjs",
