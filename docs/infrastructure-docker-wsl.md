@@ -6,34 +6,56 @@ lancer, et **ce qui n'a pas pu être vérifié**.
 
 ---
 
-## Ce qui est vérifié, et ce qui ne l'est pas
+## Ce qui est éprouvé, et ce qui ne l'est pas
 
-Distinction faite d'emblée, plutôt que laissée à découvrir au premier lancement.
+Relevé du 17 septembre 2026, **la pile ayant été réellement lancée**.
 
 | | État |
 |---|---|
-| Syntaxe des scripts (`bash -n`) | ✅ vérifiée |
-| Refus hors WSL | ✅ éprouvé — le script s'arrête et dit quoi faire |
-| Choix des ports contre l'occupation réelle du poste | ✅ relevé le 14/09/2026 |
-| Cohérence `.env` ⇄ `docker-compose.yml` ⇄ Dockerfiles | ✅ vérifiée par script — 0 variable sans valeur |
-| Un `healthcheck` sur chacun des trois services | ✅ vérifié par script |
-| `logging`, `init`, `mem_limit`, `stop_grace_period`, `security_opt` | ✅ vérifiés par script sur les trois |
-| Dépendances exprimées sur `service_healthy` | ✅ vérifié |
-| `.dockerignore` | ✅ présent — 111 Mo + 29 Mo écartés du contexte |
-| **Construction des images** | ❌ **non vérifiée** |
-| **Démarrage effectif d'Oracle** | ❌ **non vérifié** |
-| **Jeu du schéma `oracle.sql` sur une base réelle** | ❌ **non vérifié** |
+| Distribution WSL `luxrh` | ✅ créée — Ubuntu 24.04, systemd en PID 1, utilisateur en UID 1000 |
+| Docker et Compose | ✅ 29.8.1 et v5.5.1, dans la distribution |
+| Outils de diagnostic réseau | ✅ `ss`, `netstat`, `ip`, `ifconfig`, `ping`, `dig`, `traceroute` |
+| `docker compose config` | ✅ valide, ports résolus depuis `.env` |
+| Construction des images applicatives | ✅ éprouvée, contrôle de prérequis passé |
+| Démarrage effectif d'Oracle | ⏳ en cours d'épreuve |
+| Jeu de `oracle.sql` sur une base réelle | ⏳ jamais encore abouti |
 
-La raison est simple et sans détour : **la distribution `luxrh` n'existe pas, et
-Docker n'est pas installé sur ce poste.** Relevé le 14 septembre 2026 :
+### Cinq défauts que seule l'exécution a révélés
 
-```
-wsl -l -v   →  AI-P02 (par défaut, arrêtée) · Mlops1 (arrêtée)
-docker      →  introuvable
-```
+La pile passait tous les contrôles statiques — syntaxe, cohérence des variables,
+présence d'un `healthcheck` sur chaque service — et ne démarrait pas. Chacun de
+ces défauts est resté invisible jusqu'au premier lancement.
 
-Créer une distribution WSL et y installer Docker relève de votre décision, pas de
-la mienne : ce sont des programmes, pas des paquets. Les commandes sont ci-dessous.
+1. **`security_opt` écrit en table de clés** au lieu d'une chaîne. Compose
+   refusait le fichier entier : « must be a string ».
+
+2. **Les scripts `docker/*.sh` versionnés en mode 100644.** « Permission
+   denied » au premier clone POSIX. Invisible sous Windows, où le bit exécutable
+   n'a pas de sens et où l'on lance les scripts par `bash fichier.sh`.
+
+3. **`UID` est une variable en lecture seule dans bash.** `set -a; . ./.env`
+   échouait, et `set -e` arrêtait le script avant le moindre contrôle. Le tube
+   vers `tail` masquait en plus le code de sortie, qui paraissait nul.
+   D'où `LUXRH_UID` et `LUXRH_GID`.
+
+4. **Le contrôle de santé d'Oracle déclarait saine une base injoignable.**
+   `grep -q 1` cherchait le caractère « 1 » — or « ORA-12541 » en porte un, et
+   « TNS-00511: No listener » aussi. Le contrôle passait au vert pendant
+   qu'Oracle se configurait encore. C'est exactement le défaut que les contrôles
+   de santé existent pour éviter, et la même erreur que `curl` sans `-f`.
+
+5. **Oracle ne pouvait pas écrire dans son volume.** Il tourne sous l'utilisateur
+   « oracle », UID 54321 ; le répertoire monté, créé sur l'hôte, appartenait à
+   l'UID 1000. « Cannot create directory /opt/oracle/oradata/FREE » — la création
+   de la base échouait, le conteneur s'arrêtait, `restart: unless-stopped` le
+   relançait, et tout recommençait. **Cent quatre fois.**
+
+Les défauts 4 et 5 se couvraient l'un l'autre : un service qui ne démarrait
+jamais, et un contrôle qui jurait que tout allait bien. C'est la combinaison la
+plus coûteuse — celle où l'outil affirme le contraire de ce qui se passe.
+
+Les données d'Oracle vivent désormais dans un **volume nommé**, dont Docker
+initialise les droits depuis l'image.
 
 ---
 

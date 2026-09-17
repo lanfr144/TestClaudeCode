@@ -102,10 +102,10 @@ services:
         # rendait la main sur une base injoignable. C'est précisément le défaut
         # que les contrôles de santé existent pour éviter.
         - "CMD-SHELL"
+        # Le `\n` reste littéral dans un scalaire YAML plié : c'est `printf` qui
+        # l'interprète, pas YAML. L'écrire en vrai saut de ligne casse le fichier.
         - >-
-          printf 'whenever sqlerror exit 1
-select ''BASE_PRETE'' from dual;
-' |
+          printf 'whenever sqlerror exit 1\nselect ''BASE_PRETE'' from dual;\n' |
           sqlplus -S -L system/${ORACLE_PWD}@localhost:${ORACLE_CONTAINER_PORT}/${ORACLE_PDB}
           | grep -q BASE_PRETE
       interval: 20s
