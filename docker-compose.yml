@@ -59,6 +59,12 @@ services:
       ORACLE_PWD: ${ORACLE_PWD}
       ORACLE_PDB: ${ORACLE_PDB}
       ORACLE_CHARACTERSET: ${ORACLE_CHARACTERSET}
+      # Le jeu de caractères de la base ne suffit pas : SQL*Plus convertit selon
+      # le sien. Sans NLS_LANG, il lit `02_schema.sql` — qui porte 869
+      # commentaires de colonne en français — dans le jeu par défaut du
+      # conteneur, et « Salarié » entre en base abîmé. La base serait en
+      # AL32UTF8, et son contenu faux.
+      NLS_LANG: ${NLS_LANG:-.AL32UTF8}
     ports:
       - "${ORACLE_PORT}:${ORACLE_CONTAINER_PORT}"
       - "${ORACLE_EM_PORT}:${ORACLE_EM_CONTAINER_PORT}"

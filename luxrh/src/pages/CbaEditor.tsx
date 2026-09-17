@@ -34,7 +34,7 @@ const SURCHARGE_FIELDS = [
   { key: 'night_pct', label: 'Travail de nuit', note: 'Aucune majoration légale générale.', min: null, enPourcent: (t: number) => t * 100 },
   { key: 'sunday_pct', label: 'Dimanche', note: 'Minimum légal', min: 'H_DIM_PCT', enPourcent: (t: number) => t * 100 },
   { key: 'holiday_pct', label: 'Jour férié travaillé', note: 'Total légal', min: 'H_FER_PCT', enPourcent: (t: number) => 200 + t * 100 },
-  { key: 'overtime_money_pct', label: 'Heure supplémentaire', note: 'Compensation en argent, légal', min: 'H_SUP_PCT', enPourcent: (t: number) => 100 + t * 100 },
+  { key: 'remuneration_heure_sup_pct', label: 'Heure supplémentaire', note: 'Compensation en argent, légal', min: 'H_SUP_PCT', enPourcent: (t: number) => 100 + t * 100 },
 ] as const
 
 export default function CbaEditor() {
