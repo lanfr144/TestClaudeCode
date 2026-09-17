@@ -94,10 +94,13 @@ esac
 # Un port tenu par la pile elle-même n'est pas un conflit : c'est le cas normal
 # d'un redémarrage. Sans cette exception, `demarrer.sh` se refusait l'accès à
 # ses propres ports et demandait d'en changer — conseil absurde et bloquant.
+# `|| true` n'est pas une négligence : sous `set -euo pipefail`, un `grep` qui ne
+# trouve rien rend 1 et arrête le script AVANT le moindre message. Pile arrêtée,
+# aucun port publié, aucune sortie — un échec parfaitement muet.
 ports_de_la_pile() {
-  docker compose ps --format '{{.Publishers}}' 2>/dev/null     | grep -oE '"PublishedPort":[0-9]+' | grep -oE '[0-9]+' | sort -u
+  docker compose ps --format '{{.Publishers}}' 2>/dev/null     | grep -oE '"PublishedPort":[0-9]+' | grep -oE '[0-9]+' | sort -u || true
 }
-DEJA_A_NOUS="$(ports_de_la_pile)"
+DEJA_A_NOUS="$(ports_de_la_pile || true)"
 
 occupe() {
   echo "$DEJA_A_NOUS" | grep -qx "$1" && return 1
