@@ -59,7 +59,11 @@ from pathlib import Path
 # La console Windows est en cp1252. Un caractère venu de la documentation
 # citée — une coche, un tiret cadratin — faisait tomber le rapport au moment
 # de l'afficher : l'outil de contrôle échouait sur sa propre sortie.
-sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
+# Envelopper stdout une seule fois : deux modules qui le font à l'import se
+# marchent dessus, le second détachant le tampon du premier — d'où un
+# « I/O operation on closed file » au premier print du module appelant.
+if (sys.stdout.encoding or "").lower().replace("-", "") != "utf8":
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
 
 RACINE = Path(__file__).resolve().parent.parent
 ENV = RACINE / "luxrh" / ".env.local"

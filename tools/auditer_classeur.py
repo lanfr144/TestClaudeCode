@@ -25,7 +25,11 @@ import sys
 from collections import Counter, defaultdict
 from pathlib import Path
 
-sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
+# Envelopper stdout une seule fois : deux modules qui le font à l'import se
+# marchent dessus, le second détachant le tampon du premier — d'où un
+# « I/O operation on closed file » au premier print du module appelant.
+if (sys.stdout.encoding or "").lower().replace("-", "") != "utf8":
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
 
 RACINE = Path(__file__).resolve().parent.parent
 CLASSEUR = RACINE / "lois_et_règlements" / "paramètres.xlsx"

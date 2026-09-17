@@ -33,7 +33,7 @@ cette documentation.
 | [moteur-de-regles.md](moteur-de-regles.md) | Le référentiel daté, la hiérarchie loi → CCT → contrat, les scans de conformité, `fn_referential_gaps` | Développeurs base de données, conformité |
 | [api-serveur.md](api-serveur.md) | Inventaire des fonctions RPC : nom, arguments, retour, appelants, migration d'origine | Développeurs des deux fronts |
 | [guide-utilisateur.md](guide-utilisateur.md) | Parcours écran par écran, de la connexion à la portabilité | Utilisateurs, formateurs, testeurs |
-| [modele-de-donnees.md](modele-de-donnees.md) | Les 78 tables par domaine, leurs relations, les clés d'isolation | Développeurs base de données |
+| [modele-de-donnees.md](modele-de-donnees.md) | Les 79 tables par domaine, leurs relations, les clés d'isolation | Développeurs base de données |
 | [tests-et-qualite.md](tests-et-qualite.md) | Les six suites de tests, comment les lancer, ce qu'elles vérifient et ce qui n'est pas couvert | Développeurs, relecteurs |
 | [contribuer.md](contribuer.md) | Conventions du dépôt : migrations, français, pièges `supabase-js`, valeurs en dur, dépôt public | Toute personne qui écrit du code ici |
 | [bases-de-donnees.md](bases-de-donnees.md) | Choix de la base par argument, ce qu'Oracle et MySQL portent — et ce qu'ils ne portent pas | Exploitants, intégrateurs |

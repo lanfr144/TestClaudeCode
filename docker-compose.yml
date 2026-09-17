@@ -36,9 +36,11 @@ x-journal: &journal
     max-size: "10m"
     max-file: "5"
 
-x-securite: &securite
-  # Interdit à un processus du conteneur d'acquérir des privilèges qu'il n'a pas.
-  no-new-privileges: "true"
+# `security_opt` attend une liste de CHAÎNES, pas d'objets. Écrit en table de
+# clés — `no-new-privileges: "true"` —, Compose refuse le fichier entier avec
+# « services.api.security_opt.0 must be a string ». Le défaut ne se voyait pas :
+# la pile n'avait jamais été lancée.
+x-securite: &securite "no-new-privileges:true"
 
 services:
 
