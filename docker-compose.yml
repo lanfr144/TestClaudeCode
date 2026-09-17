@@ -67,6 +67,10 @@ services:
       # conteneur, et « Salarié » entre en base abîmé. La base serait en
       # AL32UTF8, et son contenu faux.
       NLS_LANG: ${NLS_LANG:-.AL32UTF8}
+      # Lu par `00_charger.sh`. Passer par l'environnement plutôt que par un
+      # fichier `define` : un fichier écrit par l'hôte appartient à l'UID de
+      # l'hôte, et Oracle tourne sous l'UID 54321 — il ne pouvait pas le lire.
+      LUXRH_DB_PASSWORD: ${LUXRH_DB_PASSWORD}
     ports:
       - "${ORACLE_PORT}:${ORACLE_CONTAINER_PORT}"
       - "${ORACLE_EM_PORT}:${ORACLE_EM_CONTAINER_PORT}"
@@ -85,11 +89,17 @@ services:
       # question ne se pose plus. La persistance est la même, et `arreter.sh
       # --effacer` sait le supprimer.
       - oracle_data:/opt/oracle/oradata
-      # `scripts/setup` est joué UNE SEULE FOIS, après création de la base.
-      # `scripts/startup` le serait à chaque démarrage — y placer un `create
-      # user` ferait échouer le second lancement. Les scripts sont malgré tout
-      # écrits de façon idempotente.
-      - ./docker/oracle-init:/opt/oracle/scripts/setup:ro
+      # `startup`, et non `setup`.
+      #
+      # L'image `database/free` embarque une base DÉJÀ CRÉÉE : elle ne passe
+      # jamais par `createDB.sh`, et rien de ce qui est déposé dans `setup`
+      # n'est joué. Le schéma restait vide, la base démarrait sans erreur, et
+      # aucun message ne le disait.
+      #
+      # `startup` est joué à chaque démarrage. `00_charger.sh` porte donc une
+      # sentinelle : il compte les objets du schéma avant de le créer.
+      # Monté en lecture-écriture parce que `demarrer.sh` y dépose 02_schema.sql.
+      - ./docker/oracle-init:/opt/oracle/scripts/startup
     healthcheck:
       # Une requête qui rend une ligne : c'est le service, pas le processus.
       # `-L` fait échouer sqlplus immédiatement plutôt que d'attendre un
